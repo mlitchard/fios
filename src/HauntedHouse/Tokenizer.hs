@@ -16,8 +16,6 @@ import Prelude hiding (many)
 import HauntedHouse.Tokenizer.Data 
 import Text.Megaparsec hiding (runParser)
 
-
-import qualified Text.Megaparsec.Char.Lexer as L
 import Data.Char (toUpper)
 
 runParser :: Parser a -> String -> Either String a
