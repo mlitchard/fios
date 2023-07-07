@@ -1,5 +1,5 @@
 {
-  description = "srid/haskell-template: Nix template for Haskell projects";
+  description = "srid/fios: Nix template for Haskell projects";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     systems.url = "github:nix-systems/default";
@@ -41,7 +41,7 @@
           # Add your package overrides here
           settings = {
             /*
-            haskell-template = {
+            fios = {
               haddock = false;
             };
             aeson = {
@@ -105,19 +105,19 @@
           run = {
             description = "Run the project with ghcid auto-recompile";
             exec = ''
-              ghcid -c "cabal repl exe:haskell-template" --warnings -T :main
+              ghcid -c "cabal repl exe:fios" --warnings -T :main
             '';
             category = "Primary";
           };
         };
 
         # Default package & app.
-        packages.default = self'.packages.haskell-template;
-        apps.default = self'.apps.haskell-template;
+        packages.default = self'.packages.fios;
+        apps.default = self'.apps.fios;
 
         # Default shell.
         devShells.default = pkgs.mkShell {
-          name = "haskell-template";
+          name = "fios";
           # See https://haskell.flake.page/devshell#composing-devshells
           inputsFrom = [
             config.haskellProjects.default.outputs.devShell
