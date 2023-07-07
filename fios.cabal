@@ -37,6 +37,7 @@ common shared
     BangPatterns
     ConstraintKinds
     DataKinds
+    DeriveAnyClass
     DeriveDataTypeable
     DeriveFoldable
     DeriveFunctor
@@ -102,6 +103,7 @@ library
   exposed-modules: 
     HauntedHouse.Parser
     HauntedHouse.Tokenizer
+    HauntedHouse.Game.GID
   
   other-modules:
     HauntedHouse.Tokenizer.Data
