@@ -108,6 +108,7 @@ library
   other-modules:
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Parser.WordClasses
+    HauntedHouse.Game.Object.Domain
 
 executable fios
   import:  shared
