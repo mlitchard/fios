@@ -64,6 +64,7 @@ common shared
     PolyKinds
     PostfixOperators
     RankNTypes
+    RecursiveDo
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
@@ -80,6 +81,7 @@ common shared
     , base          >=4.13.0.0 && <4.18.0.0.0
     , data-default
     , directory
+    , Earley
     , filepath
     , hashable      == 1.4.2.0
     , megaparsec    == 9.2.2
@@ -103,6 +105,7 @@ library
   
   other-modules:
     HauntedHouse.Tokenizer.Data
+    HauntedHouse.Parser.WordClasses
 
 executable fios
   import:  shared

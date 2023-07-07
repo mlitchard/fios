@@ -4,6 +4,7 @@ module HauntedHouse.Tokenizer
     , HauntedHouse.Tokenizer.Data.determiners 
     , HauntedHouse.Tokenizer.Data.directions
     , HauntedHouse.Tokenizer.Data.locations
+    , HauntedHouse.Tokenizer.Data.nouns 
     , HauntedHouse.Tokenizer.Data.numbers 
     , HauntedHouse.Tokenizer.Data.objects
     , HauntedHouse.Tokenizer.Data.prepositions
