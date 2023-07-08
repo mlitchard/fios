@@ -56,6 +56,7 @@ common shared
     GADTSyntax
     GeneralisedNewtypeDeriving
     ImportQualifiedPost
+    InstanceSigs
     KindSignatures
     LambdaCase
     MultiParamTypeClasses
@@ -85,6 +86,7 @@ common shared
     , Earley
     , filepath
     , hashable      == 1.4.2.0
+    , haskeline
     , megaparsec    == 9.2.2
     , mtl
     , optics-core
@@ -104,14 +106,18 @@ library
     HauntedHouse.Parser
     HauntedHouse.Tokenizer
     HauntedHouse.Game.GID
-  
-  other-modules:
+    HauntedHouse.Game.Object 
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Parser.WordClasses
     HauntedHouse.Game.Object.Domain
+    HauntedHouse.Game.Object.Container
     HauntedHouse.Game.Agent.Domain 
+    HauntedHouse.Game.Location
     HauntedHouse.Game.Location.Domain
-    Spike.RestrictedPair
+    HauntedHouse.Game.Location.LocationData
+    HauntedHouse.Game.Location.LocationMap
+    HauntedHouse.Game.GameState
+    HauntedHouse.Game.GameState.Domain
 
 executable fios
   import:  shared
