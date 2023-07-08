@@ -109,6 +109,9 @@ library
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Parser.WordClasses
     HauntedHouse.Game.Object.Domain
+    HauntedHouse.Game.Agent.Domain 
+    HauntedHouse.Game.Location.Domain
+    Spike.RestrictedPair
 
 executable fios
   import:  shared
