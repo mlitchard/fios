@@ -1,6 +1,8 @@
 module HauntedHouse.Game.GameState (
-    HauntedHouse.Game.GamteState.Domain.GameStateExceptT
+  HauntedHouse.Game.GameState.Domain.GameStateExceptT
+, HauntedHouse.Game.GameState.Domain.GameState (..)
 ) where
 
-import HauntedHouse.Game.GameState.Domain (GameStateExceptT)
+import HauntedHouse.Game.GameState.Domain (GameState (..), GameStateExceptT)
+
 

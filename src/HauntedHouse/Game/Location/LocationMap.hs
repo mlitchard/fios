@@ -1,8 +1,10 @@
-module HauntedHouse.Game.Location.LocationMap where 
+module HauntedHouse.Game.Location.LocationMap where
 
-import HauntedHouse.Game.Location.Domain
-import HauntedHouse.Game.Location.LocationData
+import Data.Map.Strict qualified (Map)
+import HauntedHouse.Game.Location.Domain (LocationName)
+import HauntedHouse.Game.Location.LocationData (LocationData)
 
-newtype LocationMap = LocationMap {
-    unLocationMap :: Map LocationName LocationData
-    } deriving stock (Show)
+newtype LocationMap = LocationMap
+  { unLocationMap :: Data.Map.Strict.Map LocationName LocationData
+  }
+  deriving stock (Show)

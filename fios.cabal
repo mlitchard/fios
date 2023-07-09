@@ -76,7 +76,6 @@ common shared
     TypeOperators
     ViewPatterns
 
-   
   build-depends:
     , aeson
     , async
@@ -85,9 +84,9 @@ common shared
     , directory
     , Earley
     , filepath
-    , hashable      == 1.4.2.0
+    , hashable      ==1.4.2.0
     , haskeline
-    , megaparsec    == 9.2.2
+    , megaparsec    ==9.2.2
     , mtl
     , optics-core
     , profunctors
@@ -100,24 +99,26 @@ common shared
   default-language:   Haskell2010
 
 library
-  import: shared
-
-  exposed-modules: 
-    HauntedHouse.Parser
-    HauntedHouse.Tokenizer
+  import:          shared
+  exposed-modules:
+    HauntedHouse.Game.Agent
+    HauntedHouse.Game.Agent.Atomic
+    HauntedHouse.Game.Agent.Domain
+    HauntedHouse.Game.GameState
+    HauntedHouse.Game.GameState.Domain
     HauntedHouse.Game.GID
-    HauntedHouse.Game.Object 
-    HauntedHouse.Tokenizer.Data
-    HauntedHouse.Parser.WordClasses
-    HauntedHouse.Game.Object.Domain
-    HauntedHouse.Game.Object.Container
-    HauntedHouse.Game.Agent.Domain 
     HauntedHouse.Game.Location
     HauntedHouse.Game.Location.Domain
     HauntedHouse.Game.Location.LocationData
     HauntedHouse.Game.Location.LocationMap
-    HauntedHouse.Game.GameState
-    HauntedHouse.Game.GameState.Domain
+    HauntedHouse.Game.Narration.Domain
+    HauntedHouse.Game.Object
+    HauntedHouse.Game.Object.Container
+    HauntedHouse.Game.Object.Domain
+    HauntedHouse.Parser
+    HauntedHouse.Parser.WordClasses
+    HauntedHouse.Tokenizer
+    HauntedHouse.Tokenizer.Data
 
 executable fios
   import:  shared
