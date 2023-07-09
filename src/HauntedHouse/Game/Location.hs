@@ -8,12 +8,11 @@ import Data.Map.Strict (lookup)
 import HauntedHouse.Game.Agent 
 import HauntedHouse.Game.GameState.Domain
     ( GameState(_locationMap), GameStateExceptT )
-import HauntedHouse.Game.Location.LocationData (LocationData)
-import HauntedHouse.Game.Location.LocationMap
-import HauntedHouse.Game.Location.Domain (LocationName)
-import Control.Monad.Except 
+import HauntedHouse.Game.Location.Domain ( LocationName )
+import HauntedHouse.Game.Location.LocationData (LocationData (_description))
+import HauntedHouse.Game.Location.LocationMap ( LocationMap(..) )
+import Control.Monad.Except ( MonadError(throwError) )
 
-{-
 getLocationData :: GameStateExceptT LocationData
 getLocationData =
   getLocationName >>= lookupLocationData >>= getLocationData'
@@ -28,11 +27,9 @@ getLocationData =
         ld <- getLocationName
         
         throwError ("For some reason, I can't find " <> show ld <> ".")
--}
 
 getLocationName :: GameStateExceptT LocationName
 getLocationName = _location <$> getAgentData
-{-
+
 getDescription :: GameStateExceptT Text
-getDescription = _description <$> getLocationDat
--}
+getDescription = _description <$> getLocationData
