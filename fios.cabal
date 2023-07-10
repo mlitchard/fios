@@ -93,6 +93,7 @@ common shared
     , relude        >=1.0
     , shower
     , time
+    , these == 1.2
     , with-utf8
 
   hs-source-dirs:     src
@@ -111,6 +112,7 @@ library
     HauntedHouse.Game.Location.Domain
     HauntedHouse.Game.Location.LocationData
     HauntedHouse.Game.Location.LocationMap
+    HauntedHouse.Game.Narration
     HauntedHouse.Game.Narration.Domain
     HauntedHouse.Game.Object
     HauntedHouse.Game.Object.Container
