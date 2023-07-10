@@ -105,6 +105,10 @@ library
     HauntedHouse.Game.Agent
     HauntedHouse.Game.Agent.Atomic
     HauntedHouse.Game.Agent.Domain
+    HauntedHouse.Game.Engine
+    HauntedHouse.Game.Engine.OnlyVerb
+    HauntedHouse.Game.Engine.OnlyVerb.DoLook
+    HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
     HauntedHouse.Game.GameState
     HauntedHouse.Game.GameState.Domain
     HauntedHouse.Game.GID
@@ -114,6 +118,7 @@ library
     HauntedHouse.Game.Location.LocationMap
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Narration.Domain
+    HauntedHouse.Game.Parser
     HauntedHouse.Game.Object
     HauntedHouse.Game.Object.Container
     HauntedHouse.Game.Object.Domain

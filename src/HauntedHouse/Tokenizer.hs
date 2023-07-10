@@ -10,7 +10,7 @@ module HauntedHouse.Tokenizer (
   HauntedHouse.Tokenizer.Data.prepositions,
   HauntedHouse.Tokenizer.Data.term,
   HauntedHouse.Tokenizer.Data.verbs,
-  HauntedHouse.Tokenizer.Data.Lexeme,
+  HauntedHouse.Tokenizer.Data.Lexeme (..),
   runParser,
   HauntedHouse.Tokenizer.tokens,
 ) where

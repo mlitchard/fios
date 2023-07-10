@@ -66,7 +66,7 @@ imperative = mdo
 
   verbPhrase <-
     rule $
-      Verb
+      OnlyVerb
         <$> verb
         <|> VerbPhrase1
         <$> verb

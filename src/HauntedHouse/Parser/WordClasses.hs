@@ -23,7 +23,7 @@ data NounPhrase
 data VerbPhrase
   = VerbPhrase1 Verb NounPhrase
   | VerbPhrase2 Verb PrepPhrase
-  | Verb Verb
+  | OnlyVerb Verb
   deriving stock (Show, Eq, Ord)
 
 data PrepPhrase
