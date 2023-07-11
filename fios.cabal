@@ -118,12 +118,11 @@ library
     HauntedHouse.Game.Location.LocationMap
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Narration.Domain
-    HauntedHouse.Game.Parser
     HauntedHouse.Game.Object
     HauntedHouse.Game.Object.Container
     HauntedHouse.Game.Object.Domain
-    HauntedHouse.Parser
-    HauntedHouse.Parser.WordClasses
+    HauntedHouse.Recognizer
+    HauntedHouse.Recognizer.WordClasses
     HauntedHouse.Tokenizer
     HauntedHouse.Tokenizer.Data
 

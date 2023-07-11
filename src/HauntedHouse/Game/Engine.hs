@@ -1,7 +1,8 @@
 module HauntedHouse.Game.Engine where
 import HauntedHouse.Game.GameState (GameStateExceptT)
-import HauntedHouse.Game.Parser
+import HauntedHouse.Recognizer 
 import Control.Monad.Except (throwError)
+import HauntedHouse.Game.Engine.OnlyVerb
 import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
 
 engine :: Imperative -> GameStateExceptT ()

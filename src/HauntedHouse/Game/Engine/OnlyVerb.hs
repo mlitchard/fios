@@ -1,5 +1,5 @@
 module HauntedHouse.Game.Engine.OnlyVerb where
-import HauntedHouse.Game.Parser (Verb)
+import HauntedHouse.Recognizer (Verb)
 import HauntedHouse.Game.GameState (GameStateExceptT)
 import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Game.Engine.OnlyVerb.DoLook (doLook)

@@ -1,14 +1,14 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
-{-# HLINT ignore "Use '<|>' from Relude" #-}
-module HauntedHouse.Parser where
+module HauntedHouse.Recognizer (
+  module HauntedHouse.Recognizer
+, module HauntedHouse.Recognizer.WordClasses
+) where
 
 import Data.HashSet qualified as HS
 
 import HauntedHouse.Tokenizer
 import Text.Earley
 
-import HauntedHouse.Parser.WordClasses
+import HauntedHouse.Recognizer.WordClasses
 
 imperative :: Grammar r (Prod r Text Lexeme Imperative)
 imperative = mdo

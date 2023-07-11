@@ -1,4 +1,4 @@
-module HauntedHouse.Parser.WordClasses where
+module HauntedHouse.Recognizer.WordClasses where
 
 import HauntedHouse.Tokenizer (Lexeme)
 
