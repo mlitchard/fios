@@ -1,5 +1,3 @@
-{-# LANGUAGE InstanceSigs #-}
-
 module HauntedHouse.Game.GID where
 
 newtype GID a = GID {unGID :: Int}
@@ -8,3 +6,4 @@ newtype GID a = GID {unGID :: Int}
 instance ToText (GID a) where
   toText :: GID a -> Text
   toText = show . unGID
+

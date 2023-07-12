@@ -5,6 +5,7 @@ import Data.Hashable (hashUsing)
 import Text.Megaparsec (Parsec)
 import Text.Megaparsec.Char (spaceChar)
 import Text.Megaparsec.Char.Lexer qualified as L
+import Data.Char (GeneralCategory(UppercaseLetter))
 
 type Parser = Parsec Void String
 
@@ -105,16 +106,27 @@ data Lexeme
   | EAST
   | SOUTH
   | WEST
+  | DOWN
   | TAKE
   | SINK
   | THROUGH
+  | SOIL 
+  | WATERING
+  | CAN
+  | BAG
+  | UP 
+  | CLIMB 
+  | GO
+  | HALL   
   | SEPERATOR
   deriving stock (Show, Eq, Enum, Ord)
 
 instance ToText Lexeme where
+  toText :: Lexeme -> Text
   toText txt = toText (show txt :: String)
 
 instance Hashable Lexeme where
+  hashWithSalt :: Int -> Lexeme -> Int
   hashWithSalt = hashUsing fromEnum
 
 term :: Parser Lexeme
@@ -168,6 +180,8 @@ term =
     <|> EAST <$ symbol "EAST"
     <|> SOUTH <$ symbol "SOUTH"
     <|> WEST <$ symbol "WEST"
+    <|> UP <$ symbol "UP"
+    <|> DOWN <$ symbol "DOWN"
     <|> EXAMINE <$ symbol "EXAMINE"
     <|> TAKE <$ symbol "TAKE"
     <|> OPEN <$ symbol "OPEN"
@@ -176,4 +190,11 @@ term =
     <|> SINK <$ symbol "SINK"
     <|> KITCHEN <$ symbol "KITCHEN"
     <|> THROUGH <$ symbol "THROUGH"
+    <|> SOIL <$ symbol "SOIL"
+    <|> WATERING <$ symbol "WATERING"
+    <|> CAN <$ symbol "CAN"
+    <|> BAG <$ symbol "BAG"
+    <|> GO <$ symbol "GO"
+    <|> CLIMB <$ symbol "CLIMB"
+    <|> HALL <$ symbol "HALL"
     <|> SEPERATOR <$ symbol ","

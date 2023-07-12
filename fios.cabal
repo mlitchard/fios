@@ -103,28 +103,34 @@ library
   import:          shared
   exposed-modules:
     HauntedHouse.Game.Agent
+    HauntedHouse.Game.Engine
+    HauntedHouse.Game.GameState
+    HauntedHouse.Game.GID
+    HauntedHouse.Game.Location
+    HauntedHouse.Game.Narration
+    HauntedHouse.Game.Object
+    HauntedHouse.Game.World
+    HauntedHouse.Recognizer
+    HauntedHouse.Tokenizer
+    
+  other-modules:
     HauntedHouse.Game.Agent.Atomic
     HauntedHouse.Game.Agent.Domain
-    HauntedHouse.Game.Engine
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
-    HauntedHouse.Game.GameState
     HauntedHouse.Game.GameState.Domain
-    HauntedHouse.Game.GID
-    HauntedHouse.Game.Location
     HauntedHouse.Game.Location.Domain
     HauntedHouse.Game.Location.LocationData
     HauntedHouse.Game.Location.LocationMap
-    HauntedHouse.Game.Narration
+    HauntedHouse.Game.Location.Exits
     HauntedHouse.Game.Narration.Domain
-    HauntedHouse.Game.Object
     HauntedHouse.Game.Object.Container
     HauntedHouse.Game.Object.Domain
-    HauntedHouse.Recognizer
-    HauntedHouse.Recognizer.WordClasses
-    HauntedHouse.Tokenizer
+    HauntedHouse.Game.World.Locations
+    HauntedHouse.Game.World.Locations.Kitchen
     HauntedHouse.Tokenizer.Data
+    HauntedHouse.Recognizer.WordClasses
 
 executable fios
   import:  shared

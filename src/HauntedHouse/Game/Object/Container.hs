@@ -20,7 +20,7 @@ data ContainerState
 -}
 -- Nothing means not a container or shelf
 newtype ContainerState 
-  = ContainerState (Maybe (ContainedIn, These Container Shelf)) deriving stock Show 
+  = ContainerState (ContainedIn, Maybe (These Container Shelf)) deriving stock Show 
 data ContainedIn
   = ContainedInAgent (GID AgentName)
   | ContainedInObject (GID ObjectName)
