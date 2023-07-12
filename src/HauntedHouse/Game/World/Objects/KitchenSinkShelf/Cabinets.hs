@@ -1,4 +1,4 @@
-module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets 
+module HauntedHouse.Game.World.Objects.KitchenSinkShelf.Cabinets 
   where
 import Data.These (These (..))
 import HauntedHouse.Game.GID

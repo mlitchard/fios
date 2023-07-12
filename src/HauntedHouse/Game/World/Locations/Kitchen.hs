@@ -2,10 +2,7 @@ module HauntedHouse.Game.World.Locations.Kitchen where
 
 import HauntedHouse.Game.Location.LocationData (LocationData (..))
 import HauntedHouse.Game.Object
-import HauntedHouse.Game.GID (GID (..))
 import HauntedHouse.Tokenizer (Lexeme(..))
-import Data.These (These(..))
-
 
 {-
 data LocationData = LocationData

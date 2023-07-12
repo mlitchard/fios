@@ -1,4 +1,4 @@
-module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf where
+module HauntedHouse.Game.World.Objects.KitchenSinkShelf.Shelf where
 import HauntedHouse.Game.Object.Container (Shelf (..), PlaceOn (..))
 import Data.These (These(..))
 

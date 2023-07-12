@@ -1,4 +1,4 @@
-module HauntedHouse.Game.World.Locations.Kitchen.KitchenSink where
+module HauntedHouse.Game.World.Objects.KitchenSink where
 
 import Data.These (These (..))
 import HauntedHouse.Game.Object 
