@@ -20,15 +20,15 @@ data ContainerState
 -}
 -- Nothing means not a container or shelf
 newtype ContainerState 
-  = ContainerState (ContainedIn, Maybe (These Container Shelf)) deriving stock Show 
-data ContainedIn
-  = ContainedInAgent (GID AgentName)
-  | ContainedInObject (GID ObjectName)
-  | ContainedInLocation (GID LocationName)
+  = ContainerState (AttachedTo, Maybe (These Container Shelf)) deriving stock Show 
+data AttachedTo
+  = AttachedToAgent (GID AgentName)
+  | AttachedToObject (GID ObjectName)
+  | AttachedToLocation (GID LocationName)
   deriving stock (Show)
 
 data Container = Container
-  { _isOpen :: Bool
+  { _isOpen :: Maybe Bool
   , _cinv :: Maybe (NonEmpty (GID ObjectName))
   , _lockState :: Maybe LockState
   }
@@ -38,9 +38,11 @@ data Moveable = Moveable | NotMovable deriving stock (Eq, Ord, Enum, Show)
 
 data LockState = Locked | Unlocked deriving stock (Show, Eq, Ord)
 
+
 data PlaceOn  = PlaceOn deriving stock Show
-data PlaceIn  = PlaceIn deriving stock Show 
+data PlaceUnder = PlaceUnder deriving stock Show 
+data PlaceAbove = PlaceAbove deriving stock Show 
 data Shelf    = Shelf
-  { placeablity :: These PlaceOn PlaceIn
-  , _sinv :: Maybe (NonEmpty (GID ObjectName, Either PlaceOn PlaceIn))
+  { _placeability :: These PlaceOn PlaceUnder
+  , _sinv :: Maybe (NonEmpty (GID ObjectName, These (These PlaceUnder PlaceOn) PlaceAbove))
   } deriving stock Show

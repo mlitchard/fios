@@ -118,6 +118,7 @@ data Lexeme
   | CLIMB 
   | GO
   | HALL   
+  | MARQUEE 
   | SEPERATOR
   deriving stock (Show, Eq, Enum, Ord)
 
@@ -197,4 +198,5 @@ term =
     <|> GO <$ symbol "GO"
     <|> CLIMB <$ symbol "CLIMB"
     <|> HALL <$ symbol "HALL"
+    <|> MARQUEE <$ symbol "MARQUEE"
     <|> SEPERATOR <$ symbol ","

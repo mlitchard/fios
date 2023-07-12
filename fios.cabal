@@ -127,8 +127,12 @@ library
     HauntedHouse.Game.Narration.Domain
     HauntedHouse.Game.Object.Container
     HauntedHouse.Game.Object.Domain
+    HauntedHouse.Game.Object.Descriptors
     HauntedHouse.Game.World.Locations
     HauntedHouse.Game.World.Locations.Kitchen
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinet
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Recognizer.WordClasses
 

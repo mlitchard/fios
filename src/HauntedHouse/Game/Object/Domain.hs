@@ -9,7 +9,7 @@ import HauntedHouse.Game.Object.Container (ContainerState, ObjectName, Moveable)
 -- _container is either (Container or Contained) or (Container and Contained)
 data Object = Object
   { _container :: ContainerState 
-  , _contained :: Maybe ObjectName
+  , _containedBy :: Maybe (GID ObjectName)
   , _moveability :: Moveable
   , _odescription :: Text
   }

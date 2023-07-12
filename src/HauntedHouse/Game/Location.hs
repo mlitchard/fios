@@ -1,7 +1,8 @@
 module HauntedHouse.Game.Location (
-  module HauntedHouse.Game.Location,
-  HauntedHouse.Game.Location.LocationMap.LocationMap (..),
-  HauntedHouse.Game.Location.Domain.LocationName,
+  module HauntedHouse.Game.Location
+, module HauntedHouse.Game.Location.LocationData
+, HauntedHouse.Game.Location.LocationMap.LocationMap (..)
+, HauntedHouse.Game.Location.Domain.LocationName
 ) where
 
 import Data.Map.Strict (lookup)
@@ -9,7 +10,7 @@ import HauntedHouse.Game.Agent
 import HauntedHouse.Game.GameState.Domain
     ( GameState(_locationMap), GameStateExceptT )
 import HauntedHouse.Game.Location.Domain ( LocationName )
-import HauntedHouse.Game.Location.LocationData (LocationData (_description))
+import HauntedHouse.Game.Location.LocationData
 import HauntedHouse.Game.Location.LocationMap ( LocationMap(..) )
 import Control.Monad.Except ( MonadError(throwError) )
 
