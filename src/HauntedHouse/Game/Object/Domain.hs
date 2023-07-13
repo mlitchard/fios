@@ -2,9 +2,10 @@ module HauntedHouse.Game.Object.Domain where
 
 import Data.Map.Strict qualified (Map)
 import HauntedHouse.Game.GID (GID)
-import HauntedHouse.Game.Object.Container
+import HauntedHouse.Game.Object.Container (ContainerState, ObjectLabel
+                                          , Moveable, AttachedTo)
 
--- import HauntedHouse.Game.Object.Container (ContainedIn, Container, ContainerState, Moveable, ObjectName (..))
+-- import HauntedHouse.Game.Object.Container (ContainedIn, Container, ContainerState, Moveable, ObjectLabel (..))
 
 -- _container is either (Container or Contained) or (Container and Contained)
 data Object = Object
@@ -15,13 +16,14 @@ data Object = Object
   }
   deriving stock (Show)
 
+
 newtype ObjectMap = ObjectMap
-  { _unObjectMap :: Data.Map.Strict.Map (GID ObjectName) Object
+  { _unObjectMap :: Data.Map.Strict.Map (GID ObjectLabel) Object
   }
   deriving stock (Show)
 
-newtype ObjectNameMap = ObjectNameMap
-  { _unObjectNameMap :: Data.Map.Strict.Map ObjectName (NonEmpty (GID ObjectName))
+newtype ObjectLabelMap = ObjectLabelMap
+  { _unObjectLabelMap :: Data.Map.Strict.Map ObjectLabel (NonEmpty (GID ObjectLabel))
   }
   deriving stock (Show)
 

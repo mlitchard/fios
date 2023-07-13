@@ -5,7 +5,6 @@ import Data.Hashable (hashUsing)
 import Text.Megaparsec (Parsec)
 import Text.Megaparsec.Char (spaceChar)
 import Text.Megaparsec.Char.Lexer qualified as L
-import Data.Char (GeneralCategory(UppercaseLetter))
 
 type Parser = Parsec Void String
 

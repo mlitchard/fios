@@ -1,6 +1,6 @@
 module HauntedHouse.Game.Location.Domain where
 
-data LocationName
+data LocationLabel
   = Attic
   | LivingRoom
   | Hall 

@@ -2,35 +2,35 @@ module HauntedHouse.Game.Location (
   module HauntedHouse.Game.Location
 , module HauntedHouse.Game.Location.LocationData
 , HauntedHouse.Game.Location.LocationMap.LocationMap (..)
-, HauntedHouse.Game.Location.Domain.LocationName
+, module HauntedHouse.Game.Location.Domain
 ) where
 
 import Data.Map.Strict (lookup)
 import HauntedHouse.Game.Agent 
 import HauntedHouse.Game.GameState.Domain
     ( GameState(_locationMap), GameStateExceptT )
-import HauntedHouse.Game.Location.Domain ( LocationName )
+import HauntedHouse.Game.Location.Domain ( LocationLabel )
 import HauntedHouse.Game.Location.LocationData
 import HauntedHouse.Game.Location.LocationMap ( LocationMap(..) )
 import Control.Monad.Except ( MonadError(throwError) )
 
 getLocationData :: GameStateExceptT LocationData
 getLocationData =
-  getLocationName >>= lookupLocationData >>= getLocationData'
+  getLocationLabel >>= lookupLocationData >>= getLocationData'
   where
-    lookupLocationData :: LocationName -> GameStateExceptT (Maybe LocationData)
-    lookupLocationData locationName =
-      (lookup locationName <$> unLocationMap) . _locationMap <$> get
+    lookupLocationData :: LocationLabel -> GameStateExceptT (Maybe LocationData)
+    lookupLocationData locationLabel =
+      (lookup locationLabel <$> unLocationMap) . _locationMap <$> get
 
     getLocationData' = \case
       Just ld -> pure ld
       Nothing -> do
-        ld <- getLocationName
+        ld <- getLocationLabel
         
         throwError ("For some reason, I can't find " <> show ld <> ".")
 
-getLocationName :: GameStateExceptT LocationName
-getLocationName = _location <$> getAgentData
+getLocationLabel :: GameStateExceptT LocationLabel
+getLocationLabel = _location <$> getAgentData
 
 getDescription :: GameStateExceptT Text
 getDescription = _description <$> getLocationData

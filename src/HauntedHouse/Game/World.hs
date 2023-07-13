@@ -1,6 +1,6 @@
 module HauntedHouse.Game.World where
 import HauntedHouse.Game.Object
-import HauntedHouse.Game.Object.Container (ObjectName)
+import HauntedHouse.Game.Object.Container (ObjectLabel)
 
 {-
 data GameState = GameState
@@ -8,7 +8,7 @@ data GameState = GameState
   , _locationMap :: LocationMap
   , _agentMap :: AgentMap
   , _report :: [Text]
-  , _player :: GID AgentName
+  , _player :: GID AgentLabel
   , _narration :: Narration
   , _newScene :: Bool
   , _clarification :: Maybe (NonEmpty Text)
@@ -17,13 +17,13 @@ data GameState = GameState
 -}
 
 {-
-cabinetON :: ObjectName
-cabinetON = ObjectName CABINET
+cabinetON :: ObjectLabel
+cabinetON = ObjectLabel CABINET
 -}
 {-
 data Object = Object
   { _container :: ContainerState
-  , _contained :: Maybe ObjectName
+  , _contained :: Maybe ObjectLabel
   , _moveability :: Moveable
   , _odescription :: Text
   }
@@ -31,7 +31,7 @@ data Object = Object
 {-
 data Container = Container
   { _isOpen :: Bool
-  , _cinv :: Maybe (NonEmpty (GID ObjectName))
+  , _cinv :: Maybe (NonEmpty (GID ObjectLabel))
   , _lockState :: Maybe LockState
   }
 -}
@@ -43,15 +43,15 @@ sinkCabinet = Object
   }
 -}
 {-
-plantON :: ObjectName
-plantON = ObjectName PLANT 
+plantON :: ObjectLabel
+plantON = ObjectLabel PLANT 
 
-potON :: ObjectName 
-potON = ObjectName POT 
+potON :: ObjectLabel 
+potON = ObjectLabel POT 
 
-soil :: ObjectName
-soil = ObjectName BAG 
+soil :: ObjectLabel
+soil = ObjectLabel BAG 
 
-can :: ObjectName
-can = ObjectName CAN 
+can :: ObjectLabel
+can = ObjectLabel CAN 
 -}

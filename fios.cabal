@@ -135,6 +135,7 @@ library
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
+    HauntedHouse.Game.World.Objects
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Recognizer.WordClasses
 

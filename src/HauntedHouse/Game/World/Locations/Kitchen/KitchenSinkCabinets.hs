@@ -4,12 +4,10 @@ import HauntedHouse.Game.Object (Object (..))
 import HauntedHouse.Game.Object.Container
 import HauntedHouse.Game.GID (GID(..))
 import Data.These (These(..))
+import HauntedHouse.Game.World.Objects
 
-type ContainedBy = GID ObjectName
-type Containing  = [GID ObjectName]
-
-kitchenSinkCabinetAboveName :: ObjectName
-kitchenSinkCabinetAboveName = ObjectName CABINET
+kitchenSinkCabinetAboveLabel :: ObjectLabel
+kitchenSinkCabinetAboveLabel = ObjectLabel CABINET
 
 kitchenSinkCabinetAbove :: ContainedBy -> Containing -> Object
 kitchenSinkCabinetAbove containedBy containing = Object
@@ -30,13 +28,9 @@ kitchenSinkCabinetAbove containedBy containing = Object
       , _lockState = Nothing
       }
 
-{-
-data Container = Container
-  { _isOpen :: Maybe Bool
-  , _cinv :: Maybe (NonEmpty (GID ObjectName))
-  , _lockState :: Maybe LockState
-  }
-  -}
+
+kitchenSinkCabinetBelowLabel :: ObjectLabel
+kitchenSinkCabinetBelowLabel = ObjectLabel CABINET   
 
 kitchenSinkCabinetBelow :: ContainedBy -> Containing -> Object
 kitchenSinkCabinetBelow containedBy containing = Object

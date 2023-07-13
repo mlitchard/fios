@@ -4,6 +4,6 @@ import HauntedHouse.Game.Location
 hall :: LocationData
 hall = LocationData {
   _description = "It's a hallway"
-, _objectNameMap = Nothing 
+, _ObjectLabelMap = Nothing 
 , _exits = Nothing  
 }

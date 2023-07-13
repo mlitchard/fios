@@ -22,5 +22,5 @@ getAgentData = do
         (Just ad) -> pure ad 
         Nothing   -> throwError ("can't find " <> show playerName ) 
 
-getPlayer :: GameStateExceptT (GID AgentName)
+getPlayer :: GameStateExceptT (GID AgentLabel)
 getPlayer = _player <$> get

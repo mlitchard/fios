@@ -1,12 +1,14 @@
-module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets 
+module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
   where
 import Data.These (These (..))
 import HauntedHouse.Game.GID
 import HauntedHouse.Game.Object
-import HauntedHouse.Game.Object (AttachedTo(AttachedToObject))
+import HauntedHouse.Tokenizer (Lexeme(CABINET))
+import HauntedHouse.Game.World.Objects
 
-type ContainedBy = GID ObjectName
-type Containing  = [GID ObjectName]
+
+kitchenCabinetAboveShelfLabel :: ObjectLabel
+kitchenCabinetAboveShelfLabel = ObjectLabel CABINET 
 
 kitchenCabinetAboveShelf :: ContainedBy -> Containing -> Object
 kitchenCabinetAboveShelf containedBy containing = Object
@@ -17,30 +19,33 @@ kitchenCabinetAboveShelf containedBy containing = Object
   }
   where
     kitchenCabinetAboveShelfContainerState :: ContainerState
-    kitchenCabinetAboveShelfContainerState = ContainerState 
+    kitchenCabinetAboveShelfContainerState = ContainerState
       (This kitchenCabinetAboveShelfContainer)
 
     kitchenCabinetAboveShelfContainer :: Container
-    kitchenCabinetAboveShelfContainer = Container 
+    kitchenCabinetAboveShelfContainer = Container
       { _isOpen = Just False
-      , _cinv = containing 
+      , _cinv = containing
       , _lockState = Nothing
       }
+
+kitchenCabinetBelowShelfLabel :: ObjectLabel
+kitchenCabinetBelowShelfLabel = ObjectLabel CABINET 
 
 kitchenCabinetBelowShelf :: ContainedBy -> Containing -> Object
 kitchenCabinetBelowShelf containedBy containing = Object
   { _container = Just kitchenCabinetBelowShelfContainerState
-  , _containedBy = Just (AttachedToObject containedBy) 
+  , _containedBy = Just (AttachedToObject containedBy)
   , _moveability = NotMovable
   , _odescription = "A cabinet below the kitchen shelf"
   }
   where
     kitchenCabinetBelowShelfContainerState :: ContainerState
-    kitchenCabinetBelowShelfContainerState = ContainerState 
+    kitchenCabinetBelowShelfContainerState = ContainerState
       (This kitchenCabinetBelowShelfContainer)
 
     kitchenCabinetBelowShelfContainer :: Container
-    kitchenCabinetBelowShelfContainer = Container 
+    kitchenCabinetBelowShelfContainer = Container
       { _isOpen = Just False
       , _cinv = containing
       , _lockState = Nothing
