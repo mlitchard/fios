@@ -130,11 +130,11 @@ library
     HauntedHouse.Game.Narration.Domain
     HauntedHouse.Game.Object.Container
     HauntedHouse.Game.Object.Domain
-    HauntedHouse.Game.Object.Descriptors   
-    HauntedHouse.Game.World.Objects.KitchenSinkCabinets
-    HauntedHouse.Game.World.Objects.KitchenSink
-    HauntedHouse.Game.World.Objects.KitchenSinkShelf.Cabinets
-    HauntedHouse.Game.World.Objects.KitchenSinkShelf.Shelf
+    HauntedHouse.Game.Object.Descriptors
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets  
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Recognizer.WordClasses
 

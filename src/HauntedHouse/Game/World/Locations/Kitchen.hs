@@ -1,5 +1,7 @@
 module HauntedHouse.Game.World.Locations.Kitchen where
 
+import HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
+import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets 
 import HauntedHouse.Game.Location.LocationData (LocationData (..))
 import HauntedHouse.Game.Object
 import HauntedHouse.Tokenizer (Lexeme(..))
@@ -11,21 +13,15 @@ data LocationData = LocationData
   }
 
 -}
-kitchen :: LocationData
-kitchen = LocationData {
-  _description = "It's a small kitchen"
-, _objectNameMap = Nothing 
-, _exits = Nothing  
-}
-
-kitchenObjectNames :: NonEmpty ObjectName
+{-
 kitchenObjectNames = fromList [
-  kitchenSinkCabinetName
-  ,kitchenSinkName
-  ,kitchenShelfCabinetBelowName
-  ,kitchenShelfCabinetAboveName
-  ,kitchenMarqueeName]
-
+  (kitchenSinkCabinetAboveName,kitchenSinkCabinetAbove)
+  ,(kitchenSinkCabinetBelowName,kitchenSinkCabinetBelow)
+  ,(kitchenSinkName,kitchenSink)
+  ,(kitchenShelfCabinetBelowName,kitchenShelfCabinetBelow)
+  ,(kitchenShelfCabinetAboveName,kitchenShelfCabinetAbove)]
+ -- ,(kitchenMarqueeName,kitchenMarquee)]
+-}
 {-
 data Object = Object
   { _container :: ContainerState 
@@ -41,17 +37,19 @@ data AttachedTo
   | AttachedToLocation (GID LocationName)
   
 -}
-kitchenSinkCabinetName :: ObjectName
-kitchenSinkCabinetName = ObjectName CABINET
+{-
+
+
+
 
 kitchenSinkName :: ObjectName
 kitchenSinkName = ObjectName SINK
 
-kitchenShelfCabinetBelowName :: ObjectName
-kitchenShelfCabinetBelowName = ObjectName CABINET
+
 
 kitchenShelfCabinetAboveName :: ObjectName
 kitchenShelfCabinetAboveName = ObjectName CABINET
 
 kitchenMarqueeName :: ObjectName
 kitchenMarqueeName = ObjectName MARQUEE
+-}
