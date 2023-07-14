@@ -7,6 +7,8 @@ import HauntedHouse.Game.GID (GID(..))
 import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Game.Location
 import HauntedHouse.Game.World.Objects
+import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
+import HauntedHouse.Game.World.WorldState (WorldState)
 
 kitchenSinkName :: ObjectLabel
 kitchenSinkName = ObjectLabel SINK
@@ -43,3 +45,24 @@ kitchenSink' containedBy containing = Object
       , _cinv = containing
       , _lockState = Nothing -- Can't lock a sink
       }
+    {-
+     kitchenSinkAsShelf :: Shelf
+     kitchenSinkAsShelf = Shelf 
+      {
+
+      -}
+
+makeSink :: WorldState 
+makeSink = do 
+  makeSink' 
+  makeUpperSinkCabinet
+  makeLowerSinkCabinet 
+  where 
+    makeSink' :: WorldState 
+    makeSink' = pass
+
+makeUpperSinkCabinet :: WorldState 
+makeUpperSinkCabinet = pass 
+
+makeLowerSinkCabinet :: WorldState 
+makeLowerSinkCabinet = pass 

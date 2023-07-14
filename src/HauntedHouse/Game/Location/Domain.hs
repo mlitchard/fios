@@ -1,8 +1,5 @@
 module HauntedHouse.Game.Location.Domain where
+import HauntedHouse.Tokenizer (Lexeme)
 
-data LocationLabel
-  = Attic
-  | LivingRoom
-  | Hall 
-  | Kitchen
+newtype LocationLabel = LocationLabel {_unLocationLabel :: Lexeme}
   deriving stock (Eq, Ord, Show)

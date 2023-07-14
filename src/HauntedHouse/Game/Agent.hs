@@ -9,14 +9,14 @@ import HauntedHouse.Game.Agent.Domain
 import HauntedHouse.Game.Agent.Atomic
 import Control.Monad.Except ( MonadError(throwError) )
 import HauntedHouse.Game.GameState.Domain
-    ( GameStateExceptT, GameState(..) )
+    ( GameStateExceptT, GameState(..), World (..) )
 import HauntedHouse.Game.GID (GID)
 
 getAgentData :: GameStateExceptT AgentData
 getAgentData = do
     playerName <- getPlayer
     gs <- get 
-    let aMap = _agentMap gs 
+    let aMap = (_agentMap . _world) gs 
         mAgent = lookup playerName $ unAgentMap aMap
     case mAgent of 
         (Just ad) -> pure ad 

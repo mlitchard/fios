@@ -2,9 +2,9 @@ module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets where
 import HauntedHouse.Tokenizer
 import HauntedHouse.Game.Object (Object (..))
 import HauntedHouse.Game.Object.Container
-import HauntedHouse.Game.GID (GID(..))
 import Data.These (These(..))
 import HauntedHouse.Game.World.Objects
+import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
 
 kitchenSinkCabinetAboveLabel :: ObjectLabel
 kitchenSinkCabinetAboveLabel = ObjectLabel CABINET

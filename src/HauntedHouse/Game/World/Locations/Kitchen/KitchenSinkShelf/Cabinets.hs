@@ -5,6 +5,7 @@ import HauntedHouse.Game.GID
 import HauntedHouse.Game.Object
 import HauntedHouse.Tokenizer (Lexeme(CABINET))
 import HauntedHouse.Game.World.Objects
+import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
 
 
 kitchenCabinetAboveShelfLabel :: ObjectLabel

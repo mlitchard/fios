@@ -1,6 +1,12 @@
 module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf where
-import HauntedHouse.Game.Object.Container (Shelf (..), PlaceOn (..))
-import Data.These (These(..))
+-- import HauntedHouse.Game.Object.Container (Shelf (..), PlaceOn (..)
+--                                          , ObjectLabel (..))
+import HauntedHouse.Tokenizer 
+
+import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
+
+kitchenShelfLabel :: ObjectLabel
+kitchenShelfLabel = ObjectLabel SHELF 
 
 {-
 

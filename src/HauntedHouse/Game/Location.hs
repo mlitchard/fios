@@ -1,5 +1,6 @@
 module HauntedHouse.Game.Location (
   module HauntedHouse.Game.Location
+, module HauntedHouse.Game.Location.Exits 
 , module HauntedHouse.Game.Location.LocationData
 , HauntedHouse.Game.Location.LocationMap.LocationMap (..)
 , module HauntedHouse.Game.Location.Domain
@@ -8,8 +9,9 @@ module HauntedHouse.Game.Location (
 import Data.Map.Strict (lookup)
 import HauntedHouse.Game.Agent 
 import HauntedHouse.Game.GameState.Domain
-    ( GameState(_locationMap), GameStateExceptT )
+    ( GameState(_world), World (_locationMap), GameStateExceptT )
 import HauntedHouse.Game.Location.Domain ( LocationLabel )
+import HauntedHouse.Game.Location.Exits 
 import HauntedHouse.Game.Location.LocationData
 import HauntedHouse.Game.Location.LocationMap ( LocationMap(..) )
 import Control.Monad.Except ( MonadError(throwError) )
@@ -20,7 +22,7 @@ getLocationData =
   where
     lookupLocationData :: LocationLabel -> GameStateExceptT (Maybe LocationData)
     lookupLocationData locationLabel =
-      (lookup locationLabel <$> unLocationMap) . _locationMap <$> get
+      (lookup locationLabel <$> unLocationMap) . _locationMap  . _world <$> get
 
     getLocationData' = \case
       Just ld -> pure ld

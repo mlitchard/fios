@@ -1,57 +1,30 @@
 module HauntedHouse.Game.World where
-import HauntedHouse.Game.Object
-import HauntedHouse.Game.Object.Container (ObjectLabel)
+import HauntedHouse.Game.World.Locations.Kitchen (makeKitchen)
+import HauntedHouse.Game.World.WorldState (WorldState)
+import HauntedHouse.Game.Location.LocationData (defaultLocationData)
+import qualified Data.Map.Strict
+import HauntedHouse.Game.Location.Domain (LocationLabel(..))
+import HauntedHouse.Tokenizer (Lexeme(..))
+import HauntedHouse.Game.GameState (World(_locationMap))
+import HauntedHouse.Game.Location.LocationMap (LocationMap(..))
 
-{-
-data GameState = GameState
-  { _objectMap :: ObjectMap
-  , _locationMap :: LocationMap
-  , _agentMap :: AgentMap
-  , _report :: [Text]
-  , _player :: GID AgentLabel
-  , _narration :: Narration
-  , _newScene :: Bool
-  , _clarification :: Maybe (NonEmpty Text)
-  }
-  deriving stock (Show)
--}
+makeWorld :: WorldState 
+makeWorld = do
+  initLocationMap 
+  makeKitchen
+  makeHall
+  pass
 
-{-
-cabinetON :: ObjectLabel
-cabinetON = ObjectLabel CABINET
--}
-{-
-data Object = Object
-  { _container :: ContainerState
-  , _contained :: Maybe ObjectLabel
-  , _moveability :: Moveable
-  , _odescription :: Text
-  }
--}
-{-
-data Container = Container
-  { _isOpen :: Bool
-  , _cinv :: Maybe (NonEmpty (GID ObjectLabel))
-  , _lockState :: Maybe LockState
-  }
--}
-{-
-sinkCabinet :: Object 
-sinkCabinet = Object 
-  { _container =  
+makeHall :: WorldState 
+makeHall = pass 
 
-  }
--}
-{-
-plantON :: ObjectLabel
-plantON = ObjectLabel PLANT 
-
-potON :: ObjectLabel 
-potON = ObjectLabel POT 
-
-soil :: ObjectLabel
-soil = ObjectLabel BAG 
-
-can :: ObjectLabel
-can = ObjectLabel CAN 
--}
+initLocationMap :: WorldState 
+initLocationMap = do
+  modify (\ws -> ws{_locationMap = initLocationMap'})
+  pass
+  where
+    kitchenLabel = LocationLabel KITCHEN 
+    hallLabel    = LocationLabel HALL 
+    initLocationMap' = LocationMap $
+      Data.Map.Strict.fromList [(kitchenLabel,defaultLocationData)
+                                ,(hallLabel,defaultLocationData)]

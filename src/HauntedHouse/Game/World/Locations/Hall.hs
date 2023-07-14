@@ -1,9 +1,12 @@
 module HauntedHouse.Game.World.Locations.Hall where
 import HauntedHouse.Game.Location
+import qualified Data.Map.Strict (empty)
 
-hall :: LocationData
-hall = LocationData {
+import HauntedHouse.Game.Object (ObjectLabelMap(..))
+
+initHall :: LocationData
+initHall = LocationData {
   _description = "It's a hallway"
-, _ObjectLabelMap = Nothing 
-, _exits = Nothing  
+, _objectLabelMap = ObjectLabelMap Data.Map.Strict.empty  
+, _exits = ExitMap Data.Map.Strict.empty  
 }

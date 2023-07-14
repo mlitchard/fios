@@ -3,15 +3,10 @@ module HauntedHouse.Game.Object.Container where
 import HauntedHouse.Game.Agent.Atomic (AgentLabel)
 import HauntedHouse.Game.GID (GID)
 import HauntedHouse.Game.Location.Domain (LocationLabel)
-import HauntedHouse.Tokenizer (Lexeme)
 import Data.These (These)
+import HauntedHouse.Game.Object.Atomic (ObjectLabel)
 
-newtype ObjectLabel 
-  = ObjectLabel {_unObjectLabel :: Lexeme} deriving stock (Eq,Ord,Show)
 
-instance ToText ObjectLabel where
-  toText :: ObjectLabel -> Text
-  toText (ObjectLabel oname) = toText oname
 
 {-
 data ContainerState
@@ -44,6 +39,6 @@ data PlaceOn  = PlaceOn deriving stock Show
 data PlaceUnder = PlaceUnder deriving stock Show
 data PlaceAbove = PlaceAbove deriving stock Show
 data Shelf    = Shelf
-  { _placeability :: These PlaceOn PlaceUnder
+  { _placeability :: These (These PlaceOn PlaceAbove) PlaceUnder
   , _sinv :: Maybe (NonEmpty (GID ObjectLabel, These (These PlaceUnder PlaceOn) PlaceAbove))
   } deriving stock Show

@@ -128,14 +128,18 @@ library
     HauntedHouse.Game.Location.LocationMap
     HauntedHouse.Game.Location.Exits
     HauntedHouse.Game.Narration.Domain
+    HauntedHouse.Game.Object.Atomic
     HauntedHouse.Game.Object.Container
     HauntedHouse.Game.Object.Domain
     HauntedHouse.Game.Object.Descriptors
+    HauntedHouse.Game.Object.WorldState
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets  
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.WorldState
     HauntedHouse.Game.World.Objects
+    HauntedHouse.Game.World.WorldState
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Recognizer.WordClasses
 
