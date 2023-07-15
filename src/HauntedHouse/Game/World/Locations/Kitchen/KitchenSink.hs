@@ -8,10 +8,7 @@ import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Game.Location
 import HauntedHouse.Game.World.Objects
 import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
-import HauntedHouse.Game.World.WorldState (WorldState)
-
-kitchenSinkName :: ObjectLabel
-kitchenSinkName = ObjectLabel SINK
+import HauntedHouse.Game.World.InitState (InitState)
 
 {-
 
@@ -52,17 +49,17 @@ kitchenSink' containedBy containing = Object
 
       -}
 
-makeSink :: WorldState 
+makeSink :: InitState ()
 makeSink = do 
   makeSink' 
   makeUpperSinkCabinet
   makeLowerSinkCabinet 
   where 
-    makeSink' :: WorldState 
+    makeSink' :: InitState ()
     makeSink' = pass
 
-makeUpperSinkCabinet :: WorldState 
+makeUpperSinkCabinet :: InitState () 
 makeUpperSinkCabinet = pass 
 
-makeLowerSinkCabinet :: WorldState 
+makeLowerSinkCabinet :: InitState ()
 makeLowerSinkCabinet = pass 

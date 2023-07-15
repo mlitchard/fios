@@ -6,9 +6,6 @@ import Data.These (These(..))
 import HauntedHouse.Game.World.Objects
 import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
 
-kitchenSinkCabinetAboveLabel :: ObjectLabel
-kitchenSinkCabinetAboveLabel = ObjectLabel CABINET
-
 kitchenSinkCabinetAbove :: ContainedBy -> Containing -> Object
 kitchenSinkCabinetAbove containedBy containing = Object
   { _container = Just kitchenSinkCabinetAboveContainerState
@@ -27,10 +24,6 @@ kitchenSinkCabinetAbove containedBy containing = Object
       , _cinv = containing 
       , _lockState = Nothing
       }
-
-
-kitchenSinkCabinetBelowLabel :: ObjectLabel
-kitchenSinkCabinetBelowLabel = ObjectLabel CABINET   
 
 kitchenSinkCabinetBelow :: ContainedBy -> Containing -> Object
 kitchenSinkCabinetBelow containedBy containing = Object

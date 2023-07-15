@@ -109,7 +109,6 @@ library
     HauntedHouse.Game.Location
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Object
-    HauntedHouse.Game.World
     HauntedHouse.Game.World.Locations
     HauntedHouse.Game.World.Locations.Kitchen
     HauntedHouse.Game.World.Locations.Hall
@@ -132,14 +131,16 @@ library
     HauntedHouse.Game.Object.Container
     HauntedHouse.Game.Object.Domain
     HauntedHouse.Game.Object.Descriptors
-    HauntedHouse.Game.Object.WorldState
+    HauntedHouse.Game.World.Objects.InitState
+    HauntedHouse.Game.World.Initialize
+    HauntedHouse.Game.World.InitState
+    HauntedHouse.Game.World.Labels
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets  
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
-    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.WorldState
+    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
     HauntedHouse.Game.World.Objects
-    HauntedHouse.Game.World.WorldState
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Recognizer.WordClasses
 

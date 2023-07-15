@@ -7,10 +7,6 @@ import HauntedHouse.Tokenizer (Lexeme(CABINET))
 import HauntedHouse.Game.World.Objects
 import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
 
-
-kitchenCabinetAboveShelfLabel :: ObjectLabel
-kitchenCabinetAboveShelfLabel = ObjectLabel CABINET 
-
 kitchenCabinetAboveShelf :: ContainedBy -> Containing -> Object
 kitchenCabinetAboveShelf containedBy containing = Object
   { _container = Just kitchenCabinetAboveShelfContainerState
@@ -29,9 +25,6 @@ kitchenCabinetAboveShelf containedBy containing = Object
       , _cinv = containing
       , _lockState = Nothing
       }
-
-kitchenCabinetBelowShelfLabel :: ObjectLabel
-kitchenCabinetBelowShelfLabel = ObjectLabel CABINET 
 
 kitchenCabinetBelowShelf :: ContainedBy -> Containing -> Object
 kitchenCabinetBelowShelf containedBy containing = Object

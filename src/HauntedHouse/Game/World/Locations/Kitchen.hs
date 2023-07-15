@@ -1,14 +1,16 @@
 module HauntedHouse.Game.World.Locations.Kitchen where
 
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
-import HauntedHouse.Game.World.WorldState (WorldState)
-import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.WorldState
+import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
+    ( makeShelf )
+import HauntedHouse.Game.World.InitState (InitState)
 
-makeKitchen :: WorldState 
+
+makeKitchen :: InitState ()
 makeKitchen = do
   makeKitchen'
   makeSink 
   makeShelf
     where
-      makeKitchen' :: WorldState 
+      makeKitchen' :: InitState () 
       makeKitchen' = pass 

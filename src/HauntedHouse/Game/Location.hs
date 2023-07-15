@@ -10,7 +10,7 @@ import Data.Map.Strict (lookup)
 import HauntedHouse.Game.Agent 
 import HauntedHouse.Game.GameState.Domain
     ( GameState(_world), World (_locationMap), GameStateExceptT )
-import HauntedHouse.Game.Location.Domain ( LocationLabel )
+import HauntedHouse.Game.Location.Domain ( LocationLabel (..))
 import HauntedHouse.Game.Location.Exits 
 import HauntedHouse.Game.Location.LocationData
 import HauntedHouse.Game.Location.LocationMap ( LocationMap(..) )
