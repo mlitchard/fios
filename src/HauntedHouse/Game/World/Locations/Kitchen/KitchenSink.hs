@@ -1,53 +1,25 @@
 module HauntedHouse.Game.World.Locations.Kitchen.KitchenSink where
-
-import Data.These (These (..))
 import HauntedHouse.Game.Object
-
-import HauntedHouse.Game.GID (GID(..))
-import HauntedHouse.Tokenizer (Lexeme(..))
-import HauntedHouse.Game.Location
-import HauntedHouse.Game.World.Objects
-import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
 import HauntedHouse.Game.World.InitState (InitState)
+import HauntedHouse.Game.Object.Container.Domain (AttachedTo
+                                                  , Containing
+                                                  , RelatedObjects
+                                                  , Container (..), Moveable (NotMovable))
 
-{-
-
-  { _container :: Maybe ContainerState 
-  , _containedBy :: Maybe AttachedTo 
-  , _moveability :: Moveable
-  , _odescription :: Text
-  }
-
--}
-
-kitchenSink' :: GID LocationLabel -> Containing -> Object
-kitchenSink' containedBy containing = Object
-  { _container = Just kitchenSinkContainerState
-  , _containedBy = Just (AttachedToLocation containedBy)
+kitchenSink :: Maybe AttachedTo -> Containing -> RelatedObjects -> Object
+kitchenSink containedBy containing relatedObjects = Object
+  {_container = Just container
+  , _containedBy = containedBy
   , _moveability = NotMovable
-  , _odescription =
-      "A kitchen sink."
-        <> " There is a cabinet above the sink."
-        <> " There is a cabinet below the sink"
-        <> " There is a shelf to the right of the sink."
+  , _odescription = "A Kitchen sink. It has a cabinet above, and a cabinet below."
   }
-  where
-    kitchenSinkContainerState :: ContainerState
-    kitchenSinkContainerState = ContainerState
-      (This kitchenSinkAsContainer)
-
-    kitchenSinkAsContainer :: Container
-    kitchenSinkAsContainer = Container
-      { _isOpen = Nothing -- Can't open or close a sink 
-      , _cinv = containing
-      , _lockState = Nothing -- Can't lock a sink
-      }
-    {-
-     kitchenSinkAsShelf :: Shelf
-     kitchenSinkAsShelf = Shelf 
-      {
-
-      -}
+    where 
+      container = Container
+        { _isOpen = Just True 
+        , _containing = containing 
+        , _lockState = Nothing 
+        , _relatedObjects = relatedObjects 
+        }
 
 makeSink :: InitState ()
 makeSink = do 

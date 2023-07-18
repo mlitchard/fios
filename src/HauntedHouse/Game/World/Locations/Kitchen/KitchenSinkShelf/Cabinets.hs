@@ -1,48 +1,46 @@
 module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
   where
-import Data.These (These (..))
-import HauntedHouse.Game.GID
-import HauntedHouse.Game.Object
-import HauntedHouse.Tokenizer (Lexeme(CABINET))
-import HauntedHouse.Game.World.Objects
-import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
 
-kitchenCabinetAboveShelf :: ContainedBy -> Containing -> Object
-kitchenCabinetAboveShelf containedBy containing = Object
-  { _container = Just kitchenCabinetAboveShelfContainerState
-  , _containedBy = Just (AttachedToObject containedBy)
+import HauntedHouse.Game.Object
+import HauntedHouse.Game.Object.Container.Domain ( Container(..)
+                                                  , RelatedObjects
+                                                  , Containing
+                                                  , AttachedTo (..)
+                                                  , Moveable (..), LockState (Unlocked))
+
+kitchenCabinetAboveShelf :: Maybe AttachedTo 
+                              -> Containing 
+                              -> RelatedObjects 
+                              -> Object
+kitchenCabinetAboveShelf containedBy containing relatedObjects = Object
+  { _container = Just kitchenCabinetAboveShelfContainer
+  , _containedBy = containedBy
   , _moveability = NotMovable
   , _odescription = "A cabinet above the kitchen shelf"
   }
   where
-    kitchenCabinetAboveShelfContainerState :: ContainerState
-    kitchenCabinetAboveShelfContainerState = ContainerState
-      (This kitchenCabinetAboveShelfContainer)
-
     kitchenCabinetAboveShelfContainer :: Container
     kitchenCabinetAboveShelfContainer = Container
-      { _isOpen = Just False
-      , _cinv = containing
-      , _lockState = Nothing
+      { _isOpen = Nothing 
+      , _containing = containing
+      , _lockState = Just Unlocked
+      , _relatedObjects = relatedObjects 
       }
 
-kitchenCabinetBelowShelf :: ContainedBy -> Containing -> Object
-kitchenCabinetBelowShelf containedBy containing = Object
-  { _container = Just kitchenCabinetBelowShelfContainerState
-  , _containedBy = Just (AttachedToObject containedBy)
+kitchenCabinetBelowShelf :: Maybe AttachedTo 
+                              -> Containing
+                              -> RelatedObjects 
+                              -> Object
+kitchenCabinetBelowShelf containedBy containing relatedObjects = Object
+  { _container = Just kitchenCabinetBelowShelfContainer 
+  , _containedBy = containedBy
   , _moveability = NotMovable
   , _odescription = "A cabinet below the kitchen shelf"
   }
   where
-    kitchenCabinetBelowShelfContainerState :: ContainerState
-    kitchenCabinetBelowShelfContainerState = ContainerState
-      (This kitchenCabinetBelowShelfContainer)
-
     kitchenCabinetBelowShelfContainer :: Container
     kitchenCabinetBelowShelfContainer = Container
-      { _isOpen = Just False
-      , _cinv = containing
-      , _lockState = Nothing
-      }
-
-
+      { _isOpen = Just True
+      , _containing = containing
+      , _lockState = Just Unlocked
+      , _relatedObjects = relatedObjects}

@@ -106,6 +106,7 @@ library
     HauntedHouse.Game.Engine
     HauntedHouse.Game.GameState
     HauntedHouse.Game.GID
+    HauntedHouse.Game.Labels
     HauntedHouse.Game.Location
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Object
@@ -129,6 +130,7 @@ library
     HauntedHouse.Game.Narration.Domain
     HauntedHouse.Game.Object.Atomic
     HauntedHouse.Game.Object.Container
+    HauntedHouse.Game.Object.Container.Domain
     HauntedHouse.Game.Object.Domain
     HauntedHouse.Game.Object.Descriptors
     HauntedHouse.Game.World.Objects.InitState

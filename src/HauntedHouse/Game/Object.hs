@@ -8,6 +8,7 @@ module HauntedHouse.Game.Object (
 import HauntedHouse.Game.Object.Container
 import HauntedHouse.Game.Object.Domain
 import Data.Text qualified (empty) 
+import HauntedHouse.Game.Object.Container.Domain (Moveable(..))
 
 defaultObject :: Object 
 defaultObject = Object 

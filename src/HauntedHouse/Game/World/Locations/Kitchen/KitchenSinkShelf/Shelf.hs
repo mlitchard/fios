@@ -1,26 +1,22 @@
 module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf where
--- import HauntedHouse.Game.Object.Container (Shelf (..), PlaceOn (..)
---                                          , ObjectLabel (..))
+import HauntedHouse.Game.Object.Container.Domain (Containing
+                                                  , RelatedObjects
+                                                  , AttachedTo
+                                                  , Moveable (NotMovable)
+                                                  , Container (..))
+import HauntedHouse.Game.Object.Domain (Object (..))
 
-import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
-
-{-
-
-data Object = Object
-  { _container :: Maybe ContainerState 
-  , _containedBy :: Maybe AttachedTo 
-  , _moveability :: Moveable
-  , _odescription :: Text
+kitchenShelf :: Maybe AttachedTo -> Containing -> RelatedObjects -> Object
+kitchenShelf containedBy containing relatedObjects = Object 
+  { _container = Just kitchenShelfContainer 
+  , _containedBy = containedBy 
+  , _moveability = NotMovable 
+  , _odescription = "A kitchen shelf to the right of the sink" 
   }
-  deriving stock (Show)
-
--}
-{-
-kitchenShelf :: Object 
-kitchenShelf = 
-kitchenSinkShelf' :: Shelf 
-kitchenSinkShelf = Shelf
-  { _placeability = This PlaceOn 
-  , _sinv = Nothing
-  }
--}
+  where 
+    kitchenShelfContainer = Container 
+      { _isOpen = Just True 
+      , _containing = containing 
+      , _lockState = Nothing 
+      , _relatedObjects = relatedObjects 
+      }
