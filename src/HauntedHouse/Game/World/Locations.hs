@@ -1,20 +1,17 @@
-module HauntedHouse.Game.World.Locations (
-  module HauntedHouse.Game.World.Locations
---   module HauntedHouse.Game.World.Locations.Kitchen
-  ) where
+module HauntedHouse.Game.World.Locations  where
 
-import Data.Map.Strict qualified (empty)
+import HauntedHouse.Game.Location
+import HauntedHouse.Game.World (World (..))
+import qualified Data.Map.Strict
+import HauntedHouse.Game.World.InitState
+    ( InitStateT, InitState(..) )
+import Control.Monad.Except (MonadError(throwError))
 
-import HauntedHouse.Game.World.Locations.Kitchen
-import HauntedHouse.Game.Location 
-import Data.Text qualified (empty)
-{-
-kitchen :: LocationData
-kitchen = LocationData {
-  _description = "It's a small kitchen"
-, _objectLabelMap = Nothing 
-, _exits = Nothing  
-}
--}
-
-
+getLocationData :: LocationLabel -> InitStateT LocationData
+getLocationData locationLabel = do
+  locationMap' <- _unLocationMap . _locationMap . _world <$> get
+  let mLocationData = Data.Map.Strict.lookup locationLabel locationMap'
+  -- Data.Map.Strict.lookup locationLabel unLocationMap 
+  case mLocationData of
+    Just locationData -> pure locationData
+    Nothing           -> throwError ("could now find" <> show locationLabel)

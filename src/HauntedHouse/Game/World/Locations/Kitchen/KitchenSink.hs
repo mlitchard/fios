@@ -1,6 +1,6 @@
 module HauntedHouse.Game.World.Locations.Kitchen.KitchenSink where
 import HauntedHouse.Game.Object
-import HauntedHouse.Game.World.InitState (InitState)
+import HauntedHouse.Game.World.InitState (InitStateT)
 import HauntedHouse.Game.Object.Container.Domain (AttachedTo
                                                   , Containing
                                                   , RelatedObjects
@@ -21,17 +21,17 @@ kitchenSink containedBy containing relatedObjects = Object
         , _relatedObjects = relatedObjects 
         }
 
-makeSink :: InitState ()
+makeSink :: InitStateT ()
 makeSink = do 
   makeSink' 
   makeUpperSinkCabinet
   makeLowerSinkCabinet 
   where 
-    makeSink' :: InitState ()
+    makeSink' :: InitStateT ()
     makeSink' = pass
 
-makeUpperSinkCabinet :: InitState () 
+makeUpperSinkCabinet :: InitStateT () 
 makeUpperSinkCabinet = pass 
 
-makeLowerSinkCabinet :: InitState ()
+makeLowerSinkCabinet :: InitStateT ()
 makeLowerSinkCabinet = pass 

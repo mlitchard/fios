@@ -1,13 +1,17 @@
-module HauntedHouse.Game.World.InitState  where 
-import HauntedHouse.Game.Object.Atomic (ObjectLabel)
+module HauntedHouse.Game.World.InitState where 
 
+import qualified Data.Map.Strict
 import HauntedHouse.Game.GID (GID (..))
-import HauntedHouse.Game.GameState (World)
+import HauntedHouse.Game.World (World)
+import HauntedHouse.Game.Object (Object, ObjectLabelMap)
+import HauntedHouse.Game.Location (LocationMap)
+import HauntedHouse.Game.Labels
 
+type InitStateT = ExceptT Text (StateT InitState IO ) 
 
-type InitState = ExceptT Text (StateT (Init,World) IO) 
-
-data Init = Init {
-  input :: [(ObjectLabel, [GID ObjectLabel])]
-  , output :: World
+data InitState = InitState {
+  _objects :: ObjectLabelMap 
+  , _locations :: LocationMap
+  , _world :: World
 }
+

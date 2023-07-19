@@ -102,7 +102,6 @@ common shared
 library
   import:          shared
   exposed-modules:
-    HauntedHouse.Game.Agent
     HauntedHouse.Game.Engine
     HauntedHouse.Game.GameState
     HauntedHouse.Game.GID
@@ -110,15 +109,16 @@ library
     HauntedHouse.Game.Location
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Object
+    HauntedHouse.Game.Player
+    HauntedHouse.Game.World
     HauntedHouse.Game.World.Locations
     HauntedHouse.Game.World.Locations.Kitchen
     HauntedHouse.Game.World.Locations.Hall
+    HauntedHouse.Game.World.Objects
     HauntedHouse.Recognizer
     HauntedHouse.Tokenizer
     
   other-modules:
-    HauntedHouse.Game.Agent.Atomic
-    HauntedHouse.Game.Agent.Domain
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
@@ -133,7 +133,6 @@ library
     HauntedHouse.Game.Object.Container.Domain
     HauntedHouse.Game.Object.Domain
     HauntedHouse.Game.Object.Descriptors
-    HauntedHouse.Game.World.Objects.InitState
     HauntedHouse.Game.World.Initialize
     HauntedHouse.Game.World.InitState
     HauntedHouse.Game.World.Labels
@@ -142,7 +141,6 @@ library
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
-    HauntedHouse.Game.World.Objects
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Recognizer.WordClasses
 

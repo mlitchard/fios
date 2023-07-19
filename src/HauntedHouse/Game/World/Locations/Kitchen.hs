@@ -1,16 +1,44 @@
 module HauntedHouse.Game.World.Locations.Kitchen where
 
+import HauntedHouse.Game.GameState (World (..))
+import HauntedHouse.Game.World.Labels
+import HauntedHouse.Game.Location.LocationMap
+import HauntedHouse.Game.World.InitState 
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
     ( makeShelf )
-import HauntedHouse.Game.World.InitState (InitState)
+import Data.Map.Strict (lookup)
+import Control.Monad.Except (MonadError(throwError))
 
+{-
+data World = World 
+  { _objectMap      :: ObjectMap
+  , _objectLabelMap :: ObjectLabelMap
+  , _locationMap    :: LocationMap
+  , _agentMap       :: AgentMap
+  } deriving stock Show 
 
-makeKitchen :: InitState ()
+  newtype LocationMap = LocationMap
+  { _unLocationMap :: Data.Map.Strict.Map LocationLabel LocationData}
+     deriving stock (Show)
+-}
+makeKitchen :: InitStateT ()
 makeKitchen = do
   makeKitchen'
   makeSink 
   makeShelf
     where
-      makeKitchen' :: InitState () 
-      makeKitchen' = pass 
+      makeKitchen' :: InitStateT () 
+      makeKitchen' = pass -- do
+{-
+        (World objectMap objectLabelMap locationMap) <- _world <$> get
+        let locationMap' = _unLocationMap locationMap 
+            kitchen      = lookup kitchenLabel locationMap'
+        case kitchen of 
+              Nothing           -> throwError kitchenErr
+              Just kitchenData' -> pass 
+        where                          
+          kitchenErr = "kitchen data should have been present but wasn't"
+  -}
+
+

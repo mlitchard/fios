@@ -3,37 +3,48 @@ module HauntedHouse.Game.World.Initialize where
 import HauntedHouse.Game.Object.Atomic (ObjectLabel)
 import HauntedHouse.Game.GID (GID (..))
 import HauntedHouse.Game.World.Objects (initOrg)
-import Data.List qualified 
-import Data.List.NonEmpty qualified 
-import HauntedHouse.Game.World.InitState (InitState)
-import HauntedHouse.Game.GameState (World(..))
+import Data.List qualified
+import Data.List.NonEmpty qualified
+import HauntedHouse.Game.World.InitState (InitState (..), InitStateT)
+import HauntedHouse.Game.World (World(..))
 import qualified Data.Map.Strict
 import HauntedHouse.Game.World.Labels
 import HauntedHouse.Game.Location (LocationMap(..))
-import HauntedHouse.Game.Location.LocationData
 import HauntedHouse.Game.World.Locations.Kitchen (makeKitchen)
+import HauntedHouse.Game.Object.Domain (ObjectLabelMap (..))
+import HauntedHouse.Game.Location.LocationData (defaultLocationData)
 
-makeWorld :: InitState ()
+makeWorld :: InitStateT ()
 makeWorld = do
-  initLocationMap 
+  initLocationMap
+  initObjectLabelMap
   makeKitchen
   makeHall
   pass
 
-makeHall :: InitState ()
-makeHall = pass 
+makeHall :: InitStateT ()
+makeHall = pass
 
-initLocationMap :: InitState ()  
-initLocationMap = do
-  modify (\(input,ws) -> (,) input (ws{_locationMap = initLocationMap'}))
-  pass
+initLocationMap :: InitStateT ()
+initLocationMap = modify' updateInitWorld
   where
-    initLocationMap' = LocationMap $
-      Data.Map.Strict.fromList [(kitchenLabel,defaultLocationData)
-                                ,(hallLabel,defaultLocationData)]
-                                
+    updateInitWorld :: InitState -> InitState
+    updateInitWorld init'@(InitState input' locations world) =
+      init'{ _world = world{_locationMap = locations}}
+
+initObjectLabelMap :: InitStateT ()
+initObjectLabelMap = modify initObjectLabelMap'
+  where
+    initObjectLabelMap' :: InitState -> InitState
+    initObjectLabelMap' init'@(InitState o _ w) =
+      init'{ _world = updatedWorld}
+      where
+        updatedWorld :: World  
+        updatedWorld = w{_objectLabelMap = o}
+      -- Init i o{_objectLabelMap = i _objects}
+
 objectLabels' :: [ObjectLabel]
-objectLabels' = 
+objectLabels' =
   [kitchenSinkLabel
   , kitchenSinkCabinetAboveLabel
   , kitchenSinkCabinetBelowLabel
@@ -42,7 +53,7 @@ objectLabels' =
   , kitchenShelfLabel]
 
 initObjectLabels :: [ObjectLabel] -> [(ObjectLabel, [GID ObjectLabel])]
-initObjectLabels objectLabels = map initOrg grouped 
+initObjectLabels objectLabels = map initOrg grouped
   where
     indexRange = [1 .. (length objectLabels)]
 
@@ -50,6 +61,6 @@ initObjectLabels objectLabels = map initOrg grouped
     zipped = zipWith (\k v -> (k, GID v)) objectLabels indexRange
 
     grouped :: [Data.List.NonEmpty.NonEmpty (ObjectLabel, GID ObjectLabel)]
-    grouped = map Data.List.NonEmpty.fromList 
-            $ Data.List.groupBy (\(k,_) (k',_) -> k == k') 
+    grouped = map Data.List.NonEmpty.fromList
+            $ Data.List.groupBy (\(k,_) (k',_) -> k == k')
             $ sort zipped
