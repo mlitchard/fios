@@ -9,7 +9,7 @@ import Control.Monad.Except (MonadError(throwError))
 
 getLocationData :: LocationLabel -> InitStateT LocationData
 getLocationData locationLabel = do
-  locationMap' <- _unLocationMap . _locationMap . _world <$> get
+  locationMap' <- _unLocationMap . _locationMap . _world' <$> get
   let mLocationData = Data.Map.Strict.lookup locationLabel locationMap'
   -- Data.Map.Strict.lookup locationLabel unLocationMap 
   case mLocationData of

@@ -29,15 +29,15 @@ initLocationMap :: InitStateT ()
 initLocationMap = modify' updateInitWorld
   where
     updateInitWorld :: InitState -> InitState
-    updateInitWorld init'@(InitState input' locations world) =
-      init'{ _world = world{_locationMap = locations}}
+    updateInitWorld init'@(InitState _ _ locations world) =
+      init'{ _world' = world{_locationMap = locations}}
 
 initObjectLabelMap :: InitStateT ()
 initObjectLabelMap = modify initObjectLabelMap'
   where
     initObjectLabelMap' :: InitState -> InitState
-    initObjectLabelMap' init'@(InitState o _ w) =
-      init'{ _world = updatedWorld}
+    initObjectLabelMap' init'@(InitState o _ _ w) =
+      init'{ _world' = updatedWorld}
       where
         updatedWorld :: World  
         updatedWorld = w{_objectLabelMap = o}
