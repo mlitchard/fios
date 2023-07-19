@@ -1,4 +1,5 @@
 module HauntedHouse.Game.World.Objects where
+
 import HauntedHouse.Game.GID (GID (..))
 import HauntedHouse.Game.Object.Atomic (ObjectLabel)
 

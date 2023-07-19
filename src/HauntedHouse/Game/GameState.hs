@@ -4,6 +4,7 @@ module HauntedHouse.Game.GameState (
 ) where
 
 import HauntedHouse.Game.GameState.Domain
+import HauntedHouse.Game.World ( World(_objectMap) ) 
 import HauntedHouse.Game.Object
 
 getObjectMap :: GameStateExceptT ObjectMap

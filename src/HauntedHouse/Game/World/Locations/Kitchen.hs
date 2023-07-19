@@ -1,14 +1,9 @@
 module HauntedHouse.Game.World.Locations.Kitchen where
 
-import HauntedHouse.Game.GameState (World (..))
-import HauntedHouse.Game.World.Labels
-import HauntedHouse.Game.Location.LocationMap
 import HauntedHouse.Game.World.InitState 
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
     ( makeShelf )
-import Data.Map.Strict (lookup)
-import Control.Monad.Except (MonadError(throwError))
 
 {-
 data World = World 
