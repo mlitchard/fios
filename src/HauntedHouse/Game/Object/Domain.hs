@@ -3,11 +3,12 @@ module HauntedHouse.Game.Object.Domain where
 import Data.Map.Strict qualified (Map)
 import HauntedHouse.Game.GID (GID)
 import HauntedHouse.Game.Object.Container.Domain ( Moveable, AttachedTo
-                                                  , Container)
-import HauntedHouse.Game.Object.Atomic (ObjectLabel)
+                                                  , Container, Containing, RelatedObjects)
+import HauntedHouse.Game.Labels (ObjectLabel)
 
 -- import HauntedHouse.Game.Object.Container (ContainedIn, Container, ContainerState, Moveable, ObjectLabel (..))
 
+type MakeObject = Maybe AttachedTo -> Containing -> RelatedObjects -> Object
 -- _container is either (Container or Contained) or (Container and Contained)
 data Object = Object
   { _container :: Maybe Container 

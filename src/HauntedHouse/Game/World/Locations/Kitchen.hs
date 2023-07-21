@@ -10,9 +10,16 @@ import HauntedHouse.Game.World.Labels
       kitchenShelfLabel,
       kitchenSinkCabinetAboveLabel,
       kitchenSinkCabinetBelowLabel,
-      kitchenSinkLabel )
+      kitchenSinkLabel,
+      kitchenLabel )
 import HauntedHouse.Game.World.Objects (popObjectGID)
 import HauntedHouse.Game.Labels (ObjectLabel)
+import HauntedHouse.Game.GID (GID)
+import HauntedHouse.Game.Object.Domain (Object)
+import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
+import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
+import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets
+import HauntedHouse.Game.World.Locations (populateLocation)
 
 {-
 data World = World 
@@ -39,15 +46,20 @@ makeKitchen = do
     where
       makeKitchen' :: InitStateT ()
       makeKitchen' = do
-        lgPairs <- mapM popObjectGID kitchenObjects
+        _lgPairs <- mapM pairUp kitchenObjects
+        mapM_ (populateLocation kitchenLabel) _lgPairs 
         pass
-      pairUp label = do
-        gid <- popObjectGID label
-        pure (label)
+
+pairUp :: ObjectLabel 
+            -> ExceptT Text (StateT InitState IO) 
+                            (ObjectLabel, GID Object)
+pairUp label = do
+  gid <- popObjectGID label
+  pure (label,gid)
         
 kitchenObjects :: [ObjectLabel]
 kitchenObjects = [kitchenShelfLabel
-                  , kitchenCabinetAboveShelfLabel
+                  , kitchenCabinetAboveShelfLabel 
                   , kitchenCabinetBelowShelfLabel
                   , kitchenSinkLabel
                   , kitchenSinkCabinetAboveLabel

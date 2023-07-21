@@ -3,17 +3,16 @@ module HauntedHouse.Game.Location (
 , module HauntedHouse.Game.Location.Exits
 , module HauntedHouse.Game.Location.LocationData
 , HauntedHouse.Game.Location.LocationMap.LocationMap (..)
-, module HauntedHouse.Game.Location.Domain
 ) where
 
 import Data.Map.Strict (lookup, Map)
 import HauntedHouse.Game.GameState.Domain
     ( GameState(_world), GameStateExceptT )
-import HauntedHouse.Game.Location.Domain ( LocationLabel (..))
+import HauntedHouse.Game.Labels (LocationLabel)
 import HauntedHouse.Game.Location.Exits
 import HauntedHouse.Game.Location.LocationData
 import HauntedHouse.Game.Location.LocationMap ( LocationMap(..) )
-import HauntedHouse.Game.World (World (_locationMap))
+import HauntedHouse.Game.World (World (_locationMap'))
 import Control.Monad.Except ( MonadError(throwError) )
 
 getLocationData :: LocationLabel -> GameStateExceptT LocationData
@@ -30,5 +29,5 @@ getLocationData = lookupLocationData
         mLocationDataT = do 
           world' :: World <-  _world <$> get
           let locationMap :: Data.Map.Strict.Map LocationLabel LocationData  
-              locationMap = (_unLocationMap . _locationMap) world'
+              locationMap = (_unLocationMap . _locationMap') world'
           pure $ Data.Map.Strict.lookup locationLabel locationMap

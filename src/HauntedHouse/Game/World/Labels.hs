@@ -1,32 +1,27 @@
 module HauntedHouse.Game.World.Labels where
-import HauntedHouse.Game.Location (LocationLabel (..))
-import HauntedHouse.Game.Object.Atomic (ObjectLabel (..))
+import HauntedHouse.Game.Labels (ObjectLabel (..), LocationLabel (..))
 import HauntedHouse.Tokenizer (Lexeme(..))
 
-kitchenLabel :: LocationLabel
+kitchenLabel :: LocationLabel 
 kitchenLabel = LocationLabel KITCHEN 
 
-hallLabel :: LocationLabel
-hallLabel    = LocationLabel HALL 
-
-kitchenCabinetAboveShelfLabel :: ObjectLabel
+kitchenCabinetAboveShelfLabel :: ObjectLabel 
 kitchenCabinetAboveShelfLabel = ObjectLabel CABINET 
 
-kitchenCabinetBelowShelfLabel :: ObjectLabel
-kitchenCabinetBelowShelfLabel = ObjectLabel CABINET 
+kitchenCabinetBelowShelfLabel :: ObjectLabel 
+kitchenCabinetBelowShelfLabel = ObjectLabel CABINET
 
 kitchenShelfLabel :: ObjectLabel
 kitchenShelfLabel = ObjectLabel SHELF 
 
-kitchenSinkLabel :: ObjectLabel
-kitchenSinkLabel = ObjectLabel SINK
-
 kitchenSinkCabinetAboveLabel :: ObjectLabel
-kitchenSinkCabinetAboveLabel = ObjectLabel CABINET
+kitchenSinkCabinetAboveLabel = ObjectLabel CABINET 
 
 kitchenSinkCabinetBelowLabel :: ObjectLabel
-kitchenSinkCabinetBelowLabel = ObjectLabel CABINET
+kitchenSinkCabinetBelowLabel = ObjectLabel CABINET 
 
-kitchenSinkName :: ObjectLabel
-kitchenSinkName = ObjectLabel SINK
+kitchenSinkLabel :: ObjectLabel
+kitchenSinkLabel = ObjectLabel SINK 
 
+hallLabel :: LocationLabel
+hallLabel = LocationLabel HALL 

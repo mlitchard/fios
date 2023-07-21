@@ -1,12 +1,12 @@
 module HauntedHouse.Game.World.Initialize where
 
-import HauntedHouse.Game.Object.Atomic (ObjectLabel)
+import HauntedHouse.Game.Labels (ObjectLabel)
 import HauntedHouse.Game.GID (GID (..))
 import HauntedHouse.Game.World.Objects (initOrg)
 import Data.List qualified
 import Data.List.NonEmpty qualified
 import HauntedHouse.Game.World.InitState (InitState (..), InitStateT)
-import HauntedHouse.Game.World (World(..))
+import HauntedHouse.Game.World qualified (World(..))
 import qualified Data.Map.Strict
 import HauntedHouse.Game.World.Labels
 import HauntedHouse.Game.Location (LocationMap(..))
@@ -30,7 +30,7 @@ initLocationMap = modify' updateInitWorld
   where
     updateInitWorld :: InitState -> InitState
     updateInitWorld init'@(InitState _ _ locations world) =
-      init'{ _world' = world{_locationMap = locations}}
+      init'{ _world' = world{HauntedHouse.Game.World._locationMap'= locations}}
 
 initObjectLabelMap :: InitStateT ()
 initObjectLabelMap = modify initObjectLabelMap'
@@ -39,9 +39,8 @@ initObjectLabelMap = modify initObjectLabelMap'
     initObjectLabelMap' init'@(InitState o _ _ w) =
       init'{ _world' = updatedWorld}
       where
-        updatedWorld :: World  
-        updatedWorld = w{_objectLabelMap = o}
-      -- Init i o{_objectLabelMap = i _objects}
+        updatedWorld :: HauntedHouse.Game.World.World  
+        updatedWorld = w{HauntedHouse.Game.World._objectLabelMap' = o}
 
 objectLabels' :: [ObjectLabel]
 objectLabels' =

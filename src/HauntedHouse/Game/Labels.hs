@@ -9,8 +9,12 @@ instance ToText ObjectLabel where
   toText (ObjectLabel oname) = toText oname
 
 newtype AgentLabel 
-          = AgentLabel {_unAgentLabel :: Lexeme} deriving stock (Eq,Ord,Show)
+          = AgentLabel {_unAgentLabel :: Lexeme} 
+              deriving stock (Eq,Ord,Show)
 
 newtype LocationLabel 
-          = LocationLabel {_unLocationLabel :: Lexeme} deriving stock (Eq,Ord,Show)
+          = LocationLabel {_unLocationLabel :: Lexeme} 
+              deriving stock (Eq,Ord,Show)
 
+newtype ExitLabel
+          = ExitLabel {_unExitLabel :: Lexeme} deriving stock (Eq,Ord,Show)

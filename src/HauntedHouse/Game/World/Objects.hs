@@ -1,7 +1,7 @@
 module HauntedHouse.Game.World.Objects where
 
 import HauntedHouse.Game.GID (GID (..))
-import HauntedHouse.Game.Object.Atomic (ObjectLabel)
+import HauntedHouse.Game.Labels (ObjectLabel)
 import HauntedHouse.Game.World.InitState
 import HauntedHouse.Game.Object
     ( Object, ObjectLabelMap(ObjectLabelMap, _unObjectLabelMap) )
