@@ -4,8 +4,8 @@ import qualified Data.Map.Strict (empty)
 
 import HauntedHouse.Game.Object (ObjectLabelMap(..))
 
-initHall :: LocationData
-initHall = LocationData {
+initHall :: Location
+initHall = Location {
   _description = "It's a hallway"
 , _objectLabelMap = ObjectLabelMap Data.Map.Strict.empty  
 , _exits = ExitMap Data.Map.Strict.empty  

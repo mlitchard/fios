@@ -5,29 +5,31 @@ module HauntedHouse.Game.Location (
 , HauntedHouse.Game.Location.LocationMap.LocationMap (..)
 ) where
 
-import Data.Map.Strict (lookup, Map)
+import Data.Map.Strict (lookup, Map, insertWith)
 import HauntedHouse.Game.GameState.Domain
     ( GameState(_world), GameStateExceptT )
-import HauntedHouse.Game.Labels (LocationLabel)
+import HauntedHouse.Game.Labels (ObjectLabel, LocationLabel)
 import HauntedHouse.Game.Location.Exits
 import HauntedHouse.Game.Location.LocationData
 import HauntedHouse.Game.Location.LocationMap ( LocationMap(..) )
-import HauntedHouse.Game.World (World (_locationMap'))
+import HauntedHouse.Game.World (World (..))
 import Control.Monad.Except ( MonadError(throwError) )
+import HauntedHouse.Game.GID (GID)
+import HauntedHouse.Game.Object
+import qualified Data.List.NonEmpty
 
-getLocationData :: LocationLabel -> GameStateExceptT LocationData
-getLocationData = lookupLocationData
+getLocation :: GID Location -> GameStateExceptT Location
+getLocation lgid = lookupLocation
   where
-    lookupLocationData :: LocationLabel -> GameStateExceptT LocationData
-    lookupLocationData locationLabel = do 
-      mLocationData <- mLocationDataT
-      case mLocationData of 
+    lookupLocation :: GameStateExceptT Location
+    lookupLocation = do
+      mLocationData <- mLocationT
+      case mLocationData of
         Just ld -> pure ld
-        Nothing -> throwError ("Couldn't find " <> show locationLabel)
+        Nothing -> throwError ("Couldn't find " <> show lgid)
       where
-        mLocationDataT :: GameStateExceptT (Maybe LocationData) 
-        mLocationDataT = do 
+        unLocationMap = _unLocationMap . _locationMap'
+        mLocationT :: GameStateExceptT (Maybe Location)
+        mLocationT = do
           world' :: World <-  _world <$> get
-          let locationMap :: Data.Map.Strict.Map LocationLabel LocationData  
-              locationMap = (_unLocationMap . _locationMap') world'
-          pure $ Data.Map.Strict.lookup locationLabel locationMap
+          pure $ Data.Map.Strict.lookup lgid (unLocationMap world')

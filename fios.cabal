@@ -70,6 +70,7 @@ common shared
     ScopedTypeVariables
     StandaloneDeriving
     StandaloneKindSignatures
+    TemplateHaskell
     TupleSections
     TypeApplications
     TypeFamilies
@@ -92,6 +93,7 @@ common shared
     , profunctors
     , relude        >=1.0
     , shower
+    , template-haskell
     , time
     , these == 1.2
     , with-utf8
@@ -110,6 +112,8 @@ library
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Object
     HauntedHouse.Game.Player
+    HauntedHouse.Game.Pregenerated.ObjectGIDS
+    HauntedHouse.Game.Pregenerated.Maps
     HauntedHouse.Game.World
     HauntedHouse.Game.World.Locations
     HauntedHouse.Game.World.Locations.Kitchen

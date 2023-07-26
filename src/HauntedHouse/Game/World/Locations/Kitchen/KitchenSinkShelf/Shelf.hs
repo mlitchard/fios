@@ -6,7 +6,10 @@ import HauntedHouse.Game.Object.Container.Domain (Containing
                                                   , Container (..))
 import HauntedHouse.Game.Object.Domain (Object (..))
 
-kitchenShelf :: Maybe AttachedTo -> Containing -> RelatedObjects -> Object
+kitchenShelf :: Maybe AttachedTo 
+                  -> Maybe Containing 
+                  -> RelatedObjects 
+                  -> Object
 kitchenShelf containedBy containing relatedObjects = Object 
   { _container = Just kitchenShelfContainer 
   , _containedBy = containedBy 

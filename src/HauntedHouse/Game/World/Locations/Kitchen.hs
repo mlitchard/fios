@@ -12,14 +12,20 @@ import HauntedHouse.Game.World.Labels
       kitchenSinkCabinetBelowLabel,
       kitchenSinkLabel,
       kitchenLabel )
-import HauntedHouse.Game.World.Objects (popObjectGID)
-import HauntedHouse.Game.Labels (ObjectLabel)
+
+-- import HauntedHouse.Game.World.Objects (popObjectGID, initObj)
+import HauntedHouse.Game.Labels (ObjectLabel (..), LocationLabel (..))
 import HauntedHouse.Game.GID (GID)
 import HauntedHouse.Game.Object.Domain (Object)
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets
-import HauntedHouse.Game.World.Locations (populateLocation)
+import HauntedHouse.Game.World.Locations
+import qualified Data.List.NonEmpty
+import qualified Data.Map.Strict
+import HauntedHouse.Tokenizer (Lexeme(..))
+import HauntedHouse.Game.World.Locations 
+import HauntedHouse.Game.Location (Location)
 
 {-
 data World = World 
@@ -38,28 +44,47 @@ data World = World
   , _exits          :: ExitMap 
   }
 -}
-makeKitchen :: InitStateT ()
-makeKitchen = do
-  makeKitchen'
-  makeSink
-  makeShelf
+{-
+initKitchen :: InitStateT ()
+initKitchen = do
+  sinkGID <- addSinkGID <$> popObjectGID (ObjectLabel SINK)
+  shelfGID <- popObjectGID (ObjectLabel SHELF)
+  cabinetGIDS <- mapM popObjectGID cabinetLabels
+  mapM addObjectGID sinkGID : shelfGID : cabinetGIDS 
+    where
+      cabinetLabels :: [ObjectLabel]
+      cabinetLabels = replicate 4 (ObjectLabel CABINET)
+
+addObjectGID :: GID Object -> InitStateT ()
+addObjectGID gid = do
+  world <- _world' <$> get
+  kitchen <- getLocation kitchenLabel head
+  updateWorld <- addObject gid kitchenLabel kitchen
+  updateWorld world
+
+makeKitchenGIDs :: [(ObjectLabel,[GID Object])] -> InitStateT ()
+makeKitchenGIDs _xs = pass
+
     where
       makeKitchen' :: InitStateT ()
       makeKitchen' = do
-        _lgPairs <- mapM pairUp kitchenObjects
-        mapM_ (populateLocation kitchenLabel) _lgPairs 
-        pass
+        lgPairs <- mapM pairUp kitchenObjects
+        mapM_ (populateLocation kitchenLabel) lgPairs
+        let used :: [(ObjectLabel, [GID Object])]
+            used = map (initObj . Data.List.NonEmpty.fromList)
+                    $ (group . sort ) lgPairs
+        mapM_ updatePlaced used
 
-pairUp :: ObjectLabel 
-            -> ExceptT Text (StateT InitState IO) 
+pairUp :: ObjectLabel
+            -> ExceptT Text (StateT InitState IO)
                             (ObjectLabel, GID Object)
 pairUp label = do
   gid <- popObjectGID label
   pure (label,gid)
-        
+
 kitchenObjects :: [ObjectLabel]
 kitchenObjects = [kitchenShelfLabel
-                  , kitchenCabinetAboveShelfLabel 
+                  , kitchenCabinetAboveShelfLabel
                   , kitchenCabinetBelowShelfLabel
                   , kitchenSinkLabel
                   , kitchenSinkCabinetAboveLabel
@@ -74,5 +99,5 @@ kitchenObjects = [kitchenShelfLabel
         where                          
           kitchenErr = "kitchen data should have been present but wasn't"
   -}
-
+-}
 

@@ -20,7 +20,7 @@ data Containing = Containing
 
 data Container = Container
   { _isOpen     :: Maybe Bool
-  , _containing :: Containing 
+  , _containing :: Maybe Containing 
   , _lockState  :: Maybe LockState
   , _relatedObjects :: RelatedObjects
   }
