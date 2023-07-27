@@ -1,19 +1,27 @@
 module HauntedHouse.Game.World.Initialize where
 
-import HauntedHouse.Game.Labels (ObjectLabel, LocationLabel)
-import HauntedHouse.Game.GID (GID (..))
-import HauntedHouse.Game.World.Objects (initObj, initLoc)
-import Data.List qualified
-import Data.List.NonEmpty qualified
-import HauntedHouse.Game.World.InitState (InitState (..), InitStateT)
-import HauntedHouse.Game.World qualified (World(..))
-import qualified Data.Map.Strict
-import HauntedHouse.Game.World.Labels
-import HauntedHouse.Game.Location (LocationMap(..))
-import HauntedHouse.Game.World.Locations.Kitchen 
-import HauntedHouse.Game.Object.Domain (ObjectLabelMap (..), Object)
-import HauntedHouse.Game.Location.LocationData (defaultLocation)
-import HauntedHouse.Game.Location (Location)
+import HauntedHouse.Game.World.Objects
+import HauntedHouse.Game.Object.Domain (Object)
+import HauntedHouse.Game.GID (GID)
+import HauntedHouse.Game.Labels (ObjectLabel)
+import HauntedHouse.Tokenizer (Lexeme (..))
+import HauntedHouse.Game.World.GID 
+import HauntedHouse.Game.World.ObjectTemplate 
+
+labelGIDPairs :: [(ObjectLabel, GID Object)]
+labelGIDPairs = [ (kitchenSinkLabel, kitchenSinkGID)
+                , (kitchenShelfLabel, kitchenShelfGID)
+                , (kitchenCabinetAboveShelfLabel,kitchenCabinetAboveShelfGID)
+                , (kitchenCabinetBelowShelfLabel,kitchenCabinetBelowShelfGID)
+                , (kitchenCabinetAboveSinkLabel,kitchenCabinetAboveSinkGID)
+                , (kitchenCabinetBelowShelfLabel,kitchenCabinetBelowShelfGID)
+                ]
+
+
+
+-- makeWorld :: WorldT 
+-- makeWorld = do 
+
 {-
 makeWorld :: InitStateT ()
 makeWorld = do

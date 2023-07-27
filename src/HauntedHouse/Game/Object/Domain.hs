@@ -3,13 +3,9 @@ module HauntedHouse.Game.Object.Domain where
 import Data.Map.Strict qualified (Map)
 import HauntedHouse.Game.GID (GID)
 import HauntedHouse.Game.Object.Container.Domain ( Moveable, AttachedTo
-                                                  , Container, Containing, RelatedObjects)
+                                                  , Container)
 import HauntedHouse.Game.Labels (ObjectLabel)
 
--- import HauntedHouse.Game.Object.Container (ContainedIn, Container, ContainerState, Moveable, ObjectLabel (..))
-
-type MakeObject = Maybe AttachedTo -> Containing -> RelatedObjects -> Object
--- _container is either (Container or Contained) or (Container and Contained)
 data Object = Object
   { _container :: Maybe Container 
   , _containedBy :: Maybe AttachedTo 
@@ -28,6 +24,7 @@ newtype ObjectLabelMap = ObjectLabelMap
                                              (NonEmpty (GID Object))
   }
   deriving stock (Show)
+
 
 -- note
 -- need a way to discern containment from objects point of view

@@ -53,6 +53,7 @@ common shared
     ExplicitForAll
     FlexibleContexts
     FlexibleInstances
+    FunctionalDependencies
     GADTSyntax
     GeneralisedNewtypeDeriving
     ImportQualifiedPost
@@ -112,10 +113,10 @@ library
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Object
     HauntedHouse.Game.Player
-    HauntedHouse.Game.Pregenerated.ObjectGIDS
-    HauntedHouse.Game.Pregenerated.Maps
     HauntedHouse.Game.World
+    HauntedHouse.Game.World.GID
     HauntedHouse.Game.World.Locations
+    HauntedHouse.Game.World.Template 
     HauntedHouse.Game.World.Locations.Kitchen
     HauntedHouse.Game.World.Locations.Hall
     HauntedHouse.Game.World.Objects
@@ -144,6 +145,7 @@ library
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
+    HauntedHouse.Game.World.ObjectTemplate
     HauntedHouse.Tokenizer.Data
     HauntedHouse.Recognizer.WordClasses
 

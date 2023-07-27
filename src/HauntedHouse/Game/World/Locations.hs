@@ -1,17 +1,5 @@
 module HauntedHouse.Game.World.Locations  where
-import HauntedHouse.Game.Labels ( LocationLabel, ObjectLabel, ExitLabel )
-import HauntedHouse.Game.Location hiding (getLocationData)
-import HauntedHouse.Game.World.InitState (InitStateT, InitState (..))
-import qualified Data.Map.Strict
-import HauntedHouse.Game.GID (GID)
-import HauntedHouse.Game.Object (Object (..), ObjectLabelMap (..))
-import HauntedHouse.Game.Location.LocationMap
-    ( LocationLabelMap(..) )
-import HauntedHouse.Game.World ( World(..) )
-import Control.Monad.Except (MonadError(throwError))
-import qualified Data.List.NonEmpty
-import Data.Map.Strict (lookup)
-import qualified Data.List.NonEmpty as Data.NonEmpty.List
+ 
 {-
 getLocation :: LocationLabel
                     -> (NonEmpty (GID Location) -> GID Location)

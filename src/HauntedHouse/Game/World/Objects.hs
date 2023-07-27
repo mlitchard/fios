@@ -10,7 +10,11 @@ import Control.Monad.Except (MonadError(throwError))
 import qualified Data.List.NonEmpty
 import qualified Data.List.NonEmpty as Data.NonEmpty.List
 import HauntedHouse.Game.Location (Location)
+import HauntedHouse.Tokenizer (Lexeme (..))
+import qualified Data.List
 
+-- xs' = map (Data.List.NonEmpty.fromList) 
+--         $ ((groupBy (\(l,_) (l',_) -> l == l')) . sort) labelGIDPairs
 initObj :: NonEmpty (ObjectLabel,GID Object)
             -> (ObjectLabel,[GID Object])
 initObj xs@((objLabel,_) :| _) = (,) objLabel $ map snd $ toList xs
@@ -18,6 +22,29 @@ initObj xs@((objLabel,_) :| _) = (,) objLabel $ map snd $ toList xs
 initLoc :: NonEmpty (LocationLabel,GID Location)
             -> (LocationLabel, [GID Location])
 initLoc xs@((locLabel,_) :| _) = (,) locLabel $ map snd $ toList xs  
+
+initObjectLabels :: [(ObjectLabel,GID Object)] -> [(ObjectLabel, [GID Object])]
+initObjectLabels objectLabelPairs = map initObj grouped
+  where
+    grouped :: [Data.List.NonEmpty.NonEmpty (ObjectLabel, GID Object)]
+    grouped = map Data.List.NonEmpty.fromList
+            $ Data.List.groupBy (\(k,_) (k',_) -> k == k')
+            $ sort objectLabelPairs
+
+objectIDNames :: [(String,Lexeme)]
+objectIDNames =
+  [("kitchenSink", SINK)
+  ,("kitchenCabinetBelowSink", CABINET)
+  , ("kitchenCabinetAboveSink", CABINET)
+  , ("kitchenShelf", SHELF)
+  , ("kitchenCabinetAboveShelf",CABINET)
+  , ("kitchenCabinetBelowShelf",CABINET)]
+
+numberOfObjects :: [Integer]
+numberOfObjects = [1 .. (toInteger $ length objectIDNames)]
+
+objectNames :: [String]
+objectNames = map fst objectIDNames
 {-
 
 data InitState = InitState {

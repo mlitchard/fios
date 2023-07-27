@@ -1,17 +1,18 @@
 module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState where
-import HauntedHouse.Game.World.InitState (InitStateT)
+import HauntedHouse.Game.World.InitState (WorldT)
 
-makeShelf :: InitStateT ()
+
+makeShelf :: WorldT ()
 makeShelf = do  
   makeShelf'
   makeUpperShelfCabinet
   makeLowerShelfCabinet
   where
-    makeShelf' :: InitStateT () 
+    makeShelf' :: WorldT () 
     makeShelf' = pass 
 
-makeUpperShelfCabinet :: InitStateT () 
+makeUpperShelfCabinet :: WorldT () 
 makeUpperShelfCabinet = pass 
 
-makeLowerShelfCabinet :: InitStateT ()
+makeLowerShelfCabinet :: WorldT ()
 makeLowerShelfCabinet = pass 

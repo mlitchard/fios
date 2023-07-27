@@ -5,13 +5,7 @@ import HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
     ( makeShelf )
 import HauntedHouse.Game.World.Labels
-    ( kitchenCabinetAboveShelfLabel,
-      kitchenCabinetBelowShelfLabel,
-      kitchenShelfLabel,
-      kitchenSinkCabinetAboveLabel,
-      kitchenSinkCabinetBelowLabel,
-      kitchenSinkLabel,
-      kitchenLabel )
+
 
 -- import HauntedHouse.Game.World.Objects (popObjectGID, initObj)
 import HauntedHouse.Game.Labels (ObjectLabel (..), LocationLabel (..))
