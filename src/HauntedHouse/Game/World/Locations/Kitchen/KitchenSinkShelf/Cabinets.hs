@@ -7,7 +7,7 @@ import HauntedHouse.Game.Object.Container.Domain ( Container(..)
                                                   , Containing
                                                   , AttachedTo (..)
                                                   , Moveable (..), LockState (Unlocked))
-
+{-
 kitchenCabinetAboveShelf :: Maybe AttachedTo 
                               -> Maybe Containing 
                               -> RelatedObjects 
@@ -44,3 +44,4 @@ kitchenCabinetBelowShelf containedBy containing relatedObjects = Object
       , _containing = containing
       , _lockState = Just Unlocked
       , _relatedObjects = relatedObjects}
+-}

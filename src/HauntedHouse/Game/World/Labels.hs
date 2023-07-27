@@ -1,33 +1,16 @@
 module HauntedHouse.Game.World.Labels where
-import HauntedHouse.Game.Labels (LocationLabel (..))
+
 import HauntedHouse.Tokenizer (Lexeme(..))
 
--- objectLabelDeclaration "kitchenSinkCabinetBelow" CABINET
-{-
-kitchenLabel :: LocationLabel 
-kitchenLabel = LocationLabel KITCHEN 
--}
+locationIDNames :: [(String,Lexeme)]
+locationIDNames = [("kitchen", KITCHEN),("hall", HALL)]
 
--- kitchenCabinetAboveShelfLabel :: ObjectLabel
--- kitchenCabinetAboveShelfLabel = ObjectLabel CABINET
+numberOfLocations :: [Integer]
+numberOfLocations = [1 .. (toInteger $ length locationIDNames)]
 
--- kitchenCabinetBelowShelfLabel :: ObjectLabel 
--- kitchenCabinetBelowShelfLabel = ObjectLabel CABINET
+locationNames :: [String]
+locationNames = map fst locationIDNames
 
--- kitchenShelfLabel :: ObjectLabel
--- kitchenShelfLabel = ObjectLabel SHELF
-
--- kitchenSinkCabinetAboveLabel :: ObjectLabel
--- kitchenSinkCabinetAboveLabel = ObjectLabel CABINET
-
--- kitchenSinkCabinetBelowLabel :: ObjectLabel
--- kitchenSinkCabinetBelowLabel = ObjectLabel CABINET 
-
--- kitchenSinkLabel :: ObjectLabel
--- kitchenSinkLabel = ObjectLabel SINK
-
-hallLabel :: LocationLabel
-hallLabel = LocationLabel HALL
 objectIDNames :: [(String,Lexeme)]
 objectIDNames =
   [("kitchenSink", SINK)

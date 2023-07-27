@@ -1,23 +1,39 @@
 module HauntedHouse.Game.World.Initialize where
 
-import HauntedHouse.Game.World.Objects
 import HauntedHouse.Game.Object.Domain (Object)
 import HauntedHouse.Game.GID (GID)
-import HauntedHouse.Game.Labels (ObjectLabel)
-import HauntedHouse.Tokenizer (Lexeme (..))
-import HauntedHouse.Game.World.GID 
-import HauntedHouse.Game.World.ObjectTemplate 
+import HauntedHouse.Game.Labels (ObjectLabel, LocationLabel)
 
-labelGIDPairs :: [(ObjectLabel, GID Object)]
-labelGIDPairs = [ (kitchenSinkLabel, kitchenSinkGID)
-                , (kitchenShelfLabel, kitchenShelfGID)
-                , (kitchenCabinetAboveShelfLabel,kitchenCabinetAboveShelfGID)
-                , (kitchenCabinetBelowShelfLabel,kitchenCabinetBelowShelfGID)
-                , (kitchenCabinetAboveSinkLabel,kitchenCabinetAboveSinkGID)
-                , (kitchenCabinetBelowShelfLabel,kitchenCabinetBelowShelfGID)
-                ]
+import HauntedHouse.Game.World.GameState (defaultLocation, defaultObject)
+import HauntedHouse.Game.World.ObjectTemplate
+    ( kitchenCabinetAboveShelfGID,
+      kitchenCabinetAboveSinkGID,
+      kitchenCabinetBelowShelfGID,
+      kitchenShelfGID,
+      kitchenSinkGID ) 
+import HauntedHouse.Game.World.LocationTemplate (hallGID, kitchenGID)
+import HauntedHouse.Game.Location (Location)
+import qualified Data.Map.Strict (Map, fromList)
 
+locationGIDDataPairs :: [(GID Location, Location)]
+locationGIDDataPairs = zip locationGIDs locationData' 
+  where 
+    locationData' = replicate (length locationGIDs) defaultLocation
+    locationGIDs :: [GID Location]
+    locationGIDs = [ kitchenGID, hallGID]
+    
+objectGIDDataPairs :: [(GID Object, Object)]
+objectGIDDataPairs = zip objectGIDs objectData' 
+  where
+    objectGIDs = [kitchenCabinetAboveShelfGID
+                  , kitchenCabinetAboveSinkGID
+                  , kitchenCabinetBelowShelfGID
+                  , kitchenShelfGID
+                  , kitchenSinkGID
+                  ]
+    objectData' = replicate (length objectGIDs) defaultObject 
 
+-- objectGIDDataMap :: Data.Map.Strict.Map (GID Object) Object 
 
 -- makeWorld :: WorldT 
 -- makeWorld = do 

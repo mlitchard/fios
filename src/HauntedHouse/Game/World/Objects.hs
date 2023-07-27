@@ -8,7 +8,6 @@ import HauntedHouse.Game.Object
 import qualified Data.Map.Strict (lookup, insert)
 import Control.Monad.Except (MonadError(throwError))
 import qualified Data.List.NonEmpty
-import qualified Data.List.NonEmpty as Data.NonEmpty.List
 import HauntedHouse.Game.Location (Location)
 import HauntedHouse.Tokenizer (Lexeme (..))
 import qualified Data.List

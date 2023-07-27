@@ -5,16 +5,16 @@ import HauntedHouse.Game.Object.Container.Domain (Containing
                                                   , Moveable (NotMovable)
                                                   , Container (..))
 import HauntedHouse.Game.Object.Domain (Object (..))
-
+{-
 kitchenShelf :: Maybe AttachedTo 
                   -> Maybe Containing 
                   -> RelatedObjects 
                   -> Object
 kitchenShelf containedBy containing relatedObjects = Object 
-  { _container = Just kitchenShelfContainer 
-  , _containedBy = containedBy 
-  , _moveability = NotMovable 
-  , _odescription = "A kitchen shelf to the right of the sink" 
+  { _container'   = Just kitchenShelfContainer 
+  , _containedBy'   = containedBy 
+  , _moveability'   = NotMovable 
+  , _odescription'  = "A kitchen shelf to the right of the sink" 
   }
   where 
     kitchenShelfContainer = Container 
@@ -23,3 +23,4 @@ kitchenShelf containedBy containing relatedObjects = Object
       , _lockState = Nothing 
       , _relatedObjects = relatedObjects 
       }
+-}

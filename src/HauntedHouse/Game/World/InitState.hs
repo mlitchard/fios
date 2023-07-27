@@ -5,7 +5,6 @@ import HauntedHouse.Game.World (World)
 type WorldT = ExceptT Text (StateT World IO)
 
 
-
                 
 
 

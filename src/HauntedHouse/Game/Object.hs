@@ -12,9 +12,8 @@ import HauntedHouse.Game.Object.Container.Domain (Moveable(..))
 
 defaultObject :: Object 
 defaultObject = Object 
-  {
-    _container = Nothing
-  , _containedBy = Nothing
-  , _moveability = NotMovable
-  , _odescription = Data.Text.empty 
+  { _container'     = Nothing
+  , _containedBy'   = Nothing
+  , _moveability'   = NotMovable
+  , _odescription'  = Data.Text.empty 
   }

@@ -108,14 +108,14 @@ library
     HauntedHouse.Game.Engine
     HauntedHouse.Game.GameState
     HauntedHouse.Game.GID
-    HauntedHouse.Game.Labels
     HauntedHouse.Game.Location
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Object
     HauntedHouse.Game.Player
     HauntedHouse.Game.World
-    HauntedHouse.Game.World.GID
+    HauntedHouse.Game.World.GameState
     HauntedHouse.Game.World.Locations
+    HauntedHouse.Game.World.LocationTemplate
     HauntedHouse.Game.World.Template 
     HauntedHouse.Game.World.Locations.Kitchen
     HauntedHouse.Game.World.Locations.Hall
@@ -130,13 +130,8 @@ library
     HauntedHouse.Game.GameState.Domain
     HauntedHouse.Game.Location.LocationData
     HauntedHouse.Game.Location.LocationMap
-    HauntedHouse.Game.Location.Exits
     HauntedHouse.Game.Narration.Domain
-    HauntedHouse.Game.Object.Atomic
-    HauntedHouse.Game.Object.Container
-    HauntedHouse.Game.Object.Container.Domain
     HauntedHouse.Game.Object.Domain
-    HauntedHouse.Game.Object.Descriptors
     HauntedHouse.Game.World.Initialize
     HauntedHouse.Game.World.InitState
     HauntedHouse.Game.World.Labels

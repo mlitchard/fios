@@ -4,7 +4,6 @@ import Data.Map.Strict qualified                (Map)
 import HauntedHouse.Game.Labels                 (LocationLabel)
 import HauntedHouse.Game.Location.LocationData  (Location)
 import HauntedHouse.Game.GID                    (GID)
-import HauntedHouse.Game.Object                 (Object)
 
 newtype LocationMap = LocationMap
   { _unLocationMap :: Data.Map.Strict.Map (GID Location) Location }

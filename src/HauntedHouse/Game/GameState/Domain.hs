@@ -10,11 +10,11 @@ type GameStateExceptT = ExceptT Text GameStateT
 type InputGameStateExceptT = InputT GameStateExceptT
 
 data GameState = GameState
-  { _world          :: World
-  , _report         :: [Text]
-  , _player         :: PlayerData 
-  , _narration      :: Narration
-  , _newScene       :: Bool
-  , _clarification  :: Maybe (NonEmpty Text)
+  { _world'         :: World
+  , _report'        :: [Text]
+  , _player'        :: PlayerData 
+  , _narration'     :: Narration
+  , _newScene'      :: Bool
+  , _clarification' :: Maybe (NonEmpty Text)
   } deriving stock Show
 

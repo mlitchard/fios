@@ -5,18 +5,15 @@ module HauntedHouse.Game.Location (
 , HauntedHouse.Game.Location.LocationMap.LocationMap (..)
 ) where
 
-import Data.Map.Strict (lookup, Map, insertWith)
 import HauntedHouse.Game.GameState.Domain
-    ( GameState(_world), GameStateExceptT )
-import HauntedHouse.Game.Labels (ObjectLabel, LocationLabel)
+    ( GameState(_world'), GameStateExceptT )
 import HauntedHouse.Game.Location.Exits
 import HauntedHouse.Game.Location.LocationData
 import HauntedHouse.Game.Location.LocationMap ( LocationMap(..) )
 import HauntedHouse.Game.World (World (..))
 import Control.Monad.Except ( MonadError(throwError) )
 import HauntedHouse.Game.GID (GID)
-import HauntedHouse.Game.Object
-import qualified Data.List.NonEmpty
+import qualified Data.Map.Strict
 
 getLocation :: GID Location -> GameStateExceptT Location
 getLocation lgid = lookupLocation
@@ -31,5 +28,5 @@ getLocation lgid = lookupLocation
         unLocationMap = _unLocationMap . _locationMap'
         mLocationT :: GameStateExceptT (Maybe Location)
         mLocationT = do
-          world' :: World <-  _world <$> get
+          world' :: World <- _world' <$> get
           pure $ Data.Map.Strict.lookup lgid (unLocationMap world')

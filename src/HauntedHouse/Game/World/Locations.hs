@@ -1,4 +1,10 @@
+{-# OPTIONS_GHC -Wno-missing-signatures #-}
 module HauntedHouse.Game.World.Locations  where
+
+-- import HauntedHouse.Tokenizer (Lexeme (..))
+import HauntedHouse.Game.World.Template
+import HauntedHouse.Game.World.Labels
+import HauntedHouse.Game.GID
  
 {-
 getLocation :: LocationLabel

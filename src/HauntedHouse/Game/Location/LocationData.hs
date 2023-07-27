@@ -2,15 +2,19 @@ module HauntedHouse.Game.Location.LocationData where
 
 import Data.Map.Strict qualified (empty)
 import Data.Text qualified (empty)
-import HauntedHouse.Game.Object.Domain (ObjectLabelMap (..))
-import HauntedHouse.Game.Location.Exits ( ExitMap (..)) 
+import HauntedHouse.Game.Object (ObjectMap)
+
 
 data Location = Location
-  { _description    :: Text
-  , _objectLabelMap  :: ObjectLabelMap
-  , _exits          :: ExitMap 
+  { _description  :: Text
+  , _objectMap    :: ObjectMap
+  , _exits        :: ExitMap 
   }
   deriving stock (Show)
+
+newtype ExitMap = ExitMap 
+  { _unExitMap :: Data.Map.Strict.Map (GID Location) Location}
+   deriving stock Show
 
 defaultLocation :: Location 
 defaultLocation = Location
