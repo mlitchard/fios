@@ -1,5 +1,5 @@
 module HauntedHouse.Game.Engine where
-import HauntedHouse.Game.GameState (GameStateExceptT)
+import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Recognizer 
 import Control.Monad.Except (throwError)
 import HauntedHouse.Game.Engine.OnlyVerb

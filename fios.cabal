@@ -106,13 +106,10 @@ library
   import:          shared
   exposed-modules:
     HauntedHouse.Game.Engine
-    HauntedHouse.Game.GameState
-    HauntedHouse.Game.GID
+    HauntedHouse.Game.Model.GID
     HauntedHouse.Game.Location
+    HauntedHouse.Game.Model
     HauntedHouse.Game.Narration
-    HauntedHouse.Game.Object
-    HauntedHouse.Game.Player
-    HauntedHouse.Game.World
     HauntedHouse.Game.World.GameState
     HauntedHouse.Game.World.Locations
     HauntedHouse.Game.World.LocationTemplate
@@ -127,14 +124,11 @@ library
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
-    HauntedHouse.Game.GameState.Domain
-    HauntedHouse.Game.Location.LocationData
-    HauntedHouse.Game.Location.LocationMap
-    HauntedHouse.Game.Narration.Domain
-    HauntedHouse.Game.Object.Domain
+    HauntedHouse.Game.Model.Mapping
+    HauntedHouse.Game.Model.Object
+    HauntedHouse.Game.Model.Object.Relation
     HauntedHouse.Game.World.Initialize
     HauntedHouse.Game.World.InitState
-    HauntedHouse.Game.World.Labels
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets  
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
     HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets

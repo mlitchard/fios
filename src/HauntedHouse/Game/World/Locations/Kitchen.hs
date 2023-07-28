@@ -1,13 +1,14 @@
 module HauntedHouse.Game.World.Locations.Kitchen where
-
+{-
 import HauntedHouse.Game.World.InitState
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
 import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
     ( makeShelf )
 import HauntedHouse.Game.World.Labels
 
-
+-}
 -- import HauntedHouse.Game.World.Objects (popObjectGID, initObj)
+{-
 import HauntedHouse.Game.Labels (ObjectLabel (..), LocationLabel (..))
 import HauntedHouse.Game.GID (GID)
 import HauntedHouse.Game.Object.Domain (Object)
@@ -20,7 +21,7 @@ import qualified Data.Map.Strict
 import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Game.World.Locations 
 import HauntedHouse.Game.Location (Location)
-
+-}
 {-
 data World = World 
   { _objectMap      :: ObjectMap

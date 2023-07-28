@@ -2,7 +2,7 @@ module HauntedHouse.Game.Engine.VerbPhraseOneEvaluator where
 
 import Control.Monad.Except (throwError)
 import HauntedHouse.Recognizer (Verb, NounPhrase)
-import HauntedHouse.Game.GameState (GameStateExceptT)
+import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Tokenizer 
 
 evalVerbPhrase1 :: (Verb, NounPhrase) -> GameStateExceptT ()

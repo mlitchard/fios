@@ -1,17 +1,6 @@
 module HauntedHouse.Game.World.Objects where
 
-import HauntedHouse.Game.GID (GID (..))
-import HauntedHouse.Game.Labels (ObjectLabel, LocationLabel)
-import HauntedHouse.Game.World.InitState
-import HauntedHouse.Game.Object
-    ( Object, ObjectLabelMap(ObjectLabelMap, _unObjectLabelMap) )
-import qualified Data.Map.Strict (lookup, insert)
-import Control.Monad.Except (MonadError(throwError))
-import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Location (Location)
-import HauntedHouse.Tokenizer (Lexeme (..))
-import qualified Data.List
-
+{-
 -- xs' = map (Data.List.NonEmpty.fromList) 
 --         $ ((groupBy (\(l,_) (l',_) -> l == l')) . sort) labelGIDPairs
 initObj :: NonEmpty (ObjectLabel,GID Object)
@@ -44,6 +33,7 @@ numberOfObjects = [1 .. (toInteger $ length objectIDNames)]
 
 objectNames :: [String]
 objectNames = map fst objectIDNames
+-}
 {-
 
 data InitState = InitState {

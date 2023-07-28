@@ -1,5 +1,5 @@
 module HauntedHouse.Game.World.Initialize where
-
+{-
 import HauntedHouse.Game.Object.Domain (Object)
 import HauntedHouse.Game.GID (GID)
 import HauntedHouse.Game.Labels (ObjectLabel, LocationLabel)
@@ -67,6 +67,7 @@ initObjectLabelMap = modify initObjectLabelMap'
       where
         updatedWorld :: HauntedHouse.Game.World.World  
         updatedWorld = w{HauntedHouse.Game.World._objectLabelMap' = o}
+-}
 {-
 objectLabels' :: [ObjectLabel]
 objectLabels' =

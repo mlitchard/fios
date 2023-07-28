@@ -1,12 +1,6 @@
 module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
   where
 
-import HauntedHouse.Game.Object
-import HauntedHouse.Game.Object.Container.Domain ( Container(..)
-                                                  , RelatedObjects
-                                                  , Containing
-                                                  , AttachedTo (..)
-                                                  , Moveable (..), LockState (Unlocked))
 {-
 kitchenCabinetAboveShelf :: Maybe AttachedTo 
                               -> Maybe Containing 

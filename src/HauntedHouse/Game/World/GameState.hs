@@ -1,4 +1,5 @@
 module HauntedHouse.Game.World.GameState where
+  {-
 import HauntedHouse.Game.Location
 import qualified Data.Text (empty)
 import qualified Data.Map.Strict (empty)
@@ -11,7 +12,8 @@ import HauntedHouse.Game.Object.Domain (ObjectMap(ObjectMap), Object (..))
 import HauntedHouse.Game.Location.LocationMap (LocationLabelMap(LocationLabelMap))
 import HauntedHouse.Game.Player (PlayerData (..))
 import HauntedHouse.Game.World.Locations (kitchenGID)
-
+-}
+{-
 defaultLocation :: Location 
 defaultLocation = Location
   { _description = Data.Text.empty 
@@ -71,3 +73,4 @@ data Object = Object
 -}
 
 
+-}

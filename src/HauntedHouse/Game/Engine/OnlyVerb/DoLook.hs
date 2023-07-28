@@ -1,6 +1,6 @@
 module HauntedHouse.Game.Engine.OnlyVerb.DoLook where
-import HauntedHouse.Game.GameState (GameStateExceptT, GameState (_narration'))
-import HauntedHouse.Game.Narration (Narration (..))
+import HauntedHouse.Game.Model (GameStateExceptT, GameState (_narration'))
+import HauntedHouse.Game.Model (Narration (..))
 
 doLook :: GameStateExceptT ()
 doLook = do

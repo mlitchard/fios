@@ -1,4 +1,4 @@
-module HauntedHouse.Game.GID where
+module HauntedHouse.Game.Model.GID where
 
 newtype GID a = GID {unGID :: Int}
   deriving stock (Show, Ord, Eq)
@@ -6,4 +6,3 @@ newtype GID a = GID {unGID :: Int}
 instance ToText (GID a) where
   toText :: GID a -> Text
   toText = show . unGID
-

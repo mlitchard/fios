@@ -1,10 +1,5 @@
 module HauntedHouse.Game.World.Locations.Kitchen.KitchenSink where
-import HauntedHouse.Game.Object
 
-import HauntedHouse.Game.Object.Container.Domain (AttachedTo
-                                                  , Containing
-                                                  , RelatedObjects
-                                                  , Container (..), Moveable (NotMovable))
 {-
 kitchenSink 
 kitchenSink = Object
