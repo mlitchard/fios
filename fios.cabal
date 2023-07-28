@@ -110,34 +110,37 @@ library
     HauntedHouse.Game.Location
     HauntedHouse.Game.Model
     HauntedHouse.Game.Narration
-    HauntedHouse.Game.World.GameState
-    HauntedHouse.Game.World.Locations
-    HauntedHouse.Game.World.LocationTemplate
-    HauntedHouse.Game.World.Template 
-    HauntedHouse.Game.World.Locations.Kitchen
-    HauntedHouse.Game.World.Locations.Hall
-    HauntedHouse.Game.World.Objects
     HauntedHouse.Recognizer
     HauntedHouse.Tokenizer
     
   other-modules:
+    HauntedHouse.Game.Build.Default 
+    HauntedHouse.Game.Build.GameState
+    HauntedHouse.Game.Build.Initialize
+    HauntedHouse.Game.Build.InitState
+    HauntedHouse.Game.Build.Labels
+    HauntedHouse.Game.Build.LocationLabels
+    HauntedHouse.Game.Build.Locations
+    HauntedHouse.Game.Build.Locations.Hall
+    HauntedHouse.Game.Build.Locations.Kitchen
+    HauntedHouse.Game.Build.Locations.Kitchen.KitchenSink
+    HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkCabinets
+    HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Cabinets
+    HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.InitState
+    HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Shelf
+    HauntedHouse.Game.Build.LocationTemplate
+    HauntedHouse.Game.Build.Objects
+    HauntedHouse.Game.Build.ObjectLabels
+    HauntedHouse.Game.Build.ObjectTemplate
+    HauntedHouse.Game.Build.Template
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
     HauntedHouse.Game.Model.Mapping
-    HauntedHouse.Game.Model.Object
+    HauntedHouse.Game.Model.World
     HauntedHouse.Game.Model.Object.Relation
-    HauntedHouse.Game.World.Initialize
-    HauntedHouse.Game.World.InitState
-    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets  
-    HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
-    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
-    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
-    HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
-    HauntedHouse.Game.World.ObjectTemplate
-    HauntedHouse.Tokenizer.Data
     HauntedHouse.Recognizer.WordClasses
-
+    HauntedHouse.Tokenizer.Data
 executable fios
   import:  shared
   main-is: Main.hs

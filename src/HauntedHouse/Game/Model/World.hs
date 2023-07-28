@@ -1,5 +1,7 @@
-module HauntedHouse.Game.Model.Object where 
+module HauntedHouse.Game.Model.World where 
 
+import Data.List.NonEmpty qualified
+import Data.Text qualified
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.Object.Relation
@@ -9,7 +11,7 @@ import HauntedHouse.Tokenizer (Lexeme)
 data Object = Object
   { _container'     :: Maybe (Container Object)
   , _containedBy'   :: Maybe (ContainedBy Object Location)
-  , _moveability'   :: Moveable
+  , _moveability'   :: Moveablility
   , _odescription'  :: Text
   }
 
@@ -35,9 +37,16 @@ data Containing = Containing
 
 data Location = Location
   { _description  :: Text
-  , _objectMap    :: Mapping Object
-  , _exits        :: Mapping Exit  
+  , _objects      :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
+  , _exits        :: Maybe (Data.List.NonEmpty.NonEmpty (GID Exit))  
   }
-  
+
+data World = World 
+  { _objectMap'         :: GIDToDataMapping Object
+  , _objectLabelMap'    :: LabelToGIDMapping Object
+  , _locationMap'       :: GIDToDataMapping Location  
+  , _locationLabelMap'  :: LabelToGIDMapping Location
+  }
+
 newtype Exit = Exit {_unExit :: Lexeme} deriving stock (Show,Eq,Ord)
 data LockState = Locked | Unlocked deriving stock (Show, Eq, Ord)

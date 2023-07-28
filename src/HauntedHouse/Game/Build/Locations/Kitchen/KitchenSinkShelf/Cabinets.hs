@@ -1,6 +1,6 @@
-module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
+module HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Cabinets
   where
-
+    
 {-
 kitchenCabinetAboveShelf :: Maybe AttachedTo 
                               -> Maybe Containing 

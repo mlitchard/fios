@@ -1,9 +1,8 @@
-{-# OPTIONS_GHC -Wno-missing-signatures #-}
-module HauntedHouse.Game.World.Locations  where
+module HauntedHouse.Game.Build.Locations  where
 
 -- import HauntedHouse.Tokenizer (Lexeme (..))
-import HauntedHouse.Game.World.Template
-import HauntedHouse.Game.World.Labels
+import HauntedHouse.Game.Build.Template
+import HauntedHouse.Game.Build.Labels
 import HauntedHouse.Game.Model.GID
  
 {-
@@ -36,7 +35,7 @@ popLocationGID lLabel = do
                       -> InitState
     updateLocation xs init'@(InitState _ _ locationLabelMap _ _ _)  =
       let updatedMap = LocationLabelMap $ Data.Map.Strict.insert lLabel xs (_unLocationLabelMap locationLabelMap)
-      in init'{HauntedHouse.Game.World.InitState._locationLabelMap = updatedMap}
+      in init'{HauntedHouse.Game.Build.InitState._locationLabelMap = updatedMap}
 
 getLocationGIDs :: LocationLabel -> InitStateT (NonEmpty (GID Location))
 getLocationGIDs locationLabel' = do

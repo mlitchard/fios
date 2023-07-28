@@ -1,17 +1,17 @@
-module HauntedHouse.Game.World.Initialize where
+module HauntedHouse.Game.Build.Initialize where
 {-
 import HauntedHouse.Game.Object.Domain (Object)
 import HauntedHouse.Game.GID (GID)
 import HauntedHouse.Game.Labels (ObjectLabel, LocationLabel)
 
-import HauntedHouse.Game.World.GameState (defaultLocation, defaultObject)
-import HauntedHouse.Game.World.ObjectTemplate
+import HauntedHouse.Game.Build.GameState (defaultLocation, defaultObject)
+import HauntedHouse.Game.Build.ObjectTemplate
     ( kitchenCabinetAboveShelfGID,
       kitchenCabinetAboveSinkGID,
       kitchenCabinetBelowShelfGID,
       kitchenShelfGID,
       kitchenSinkGID ) 
-import HauntedHouse.Game.World.LocationTemplate (hallGID, kitchenGID)
+import HauntedHouse.Game.Build.LocationTemplate (hallGID, kitchenGID)
 import HauntedHouse.Game.Location (Location)
 import qualified Data.Map.Strict (Map, fromList)
 
@@ -56,7 +56,7 @@ initLocationMap = modify' updateInitWorld
   where
     updateInitWorld :: InitState -> InitState
     updateInitWorld init'@(InitState _ _ _ locations _ world) =
-      init'{ _world' = world{HauntedHouse.Game.World._locationMap'= locations}}
+      init'{ _world' = world{HauntedHouse.Game.Build._locationMap'= locations}}
 
 initObjectLabelMap :: InitStateT ()
 initObjectLabelMap = modify initObjectLabelMap'
@@ -65,8 +65,8 @@ initObjectLabelMap = modify initObjectLabelMap'
     initObjectLabelMap' init'@(InitState o _ _ _ _ w) =
       init'{ _world' = updatedWorld}
       where
-        updatedWorld :: HauntedHouse.Game.World.World  
-        updatedWorld = w{HauntedHouse.Game.World._objectLabelMap' = o}
+        updatedWorld :: HauntedHouse.Game.Build.World  
+        updatedWorld = w{HauntedHouse.Game.Build._objectLabelMap' = o}
 -}
 {-
 objectLabels' :: [ObjectLabel]

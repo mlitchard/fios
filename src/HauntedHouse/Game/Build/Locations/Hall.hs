@@ -1,4 +1,4 @@
-module HauntedHouse.Game.World.Locations.Hall where
+module HauntedHouse.Game.Build.Locations.Hall where
 import HauntedHouse.Game.Location
 import qualified Data.Map.Strict (empty)
 

@@ -1,4 +1,10 @@
-module HauntedHouse.Game.World.Objects where
+module HauntedHouse.Game.Build.Objects where
+
+import HauntedHouse.Game.Build.Labels 
+import HauntedHouse.Game.Build.Template
+import HauntedHouse.Game.Model.Mapping  (Label (..))
+import HauntedHouse.Game.Model.World    (Object (..))
+import HauntedHouse.Tokenizer           (Lexeme (..))
 
 {-
 -- xs' = map (Data.List.NonEmpty.fromList) 

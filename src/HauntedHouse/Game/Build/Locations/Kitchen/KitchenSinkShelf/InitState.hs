@@ -1,4 +1,4 @@
-module HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState where
+module HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.InitState where
 {-
 makeShelf :: WorldT ()
 makeShelf = do  

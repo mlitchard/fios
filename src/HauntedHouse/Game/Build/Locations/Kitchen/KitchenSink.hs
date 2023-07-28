@@ -1,4 +1,4 @@
-module HauntedHouse.Game.World.Locations.Kitchen.KitchenSink where
+module HauntedHouse.Game.Build.Locations.Kitchen.KitchenSink where
 
 {-
 kitchenSink 

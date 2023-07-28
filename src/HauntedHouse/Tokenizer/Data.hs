@@ -126,6 +126,10 @@ instance ToText Lexeme where
   toText :: Lexeme -> Text
   toText txt = toText (show txt :: String)
 
+instance ToString Lexeme where 
+  toString :: Lexeme -> String 
+  toString lex = (toString . toText) lex
+
 instance Hashable Lexeme where
   hashWithSalt :: Int -> Lexeme -> Int
   hashWithSalt = hashUsing fromEnum

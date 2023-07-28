@@ -1,25 +1,25 @@
-module HauntedHouse.Game.World.Locations.Kitchen where
+module HauntedHouse.Game.Build.Locations.Kitchen where
 {-
-import HauntedHouse.Game.World.InitState
-import HauntedHouse.Game.World.Locations.Kitchen.KitchenSink
-import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.InitState
+import HauntedHouse.Game.Build.InitState
+import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSink
+import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.InitState
     ( makeShelf )
-import HauntedHouse.Game.World.Labels
+import HauntedHouse.Game.Build.Labels
 
 -}
--- import HauntedHouse.Game.World.Objects (popObjectGID, initObj)
+-- import HauntedHouse.Game.Build.Objects (popObjectGID, initObj)
 {-
 import HauntedHouse.Game.Labels (ObjectLabel (..), LocationLabel (..))
 import HauntedHouse.Game.GID (GID)
 import HauntedHouse.Game.Object.Domain (Object)
-import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Shelf
-import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkShelf.Cabinets
-import HauntedHouse.Game.World.Locations.Kitchen.KitchenSinkCabinets
-import HauntedHouse.Game.World.Locations
+import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Shelf
+import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Cabinets
+import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkCabinets
+import HauntedHouse.Game.Build.Locations
 import qualified Data.List.NonEmpty
 import qualified Data.Map.Strict
 import HauntedHouse.Tokenizer (Lexeme(..))
-import HauntedHouse.Game.World.Locations 
+import HauntedHouse.Game.Build.Locations 
 import HauntedHouse.Game.Location (Location)
 -}
 {-
