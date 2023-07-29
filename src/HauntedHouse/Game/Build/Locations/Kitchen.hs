@@ -13,13 +13,15 @@ import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Build.ObjectTemplate (kitchenShelfGID, kitchenSinkGID, kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID, kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.World
-import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Shelf
+import HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Shelf
+import HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Cabinets.AboveShelf
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
   buildKitchenFrame
   buildKitchenSink
   buildKitchenShelf
+  buildKitchenCabinetAboveShelf
 
 buildKitchenFrame :: GameStateExceptT ()
 buildKitchenFrame = do

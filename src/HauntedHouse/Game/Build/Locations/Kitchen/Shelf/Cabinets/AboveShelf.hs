@@ -1,5 +1,5 @@
-module HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Cabinets
-  where
+module HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Cabinets.AboveShelf
+  (buildKitchenCabinetAboveShelf) where
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Mapping
@@ -11,6 +11,7 @@ import HauntedHouse.Game.Model.Object.Relation
         , LeftOrRight (OnLeft))
 import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Build.LocationTemplate (kitchenGID)
+
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do
   world <- _world' <$> get 
@@ -47,3 +48,15 @@ relationToOtherObjects =
         ,(PlaceNextTo OnLeft, Just placeNextTo)]
     placeUnder = Data.List.NonEmpty.fromList [kitchenShelfGID]
     placeNextTo = Data.List.NonEmpty.fromList [kitchenCabinetAboveSinkGID]
+{-
+buildKitchenCabinetBelowShelf :: GameStateExceptT ()
+buildKitchenCabinetBelowShelf = do
+  world <- _world' <$> get 
+  let objectMap' :: GIDToDataMapping Object 
+      objectMap' = 
+        GIDToDataMapping 
+          $ Data.Map.Strict.insert 
+              kitchenCabinetAboveSinkGID buildCabinet 
+                $ (_unGIDMapping' . _objectMap') world
+  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
+-}
