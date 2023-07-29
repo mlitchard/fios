@@ -16,11 +16,11 @@ newtype LabelToGIDListMapping a
     { _unLabelToGIDListMapping' :: Data.Map.Strict.Map (Label a) (NonEmpty (GID a))}
       deriving stock Show 
 
-newtype LabelToGIDMapping a 
+newtype LabelToGIDMapping a b
   = LabelToGIDMapping
-      { _unlabelToGIDListMapping :: Data.Map.Strict.Map (Label a) (GID a)}
+      { _unlabelToGIDListMapping :: Data.Map.Strict.Map (Label a) (GID b)}
         deriving stock Show 
-        
+
 newtype GIDToDataMapping a 
   = GIDToDataMapping {_unGIDMapping' :: Data.Map.Strict.Map (GID a) a} 
       deriving stock Show

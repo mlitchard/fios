@@ -39,7 +39,7 @@ data Containing = Containing
 data Location = Location
   { _description  :: Text
   , _objects      :: Maybe Objects
-  , _exits        :: Maybe (LabelToGIDMapping Exit) -- Maybe (Data.Map.Strict.Map (Label Exit) (GID Exit))
+  , _exits        :: Maybe (LabelToGIDMapping Exit Location) -- Maybe (Data.Map.Strict.Map (Label Exit) (GID Exit))
   } deriving stock Show
 
 newtype Objects 
