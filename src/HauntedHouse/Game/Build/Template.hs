@@ -1,17 +1,19 @@
 module HauntedHouse.Game.Build.Template where
 
 import Language.Haskell.TH
+    ( mkName,
+      Exp(LitE, UnboundVarE, AppE, ConE),
+      Pat(VarP),
+      Type(ConT, AppT),
+      Dec(ValD, SigD),
+      DecsQ,
+      Body(NormalB),
+      Lit(IntegerL) )
 
-import HauntedHouse.Tokenizer (Lexeme)
-import HauntedHouse.Game.Model.Mapping
-import HauntedHouse.Game.Model.World 
+import HauntedHouse.Tokenizer.Data ( Lexeme )
 
--- newtype Label a = Label {_unLabel :: Lexeme} deriving (Show,Eq,Ord)
-objectProtoType :: DecsQ 
-objectProtoType = [d| sinkLabel :: Label Object
-                      sinkLabel = (Label SINK)
-                  |]
-labelTemplate :: String -> String -> Lexeme -> DecsQ 
+
+labelTemplate :: String -> String -> Lexeme -> DecsQ
 labelTemplate typeStr name lexeme = pure desc
   where
     desc        = [sigd,vald]
@@ -25,24 +27,12 @@ labelTemplate typeStr name lexeme = pure desc
     uvar = UnboundVarE $ (mkName . toString) lexeme
     labelName = mkName "HauntedHouse.Game.Model.Mapping.Label"
 
--- assumes unique int 
-
-objectGIDDeclaration :: String -> Integer -> DecsQ 
-objectGIDDeclaration dnameSTR gid = pure [fsig] 
+gidDeclaration :: String -> String -> Integer -> DecsQ
+gidDeclaration tag' binding' literal = pure [sigd, value]
   where
-    dname = dnameSTR <> "GID"
-    fsig = ValD fname objectType []
-    fname = VarP (mkName dname)
-    objectType = NormalB (AppE constructor value)
-    constructor = ConE (mkName "GID")
-    value = LitE (IntegerL gid)
-
-locationGIDDeclaration :: String -> Integer -> DecsQ 
-locationGIDDeclaration dnameSTR gid = pure [fsig]
-  where
-    fsig  = ValD fname objectType []
-    fname = VarP (mkName dname) 
-    dname =  dnameSTR <> "GID"
-    objectType = NormalB (AppE constructor value)
-    constructor = ConE (mkName "GID")
-    value = LitE (IntegerL gid)
+    sigd    = SigD binding type'
+    binding = mkName (binding' <> "GID")
+    type'   = AppT (ConT gid) (ConT tag)
+    gid     = mkName "GID"
+    tag     = mkName tag'
+    value = ValD (VarP binding) (NormalB (AppE (ConE gid) (LitE (IntegerL literal)))) []

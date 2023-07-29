@@ -20,9 +20,6 @@ newtype GIDToDataMapping a
   = GIDToDataMapping {_unGIDMapping' :: Data.Map.Strict.Map (GID a) a} 
       deriving stock Show
 
-newtype GIDToGIDMapping a b
-  = GIDToGIDMapping {_unGIDToGIDMapping' :: Data.Map.Strict.Map (GID a) (GID b)}
-
 newtype GIDToGIDMapping a b 
   = GIDToGIDMapping 
     {_unGIDtoGIDMapping :: Data.Map.Strict.Map (GID a ) (GID b)}

@@ -115,6 +115,8 @@ library
     
   other-modules:
     HauntedHouse.Game.Build.Default 
+    HauntedHouse.Game.Build.Exits
+    HauntedHouse.Game.Build.ExitTemplate
     HauntedHouse.Game.Build.GameState
     HauntedHouse.Game.Build.Initialize
     HauntedHouse.Game.Build.InitState

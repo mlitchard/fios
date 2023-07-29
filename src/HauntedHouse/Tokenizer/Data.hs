@@ -32,7 +32,7 @@ adjectives :: HashSet Lexeme
 adjectives = HS.fromList [MIND, BLUE, RED, GREAT, LONG, OLD, DRUNK, PLANT, POT, TEA, CABINET]
 
 directions :: HashSet Lexeme
-directions = HS.fromList [NORTH, EAST, SOUTH, WEST]
+directions = HS.fromList [NORTH, EAST, SOUTH, WEST, DOWN, UP]
 
 numbers :: HashSet Lexeme
 numbers = HS.fromList [ONE, TWO, THREE]
@@ -109,16 +109,16 @@ data Lexeme
   | TAKE
   | SINK
   | THROUGH
-  | SOIL 
+  | SOIL
   | WATERING
   | CAN
   | BAG
-  | UP 
-  | CLIMB 
+  | UP
+  | CLIMB
   | GO
-  | HALL   
-  | MARQUEE 
-  | SHELF 
+  | HALL
+  | MARQUEE
+  | SHELF
   | SEPERATOR
   deriving stock (Show, Eq, Enum, Ord)
 
@@ -126,9 +126,9 @@ instance ToText Lexeme where
   toText :: Lexeme -> Text
   toText txt = toText (show txt :: String)
 
-instance ToString Lexeme where 
-  toString :: Lexeme -> String 
-  toString lex = (toString . toText) lex
+instance ToString Lexeme where
+  toString :: Lexeme -> String
+  toString = toString . toText
 
 instance Hashable Lexeme where
   hashWithSalt :: Int -> Lexeme -> Int
