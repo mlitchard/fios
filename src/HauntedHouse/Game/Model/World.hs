@@ -13,7 +13,7 @@ data Object = Object
   , _containedBy'   :: Maybe ContainedBy
   , _moveability'   :: Moveablility
   , _odescription'  :: Text
-  }
+  } deriving stock Show 
 
 -- a is Object
 data Container = Container
@@ -21,25 +21,25 @@ data Container = Container
   , _containing :: Maybe Containing 
   , _lockState  :: Maybe LockState
   , _relatedObjects :: RelatedObjects Object
-  }
+  } deriving stock Show
 
 data ContainedBy
   = ByObject (GID Object)
   | ByLocation (GID Location)
-  | ByPlayer 
+  | ByPlayer deriving stock Show 
 
 data Containing = Containing
   { _placeIn    :: Maybe (NonEmpty (GID Object))
   , _placeOn    :: Maybe (NonEmpty (GID Object))
   , _placeUnder :: Maybe (NonEmpty (GID Object))
   , _placeAbove :: Maybe (NonEmpty (GID Object))
-  }
+  } deriving stock Show 
 
 data Location = Location
   { _description  :: Text
   , _objects      :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
   , _exits        :: Maybe (Data.List.NonEmpty.NonEmpty (GID Exit))  
-  }
+  } deriving stock Show 
 
 data World = World 
   { _objectMap'         :: GIDToDataMapping Object

@@ -14,17 +14,23 @@ instance ToText Object where
 
   toText :: Object -> Text 
   toText = show . _unObject'
--} {-
+  -}
+ {-
 data ContainedBy a b
   = ByObject (GID a)
   | ByLocation (GID b)
   | ByPlayer 
   -}
 
+instance ToText ContainedBy where 
+  toText (ByObject gid)   = toText gid 
+  toText (ByLocation gid) = toText gid
+  toText ByPlayer         = "By Player"  
+
 instance ToText (Label Object) where
   toText :: Label Object -> Text 
   toText = toText . _unLabel
-{-
+
 instance ToText (Label Location) where 
   toText :: Label Location -> Text
   toText = toText . _unLabel
@@ -40,6 +46,6 @@ class (ToText b) => FormatMap a b where
   format :: a b -> [Text] 
 
 -- instance FormatMap LabelToGIDMapping Object where 
-  -}
+
 
 

@@ -14,10 +14,13 @@ newtype Label a = Label {_unLabel :: Lexeme} deriving stock (Show,Eq,Ord)
 newtype LabelToGIDMapping a 
   = LabelToGIDMapping 
     { _unLabelMapping :: Data.Map.Strict.Map (Label a) (NonEmpty (GID a))}
+      deriving stock Show 
 
 newtype GIDToDataMapping a 
-  = GIDToDataMapping {_unGIDMapping :: Data.Map.Strict.Map (GID a) a}
+  = GIDToDataMapping {_unGIDMapping :: Data.Map.Strict.Map (GID a) a} 
+      deriving stock Show
 
 newtype GIDToGIDMapping a b 
   = GIDToGIDMapping 
     {_unGIDtoGIDMapping :: Data.Map.Strict.Map (GID a ) (GID b)}
+        deriving stock Show 
