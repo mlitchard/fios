@@ -118,7 +118,6 @@ library
     HauntedHouse.Game.Build.GameState
     HauntedHouse.Game.Build.Initialize
     HauntedHouse.Game.Build.InitState
-    HauntedHouse.Game.Build.Labels
     HauntedHouse.Game.Build.LocationLabels
     HauntedHouse.Game.Build.Locations
     HauntedHouse.Game.Build.Locations.Hall

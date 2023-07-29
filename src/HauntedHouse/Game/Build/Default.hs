@@ -8,17 +8,25 @@ import Data.Text qualified                      (empty)
 
 import HauntedHouse.Game.Build.LocationLabels
 import HauntedHouse.Game.Build.LocationTemplate
-import HauntedHouse.Game.Build.Objects
-import HauntedHouse.Game.Build.ObjectLabels
-import HauntedHouse.Game.Build.ObjectTemplate
 
-import HauntedHouse.Game.Model 
+import HauntedHouse.Game.Build.ObjectLabels
+    ( sink, shelf, cabinet )
+import HauntedHouse.Game.Build.ObjectTemplate
+    ( kitchenSinkGID,
+      kitchenCabinetBelowSinkGID,
+      kitchenCabinetAboveSinkGID,
+      kitchenShelfGID,
+      kitchenCabinetAboveShelfGID,
+      kitchenCabinetBelowShelfGID )
+
+import HauntedHouse.Game.Model
+    ( Player(..), Narration(Narration), GameState(..) ) 
 import HauntedHouse.Game.Model.GID              (GID)
-import HauntedHouse.Game.Model.Mapping          (Label, LabelToGIDMapping (..)
-                                                , GIDToDataMapping (..))
+import HauntedHouse.Game.Model.Mapping          
+    (LabelToGIDMapping (..) , GIDToDataMapping (..))
 import HauntedHouse.Game.Model.Object.Relation  (Moveablility (NotMovable))
-import HauntedHouse.Game.Model.World            (Object (..), Location (..)
-                                                , World (..))
+import HauntedHouse.Game.Model.World            
+    (Object (..), Location (..), World (..))
 
 defaultLocation :: Location 
 defaultLocation = Location
@@ -35,18 +43,6 @@ defaultObject = Object
   , _odescription'  = Data.Text.empty 
   }
 
-{-
-
-data GameState = GameState
-  { _world'         :: World
-  , _report'        :: [Text]
-  , _player'        :: Player
-  , _narration'     :: Narration
-  , _newScene'      :: Bool
-  , _clarification' :: Maybe (NonEmpty Text)
-  }
-
--}
 defaultGameState :: GameState 
 defaultGameState = GameState 
   { _world' = defaultWorld 
@@ -56,8 +52,10 @@ defaultGameState = GameState
   , _newScene' = True 
   , _clarification' = Nothing
   }
+defaultNarration :: Narration
 defaultNarration = Narration Nothing Nothing Nothing Nothing
 
+defaultPlayer :: Player
 defaultPlayer = Player
   {_playerLocation = kitchenGID
   , _p_inv = Nothing

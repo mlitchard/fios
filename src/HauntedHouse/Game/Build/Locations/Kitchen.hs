@@ -4,7 +4,7 @@ import HauntedHouse.Game.Build.InitState
 import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSink
 import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.InitState
     ( makeShelf )
-import HauntedHouse.Game.Build.Labels
+import HauntedHouse.Game.Build.Locations
 
 -}
 -- import HauntedHouse.Game.Build.Objects (popObjectGID, initObj)

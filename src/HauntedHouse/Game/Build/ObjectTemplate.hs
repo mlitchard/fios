@@ -1,11 +1,9 @@
+{-# OPTIONS_GHC -Wno-missing-signatures #-}
 module HauntedHouse.Game.Build.ObjectTemplate where 
 
-import Language.Haskell.TH
-import HauntedHouse.Game.Model.GID 
-import HauntedHouse.Game.Build.Labels (objectIntPairs)
-import HauntedHouse.Game.Build.Template
-import HauntedHouse.Game.Model.Mapping (Label (..))
-
-import HauntedHouse.Tokenizer (Lexeme(..))
+import HauntedHouse.Game.Model.GID ( GID(GID) ) 
+import HauntedHouse.Game.Build.ObjectLabels (objectIntPairs)
+import HauntedHouse.Game.Build.Template ( objectGIDDeclaration )
 
 foldMapM (uncurry objectGIDDeclaration) objectIntPairs
+
