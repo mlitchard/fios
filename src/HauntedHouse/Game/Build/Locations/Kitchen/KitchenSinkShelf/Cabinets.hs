@@ -1,41 +1,50 @@
 module HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Cabinets
   where
-    
-{-
-kitchenCabinetAboveShelf :: Maybe AttachedTo 
-                              -> Maybe Containing 
-                              -> RelatedObjects 
-                              -> Object
-kitchenCabinetAboveShelf containedBy containing relatedObjects = Object
-  { _container = Just kitchenCabinetAboveShelfContainer
-  , _containedBy = containedBy
-  , _moveability = NotMovable
-  , _odescription = "A cabinet above the kitchen shelf"
-  }
-  where
-    kitchenCabinetAboveShelfContainer :: Container
-    kitchenCabinetAboveShelfContainer = Container
-      { _isOpen = Nothing 
-      , _containing = containing
-      , _lockState = Just Unlocked
-      , _relatedObjects = relatedObjects 
-      }
+import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
+import HauntedHouse.Game.Model.World
+import HauntedHouse.Game.Model.Mapping
+import qualified Data.Map.Strict
+import HauntedHouse.Game.Build.ObjectTemplate
+        (kitchenCabinetAboveSinkGID, kitchenShelfGID)
+import HauntedHouse.Game.Model.Object.Relation
+        (Moveablility(..), RelatedObjects (..), Placeability (..)
+        , LeftOrRight (OnLeft))
+import qualified Data.List.NonEmpty
+import HauntedHouse.Game.Build.LocationTemplate (kitchenGID)
+buildKitchenCabinetAboveShelf :: GameStateExceptT ()
+buildKitchenCabinetAboveShelf = do
+  world <- _world' <$> get 
+  let objectMap' :: GIDToDataMapping Object 
+      objectMap' = 
+        GIDToDataMapping 
+          $ Data.Map.Strict.insert 
+              kitchenCabinetAboveSinkGID buildCabinet 
+                $ (_unGIDMapping' . _objectMap') world
+  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
-kitchenCabinetBelowShelf :: Maybe AttachedTo 
-                              -> Maybe Containing
-                              -> RelatedObjects 
-                              -> Object
-kitchenCabinetBelowShelf containedBy containing relatedObjects = Object
-  { _container = Just kitchenCabinetBelowShelfContainer 
-  , _containedBy = containedBy
-  , _moveability = NotMovable
-  , _odescription = "A cabinet below the kitchen shelf"
+buildCabinet :: Object 
+buildCabinet = Object 
+  { _container' = Just buildCabinetContainer 
+  , _containedBy' = Just (ByLocation kitchenGID)
+  , _moveability' = NotMovable 
+  , _odescription' = "It's a cabinet. You can put things in it"
   }
-  where
-    kitchenCabinetBelowShelfContainer :: Container
-    kitchenCabinetBelowShelfContainer = Container
-      { _isOpen = Just True
-      , _containing = containing
-      , _lockState = Just Unlocked
-      , _relatedObjects = relatedObjects}
--}
+
+buildCabinetContainer :: Container
+buildCabinetContainer = Container
+  { _isOpen'          = Just False
+  , _containing'      = Nothing 
+  , _lockState'       = Just Unlocked 
+  , _relatedObjects'  = relationToOtherObjects 
+  }
+
+relationToOtherObjects :: RelatedObjects Object 
+relationToOtherObjects = 
+  RelatedObjects $ Data.Map.Strict.fromList relatedObjects
+  where 
+    relatedObjects = 
+      [(PlaceIn, Nothing)
+        ,(PlaceUnder, Just placeUnder)
+        ,(PlaceNextTo OnLeft, Just placeNextTo)]
+    placeUnder = Data.List.NonEmpty.fromList [kitchenShelfGID]
+    placeNextTo = Data.List.NonEmpty.fromList [kitchenCabinetAboveSinkGID]
