@@ -1,8 +1,8 @@
 module HauntedHouse.Game.World where
 
 import HauntedHouse.Game.Model
-import HauntedHouse.Game.Model.Mapping 
-import HauntedHouse.Game.Model.Object
+import Control.Monad.Except (throwError)
 
-getObjectMap :: GameStateExceptT (Mapping Object)
-getObjectMap = _objectMap' . _world' <$> get
+throwMaybe :: Text -> Maybe a -> GameStateExceptT a
+throwMaybe _ (Just a) = pure a
+throwMaybe errmsg Nothing  = throwError errmsg

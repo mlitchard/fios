@@ -9,13 +9,18 @@ import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
 import qualified Data.Map.Strict
 import Control.Monad.Except (throwError)
-import HauntedHouse.Game.Build.Default (kitchenShelf, kitchenSink)
 import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Build.ObjectTemplate (kitchenShelfGID, kitchenSinkGID, kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID, kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID)
 import HauntedHouse.Game.Model.GID (GID)
+import HauntedHouse.Game.World
 
 buildKitchen :: GameStateExceptT ()
-buildKitchen = do
+buildKitchen = do 
+  buildKitchenFrame
+  buildKitchenSink 
+
+buildKitchenFrame :: GameStateExceptT ()
+buildKitchenFrame = do
   world :: World <- _world' <$> get
   let locationMap' :: Data.Map.Strict.Map (GID Location) Location
       locationMap' = unLocationMap world
@@ -46,6 +51,4 @@ buildKitchen = do
       unLocationMap = _unGIDMapping' . _locationMap'
       errmsg = "kitchen should have been in this map but wasn't"
 
-throwMaybe :: Text -> Maybe a -> GameStateExceptT a
-throwMaybe _ (Just a) = pure a
-throwMaybe errmsg Nothing  = throwError errmsg
+

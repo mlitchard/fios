@@ -110,6 +110,7 @@ library
     HauntedHouse.Game.Location
     HauntedHouse.Game.Model
     HauntedHouse.Game.Narration
+    HauntedHouse.Game.World
     HauntedHouse.Recognizer
     HauntedHouse.Tokenizer
     

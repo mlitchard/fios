@@ -5,8 +5,6 @@ import Data.List.NonEmpty qualified
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.Object.Relation
-import HauntedHouse.Tokenizer (Lexeme)
-
 
 -- a is Object b is Location
 data Object = Object
@@ -18,10 +16,10 @@ data Object = Object
 
 -- a is Object
 data Container = Container
-  { _isOpen     :: Maybe Bool
-  , _containing :: Maybe Containing
-  , _lockState  :: Maybe LockState
-  , _relatedObjects :: RelatedObjects Object
+  { _isOpen'          :: Maybe Bool
+  , _containing'      :: Maybe Containing
+  , _lockState'       :: Maybe LockState
+  , _relatedObjects'  :: RelatedObjects Object
   } deriving stock Show
 
 data ContainedBy

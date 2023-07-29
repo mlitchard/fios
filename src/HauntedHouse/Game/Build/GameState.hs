@@ -14,3 +14,4 @@ finalizeBuild = pass
 buildWorld :: GameStateExceptT () 
 buildWorld = do 
   buildKitchen
+  
