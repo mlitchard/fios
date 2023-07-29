@@ -17,7 +17,6 @@ data Object = Object
 -- a is Object
 data Container = Container
   { _isOpen'          :: Maybe Bool
-  , _containing'      :: Maybe Containing
   , _lockState'       :: Maybe LockState
   , _relatedObjects'  :: RelatedObjects Object
   } deriving stock Show
@@ -26,13 +25,6 @@ data ContainedBy
   = ByObject (GID Object)
   | ByLocation (GID Location)
   | ByPlayer deriving stock Show
-
-data Containing = Containing
-  { _placeIn    :: Maybe (NonEmpty (GID Object))
-  , _placeOn    :: Maybe (NonEmpty (GID Object))
-  , _placeUnder :: Maybe (NonEmpty (GID Object))
-  , _placeAbove :: Maybe (NonEmpty (GID Object))
-  } deriving stock Show
 
 data Location = Location
   { _description  :: Text

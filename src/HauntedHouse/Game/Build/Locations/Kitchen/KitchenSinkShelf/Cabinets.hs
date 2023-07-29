@@ -33,7 +33,6 @@ buildCabinet = Object
 buildCabinetContainer :: Container
 buildCabinetContainer = Container
   { _isOpen'          = Just False
-  , _containing'      = Nothing 
   , _lockState'       = Just Unlocked 
   , _relatedObjects'  = relationToOtherObjects 
   }

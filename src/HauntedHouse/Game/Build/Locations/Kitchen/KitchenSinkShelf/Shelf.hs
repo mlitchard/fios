@@ -29,7 +29,6 @@ buildShelf= Object
 buildShelfContainer :: Container
 buildShelfContainer = Container
   { _isOpen'          = Nothing
-  , _containing'      = Nothing 
   , _lockState'       = Nothing 
   , _relatedObjects'  = relationToOtherObjects 
   }
