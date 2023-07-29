@@ -1,98 +1,41 @@
 module HauntedHouse.Game.Build.Locations.Kitchen where
-{-
-import HauntedHouse.Game.Build.InitState
-import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSink
-import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.InitState
-    ( makeShelf )
-import HauntedHouse.Game.Build.Locations
 
--}
--- import HauntedHouse.Game.Build.Objects (popObjectGID, initObj)
-{-
-import HauntedHouse.Game.Labels (ObjectLabel (..), LocationLabel (..))
-import HauntedHouse.Game.GID (GID)
-import HauntedHouse.Game.Object.Domain (Object)
-import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Shelf
-import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkShelf.Cabinets
-import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkCabinets
-import HauntedHouse.Game.Build.Locations
-import qualified Data.List.NonEmpty
+import HauntedHouse.Game.Build.LocationTemplate
+import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
+import HauntedHouse.Game.Model.Mapping
+import HauntedHouse.Game.Model.World
 import qualified Data.Map.Strict
-import HauntedHouse.Tokenizer (Lexeme(..))
-import HauntedHouse.Game.Build.Locations 
-import HauntedHouse.Game.Location (Location)
--}
+import Control.Monad.Except (throwError)
 {-
-data World = World 
-  { _objectMap      :: ObjectMap
-  , _objectLabelMap :: ObjectLabelMap
-  , _locationMap    :: LocationMap
-  , _agentMap       :: AgentMap
-  } deriving stock Show 
-
-  newtype LocationMap = LocationMap
-  { _unLocationMap :: Data.Map.Strict.Map LocationLabel LocationData}
-     deriving stock (Show)
-
-  { _description    :: Text
-  , _objectLabelMap  :: ObjectLabelMap
-  , _exits          :: ExitMap 
+data GameState = GameState
+  { _world'         :: World
+  , _report'        :: [Text]
+  , _player'        :: Player
+  , _narration'     :: Narration
+  , _newScene'      :: Bool
+  , _clarification' :: Maybe (NonEmpty Text)
   }
--}
-{-
-initKitchen :: InitStateT ()
-initKitchen = do
-  sinkGID <- addSinkGID <$> popObjectGID (ObjectLabel SINK)
-  shelfGID <- popObjectGID (ObjectLabel SHELF)
-  cabinetGIDS <- mapM popObjectGID cabinetLabels
-  mapM addObjectGID sinkGID : shelfGID : cabinetGIDS 
-    where
-      cabinetLabels :: [ObjectLabel]
-      cabinetLabels = replicate 4 (ObjectLabel CABINET)
+data World = World 
+  { _objectMap'         :: GIDToDataMapping Object
+  , _objectLabelMap'    :: LabelToGIDMapping Object
+  , _locationMap'       :: GIDToDataMapping Location  
+  , _locationLabelMap'  :: LabelToGIDMapping Location
+  }
 
-addObjectGID :: GID Object -> InitStateT ()
-addObjectGID gid = do
+-}
+buildKitchen :: GameStateExceptT ()
+buildKitchen = do
   world <- _world' <$> get
-  kitchen <- getLocation kitchenLabel head
-  updateWorld <- addObject gid kitchenLabel kitchen
-  updateWorld world
-
-makeKitchenGIDs :: [(ObjectLabel,[GID Object])] -> InitStateT ()
-makeKitchenGIDs _xs = pass
-
+  _ <- throwMaybe errmsg 
+        <$> Data.Map.Strict.lookup kitchenGID $ unLocationMap world
+  
+  pass
     where
-      makeKitchen' :: InitStateT ()
-      makeKitchen' = do
-        lgPairs <- mapM pairUp kitchenObjects
-        mapM_ (populateLocation kitchenLabel) lgPairs
-        let used :: [(ObjectLabel, [GID Object])]
-            used = map (initObj . Data.List.NonEmpty.fromList)
-                    $ (group . sort ) lgPairs
-        mapM_ updatePlaced used
+      unLocationMap = _unGIDMapping' . _locationMap'
+      errmsg = "kitchen should have been in this map but wasn't"
 
-pairUp :: ObjectLabel
-            -> ExceptT Text (StateT InitState IO)
-                            (ObjectLabel, GID Object)
-pairUp label = do
-  gid <- popObjectGID label
-  pure (label,gid)
+throwMaybe :: Text -> Maybe a -> GameStateExceptT a 
+throwMaybe _ (Just a) = pure a 
+throwMaybe errmsg Nothing  = throwError errmsg  
 
-kitchenObjects :: [ObjectLabel]
-kitchenObjects = [kitchenShelfLabel
-                  , kitchenCabinetAboveShelfLabel
-                  , kitchenCabinetBelowShelfLabel
-                  , kitchenSinkLabel
-                  , kitchenSinkCabinetAboveLabel
-                  , kitchenSinkCabinetBelowLabel]
-{-
-        (World objectMap objectLabelMap locationMap) <- _world <$> get
-        let locationMap' = _unLocationMap locationMap 
-            kitchen      = lookup kitchenLabel locationMap'
-        case kitchen of 
-              Nothing           -> throwError kitchenErr
-              Just kitchenData' -> pass 
-        where                          
-          kitchenErr = "kitchen data should have been present but wasn't"
-  -}
--}
 
