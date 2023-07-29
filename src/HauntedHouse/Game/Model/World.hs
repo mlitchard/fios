@@ -1,7 +1,7 @@
 module HauntedHouse.Game.Model.World where 
 
 import Data.List.NonEmpty qualified
-import Data.Text qualified
+
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.Object.Relation
@@ -9,23 +9,23 @@ import HauntedHouse.Tokenizer (Lexeme)
 
 -- a is Object b is Location
 data Object = Object
-  { _container'     :: Maybe (Container Object)
-  , _containedBy'   :: Maybe (ContainedBy Object Location)
+  { _container'     :: Maybe Container
+  , _containedBy'   :: Maybe ContainedBy
   , _moveability'   :: Moveablility
   , _odescription'  :: Text
   }
 
 -- a is Object
-data Container a = Container
+data Container = Container
   { _isOpen     :: Maybe Bool
   , _containing :: Maybe Containing 
   , _lockState  :: Maybe LockState
-  , _relatedObjects :: RelatedObjects a
+  , _relatedObjects :: RelatedObjects Object
   }
 
-data ContainedBy a b
-  = ByObject (GID a)
-  | ByLocation (GID b)
+data ContainedBy
+  = ByObject (GID Object)
+  | ByLocation (GID Location)
   | ByPlayer 
 
 data Containing = Containing

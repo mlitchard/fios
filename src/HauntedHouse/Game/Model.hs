@@ -1,13 +1,8 @@
 module HauntedHouse.Game.Model where 
 
 import Data.List.NonEmpty qualified             (NonEmpty) 
-import Data.Text qualified                      (empty)
-import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
-import HauntedHouse.Game.Model.Object.Relation
 import System.Console.Haskeline (InputT)
-import HauntedHouse.Tokenizer (Lexeme)
-import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.GID (GID)
 
 type GameStateExceptT = ExceptT Text (StateT GameState IO)

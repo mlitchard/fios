@@ -136,8 +136,9 @@ library
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
     HauntedHouse.Game.Model.Mapping
-    HauntedHouse.Game.Model.World
     HauntedHouse.Game.Model.Object.Relation
+    HauntedHouse.Game.Model.ToText 
+    HauntedHouse.Game.Model.World
     HauntedHouse.Recognizer.WordClasses
     HauntedHouse.Tokenizer.Data
 executable fios
