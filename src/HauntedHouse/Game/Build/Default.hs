@@ -3,7 +3,7 @@ module HauntedHouse.Game.Build.Default where
 import Data.List qualified                      (replicate)
 import Data.List.NonEmpty qualified             (NonEmpty,fromList,singleton
                                                 , length,toList,zip)
-import Data.Map.Strict qualified                (fromList,empty)
+import Data.Map.Strict qualified                (fromList)
 import Data.Text qualified                      (empty)
 
 import HauntedHouse.Game.Build.LocationLabels
@@ -18,6 +18,7 @@ import HauntedHouse.Game.Build.ObjectTemplate
       kitchenShelfGID,
       kitchenCabinetAboveShelfGID,
       kitchenCabinetBelowShelfGID )
+import HauntedHouse.Game.Build.ExitTemplate
 
 import HauntedHouse.Game.Model
     ( Player(..), Narration(Narration), GameState(..) ) 
@@ -69,8 +70,10 @@ defaultWorld = World
   , _locationLabelMap'  = locationLabelMap
   , _exitMap'           = exitMap 
   }
+
 exitMap :: GIDToGIDMapping Exit Location
-exitMap = GIDToGIDMapping Data.Map.Strict.empty 
+exitMap = GIDToGIDMapping $ Data.Map.Strict.fromList 
+  [(kitchenEastExitGID, hallGID), (hallWestExitGID, kitchenGID)]
 
 kitchenCabinets :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenCabinets = Data.List.NonEmpty.fromList 

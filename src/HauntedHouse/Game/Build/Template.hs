@@ -14,12 +14,12 @@ import HauntedHouse.Tokenizer.Data ( Lexeme )
 
 
 labelTemplate :: String -> String -> Lexeme -> DecsQ
-labelTemplate typeStr name lexeme = pure desc
+labelTemplate typeStr binding lexeme = pure desc
   where
     desc        = [sigd,vald]
     sigd        = SigD decLabel appt
     appt        = AppT labelType' objectType'
-    decLabel    = mkName (name <> "Label")
+    decLabel    = mkName (binding <> "Label")
     labelType'  = ConT labelName
     objectType' = ConT (mkName typeStr)
     vald = ValD (VarP decLabel) eval' []

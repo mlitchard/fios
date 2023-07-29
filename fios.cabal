@@ -114,7 +114,8 @@ library
     HauntedHouse.Tokenizer
     
   other-modules:
-    HauntedHouse.Game.Build.Default 
+    HauntedHouse.Game.Build.Default
+    HauntedHouse.Game.Build.DirectionTemplate
     HauntedHouse.Game.Build.Exits
     HauntedHouse.Game.Build.ExitTemplate
     HauntedHouse.Game.Build.GameState
