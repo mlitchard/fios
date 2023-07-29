@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.Locations.Kitchen.KitchenSink 
+module HauntedHouse.Game.Build.Locations.Kitchen.Sink.Sink 
   (buildKitchenSink) where
 
 import Data.List.NonEmpty qualified (fromList)

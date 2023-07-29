@@ -1,19 +1,17 @@
-module HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Cabinets.AboveShelf
-  (buildKitchenCabinetAboveShelf) where
+module HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf 
+  (buildKitchenCabinetBelowShelf) where
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
+import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..))
 import HauntedHouse.Game.Model.World
-import HauntedHouse.Game.Model.Mapping
-import qualified Data.Map.Strict
-import HauntedHouse.Game.Build.ObjectTemplate
-        (kitchenCabinetAboveSinkGID, kitchenShelfGID)
-import HauntedHouse.Game.Model.Object.Relation
-        (Moveablility(..), RelatedObjects (..), Placeability (..)
-        , LeftOrRight (OnLeft))
+        (Object (..) , World (..), Container (..), ContainedBy (ByLocation), LockState (Unlocked))
+import qualified Data.Map.Strict (insert, fromList)
+import HauntedHouse.Game.Model.Object.Relation (RelatedObjects (..), Moveablility (NotMovable), Placeability (..), LeftOrRight (OnLeft))
 import qualified Data.List.NonEmpty
+import HauntedHouse.Game.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID)
 import HauntedHouse.Game.Build.LocationTemplate (kitchenGID)
 
-buildKitchenCabinetAboveShelf :: GameStateExceptT ()
-buildKitchenCabinetAboveShelf = do
+buildKitchenCabinetBelowShelf :: GameStateExceptT ()
+buildKitchenCabinetBelowShelf = do
   world <- _world' <$> get 
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = 
@@ -44,19 +42,5 @@ relationToOtherObjects =
   where 
     relatedObjects = 
       [(PlaceIn, Nothing)
-        ,(PlaceUnder, Just placeUnder)
         ,(PlaceNextTo OnLeft, Just placeNextTo)]
-    placeUnder = Data.List.NonEmpty.fromList [kitchenShelfGID]
-    placeNextTo = Data.List.NonEmpty.fromList [kitchenCabinetAboveSinkGID]
-{-
-buildKitchenCabinetBelowShelf :: GameStateExceptT ()
-buildKitchenCabinetBelowShelf = do
-  world <- _world' <$> get 
-  let objectMap' :: GIDToDataMapping Object 
-      objectMap' = 
-        GIDToDataMapping 
-          $ Data.Map.Strict.insert 
-              kitchenCabinetAboveSinkGID buildCabinet 
-                $ (_unGIDMapping' . _objectMap') world
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
--}
+    placeNextTo = Data.List.NonEmpty.fromList [kitchenCabinetBelowSinkGID]

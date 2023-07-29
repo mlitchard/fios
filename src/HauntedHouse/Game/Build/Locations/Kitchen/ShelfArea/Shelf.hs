@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Shelf
+module HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Shelf
         (buildKitchenShelf) where
 import HauntedHouse.Game.Model
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..))

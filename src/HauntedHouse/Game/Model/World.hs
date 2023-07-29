@@ -29,7 +29,7 @@ data ContainedBy
 data Location = Location
   { _description  :: Text
   , _objects      :: Maybe Objects
-  , _exits        :: Maybe (LabelToGIDMapping Exit Location) -- Maybe (Data.Map.Strict.Map (Label Exit) (GID Exit))
+  , _exits        :: Maybe (LabelToGIDMapping Exit Location)
   } deriving stock Show
 
 newtype Objects 

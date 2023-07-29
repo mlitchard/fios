@@ -124,12 +124,14 @@ library
     HauntedHouse.Game.Build.InitState
     HauntedHouse.Game.Build.LocationLabels
     HauntedHouse.Game.Build.Locations
+    HauntedHouse.Game.Build.Locations.BuildFrame
     HauntedHouse.Game.Build.Locations.Hall
     HauntedHouse.Game.Build.Locations.Kitchen
-    HauntedHouse.Game.Build.Locations.Kitchen.KitchenSink
-    HauntedHouse.Game.Build.Locations.Kitchen.KitchenSinkCabinets
-    HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Cabinets.BelowShelf
-    HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Cabinets.AboveShelf
+    HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Shelf
+    HauntedHouse.Game.Build.Locations.Kitchen.Sink.Sink
+    HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
+    HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
+    HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Shelf
     HauntedHouse.Game.Build.LocationTemplate
     HauntedHouse.Game.Build.Objects
     HauntedHouse.Game.Build.ObjectLabels

@@ -1,20 +1,19 @@
 module HauntedHouse.Game.Location  where
 
-{-
-getLocation :: GID Location -> GameStateExceptT Location
-getLocation lgid = lookupLocation
-  where
-    lookupLocation :: GameStateExceptT Location
-    lookupLocation = do
-      mLocationData <- mLocationT
-      case mLocationData of
-        Just ld -> pure ld
-        Nothing -> throwError ("Couldn't find " <> show lgid)
-      where
-        unLocationMap = _unLocationMap . _locationMap'
-        mLocationT :: GameStateExceptT (Maybe Location)
-        mLocationT = do
-          world' :: World <- _world' <$> get
-          pure $ Data.Map.Strict.lookup lgid (unLocationMap world')
+import Data.Map.Strict                (lookup)
+import HauntedHouse.Game.Model.GID    (GID(GID))
+import HauntedHouse.Game.Model        
+        (GameStateExceptT, GameState (_world'))
+import HauntedHouse.Game.Model.Mapping
+import HauntedHouse.Game.Model.World  
+        (Location (..), World (_locationMap'))
+import HauntedHouse.Game.World
 
--}
+--  _locationMap'       :: GIDToDataMapping Location
+getLocation :: (GID Location) -> GameStateExceptT (Location) 
+getLocation gid = do
+  world <- _world' <$> get 
+  throwMaybe errmsg $ lookup gid (unLocationMap world)
+  where
+    unLocationMap = _unGIDMapping' . _locationMap'
+    errmsg = "that location wasn;t found"

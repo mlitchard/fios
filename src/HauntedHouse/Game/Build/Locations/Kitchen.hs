@@ -4,7 +4,7 @@ module HauntedHouse.Game.Build.Locations.Kitchen where
 
 import HauntedHouse.Game.Build.DirectionTemplate
 import HauntedHouse.Game.Build.LocationTemplate
-import HauntedHouse.Game.Build.Locations.Kitchen.KitchenSink
+import HauntedHouse.Game.Build.Locations.Kitchen.Sink.Sink
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
@@ -13,8 +13,9 @@ import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Build.ObjectTemplate (kitchenShelfGID, kitchenSinkGID, kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID, kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.World
-import HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Shelf
-import HauntedHouse.Game.Build.Locations.Kitchen.Shelf.Cabinets.AboveShelf
+import HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Shelf
+import HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
+import HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
@@ -22,6 +23,8 @@ buildKitchen = do
   buildKitchenSink
   buildKitchenShelf
   buildKitchenCabinetAboveShelf
+  buildKitchenCabinetBelowShelf
+
 
 buildKitchenFrame :: GameStateExceptT ()
 buildKitchenFrame = do
