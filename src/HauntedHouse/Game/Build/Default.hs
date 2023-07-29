@@ -24,7 +24,8 @@ import HauntedHouse.Game.Model
     ( Player(..), Narration(Narration), GameState(..) ) 
 import HauntedHouse.Game.Model.GID              (GID)
 import HauntedHouse.Game.Model.Mapping
-    (LabelToGIDMapping (..) , GIDToDataMapping (..), GIDToGIDMapping (..))
+    (LabelToGIDMapping (..) , GIDToDataMapping (..), GIDToGIDMapping (..)
+     , LabelToGIDListMapping (..))
 import HauntedHouse.Game.Model.Object.Relation  (Moveablility (NotMovable))
 import HauntedHouse.Game.Model.World
     (Object (..), Location (..), World (..), Exit)
@@ -87,16 +88,16 @@ kitchenShelf = Data.List.NonEmpty.singleton kitchenShelfGID
 
 kitchenSink :: Data.List.NonEmpty.NonEmpty (GID Object) 
 kitchenSink = Data.List.NonEmpty.singleton kitchenSinkGID 
-
-objectLabelMap :: LabelToGIDMapping Object
-objectLabelMap = (LabelToGIDMapping . Data.Map.Strict.fromList)
+-- LabelToGIDListMapping
+objectLabelMap :: LabelToGIDListMapping Object
+objectLabelMap = (LabelToGIDListMapping . Data.Map.Strict.fromList)
   [(cabinet, kitchenCabinets)
   ,(shelf, kitchenShelf)
   , (sink, kitchenSink)
   ]
 
-locationLabelMap :: LabelToGIDMapping Location 
-locationLabelMap = (LabelToGIDMapping . Data.Map.Strict.fromList)
+locationLabelMap :: LabelToGIDListMapping Location 
+locationLabelMap = (LabelToGIDListMapping . Data.Map.Strict.fromList)
   [(kitchenLabel,Data.List.NonEmpty.singleton kitchenGID)
   , (hallLabel, Data.List.NonEmpty.singleton hallGID)]
 

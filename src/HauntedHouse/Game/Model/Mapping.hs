@@ -11,11 +11,16 @@ import HauntedHouse.Tokenizer (Lexeme)
 -- LocationData Map (GID Label) Label 
 newtype Label a = Label {_unLabel' :: Lexeme} deriving stock (Show,Eq,Ord)
 
-newtype LabelToGIDMapping a 
-  = LabelToGIDMapping 
-    { _unLabelMapping' :: Data.Map.Strict.Map (Label a) (NonEmpty (GID a))}
+newtype LabelToGIDListMapping a 
+  = LabelToGIDListMapping 
+    { _unLabelToGIDListMapping' :: Data.Map.Strict.Map (Label a) (NonEmpty (GID a))}
       deriving stock Show 
 
+newtype LabelToGIDMapping a 
+  = LabelToGIDMapping
+      { _unlabelToGIDListMapping :: Data.Map.Strict.Map (Label a) (GID a)}
+        deriving stock Show 
+        
 newtype GIDToDataMapping a 
   = GIDToDataMapping {_unGIDMapping' :: Data.Map.Strict.Map (GID a) a} 
       deriving stock Show

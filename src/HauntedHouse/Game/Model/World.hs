@@ -48,9 +48,9 @@ newtype Objects
 
 data World = World
   { _objectMap'         :: GIDToDataMapping Object
-  , _objectLabelMap'    :: LabelToGIDMapping Object
+  , _objectLabelMap'    :: LabelToGIDListMapping Object
   , _locationMap'       :: GIDToDataMapping Location
-  , _locationLabelMap'  :: LabelToGIDMapping Location
+  , _locationLabelMap'  :: LabelToGIDListMapping Location
   , _exitMap'           :: GIDToGIDMapping Exit Location
   }
 
