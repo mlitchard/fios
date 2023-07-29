@@ -72,7 +72,7 @@ relationToOtherObjects =
         ,(PlaceNextTo OnRight, Just placeNextTo)]
     placeAbove = Data.List.NonEmpty.fromList [kitchenCabinetAboveSinkGID]
     placeUnder = Data.List.NonEmpty.fromList [kitchenCabinetBelowSinkGID]
-    placeNextTo = Data.List.NonEmpty.fromList [kitchenSinkGID]
+    placeNextTo = Data.List.NonEmpty.fromList [kitchenShelfGID]
 {-
 -- a is Object
 newtype RelatedObjects a
