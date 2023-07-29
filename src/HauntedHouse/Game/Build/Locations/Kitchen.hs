@@ -14,24 +14,6 @@ import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Build.ObjectTemplate (kitchenShelfGID, kitchenSinkGID, kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID, kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID)
 import HauntedHouse.Game.Model.GID (GID)
 
-
-{-
-data GameState = GameState
-  { _world'         :: World
-  , _report'        :: [Text]
-  , _player'        :: Player
-  , _narration'     :: Narration
-  , _newScene'      :: Bool
-  , _clarification' :: Maybe (NonEmpty Text)
-  }
-data World = World 
-  { _objectMap'         :: GIDToDataMapping Object
-  , _objectLabelMap'    :: LabelToGIDMapping Object
-  , _locationMap'       :: GIDToDataMapping Location  
-  , _locationLabelMap'  :: LabelToGIDMapping Location
-  }
-
--}
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
   world :: World <- _world' <$> get
@@ -64,17 +46,6 @@ buildKitchen = do
       unLocationMap = _unGIDMapping' . _locationMap'
       errmsg = "kitchen should have been in this map but wasn't"
 
-{-
-
-data Location = Location
-  { _description  :: Text
-  , _objects      :: Maybe Objects
-  , _exits        :: Maybe (LabelToGIDMapping Exit Location) -- Maybe (Data.Map.Strict.Map (Label Exit) (GID Exit))
-  } deriving stock Show
-
--}
 throwMaybe :: Text -> Maybe a -> GameStateExceptT a
 throwMaybe _ (Just a) = pure a
 throwMaybe errmsg Nothing  = throwError errmsg
-
-
