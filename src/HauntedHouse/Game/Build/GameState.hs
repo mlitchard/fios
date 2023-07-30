@@ -12,23 +12,9 @@ buildGameState = do
   print gs
   finalizeBuild
 
-{-
-
-data GameState = GameState
-  { _world'         :: World
-  , _report'        :: [Text]
-  , _player'        :: Player
-  , _narration'     :: Narration
-  , _newScene'      :: Bool
-  , _clarification' :: Maybe (NonEmpty Text)
-  }
-
--}
-
 finalizeBuild :: GameStateExceptT ()
 finalizeBuild = pass
     
-
 buildWorld :: GameStateExceptT () 
 buildWorld = do 
   buildKitchen
