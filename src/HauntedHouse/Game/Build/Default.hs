@@ -24,8 +24,7 @@ import HauntedHouse.Game.Model
     ( Player(..), Narration(Narration), GameState(..) ) 
 import HauntedHouse.Game.Model.GID              (GID)
 import HauntedHouse.Game.Model.Mapping
-    (LabelToGIDMapping (..) , GIDToDataMapping (..), GIDToGIDMapping (..)
-     , LabelToGIDListMapping (..))
+    (GIDToDataMapping (..), GIDToGIDMapping (..), LabelToGIDListMapping (..))
 import HauntedHouse.Game.Model.Object.Relation  (Moveablility (NotMovable))
 import HauntedHouse.Game.Model.World
     (Object (..), Location (..), World (..), Exit)

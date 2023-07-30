@@ -42,7 +42,7 @@ data World = World
   , _locationMap'       :: GIDToDataMapping Location
   , _locationLabelMap'  :: LabelToGIDListMapping Location
   , _exitMap'           :: GIDToGIDMapping Exit Location
-  }
+  } deriving stock Show
 
 data LockState = Locked | Unlocked deriving stock (Show, Eq, Ord)
 

@@ -15,7 +15,7 @@ data GameState = GameState
   , _narration'     :: Narration
   , _newScene'      :: Bool
   , _clarification' :: Maybe (NonEmpty Text)
-  }
+  } deriving stock Show
 
 data Narration = Narration
   { _playerAction'         :: Maybe (Data.List.NonEmpty.NonEmpty Text)
@@ -28,4 +28,4 @@ data Narration = Narration
 data Player = Player 
   { _playerLocation :: GID Location
   , _p_inv :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
-  }
+  } deriving stock Show
