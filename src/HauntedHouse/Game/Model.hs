@@ -26,6 +26,6 @@ data Narration = Narration
   deriving stock (Show)
 
 data Player = Player 
-  { _playerLocation :: GID Location
-  , _p_inv :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
+  { _playerLocation'  :: GID Location
+  , _p_inv'           :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
   } deriving stock Show

@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.LocationLabels where 
+module HauntedHouse.Build.LocationLabels where 
 
 import HauntedHouse.Tokenizer (Lexeme (..))
 import HauntedHouse.Game.Model.Mapping  (Label (..))

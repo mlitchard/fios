@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.Objects where
+module HauntedHouse.Build.Objects where
 
 
 

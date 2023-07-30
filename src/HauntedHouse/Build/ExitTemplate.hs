@@ -1,7 +1,7 @@
-module HauntedHouse.Game.Build.ExitTemplate where
+module HauntedHouse.Build.ExitTemplate where
 
-import HauntedHouse.Game.Build.Exits
-import HauntedHouse.Game.Build.Template
+import HauntedHouse.Build.Exits
+import HauntedHouse.Build.Template
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.World
 

@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.Locations where
+module HauntedHouse.Build.Locations where
 
 import HauntedHouse.Tokenizer (Lexeme(..))
 

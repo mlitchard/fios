@@ -21,13 +21,13 @@ import Prelude hiding (many)
 
 import Data.Char (toUpper)
 
-runParser :: Parser a -> String -> Either String a
+runParser :: Parser a -> Text -> Either String a
 runParser parser str = do
   case parse parser "" str' of
     Left err -> Left $ errorBundlePretty err
     Right prog -> Right prog
   where
-    str' = map toUpper str
+    str' = map toUpper $ toString str
 
 tokens :: Parser [Lexeme]
 tokens = sc *> many term <* eof

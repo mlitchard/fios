@@ -1,11 +1,11 @@
-module HauntedHouse.Game.Build.Locations.Kitchen.Sink.Sink 
+module HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink 
   (buildKitchenSink) where
 
 import Data.List.NonEmpty qualified (fromList)
 import Data.Map.Strict qualified
 
-import HauntedHouse.Game.Build.LocationTemplate (kitchenGID)
-import HauntedHouse.Game.Build.ObjectTemplate 
+import HauntedHouse.Build.LocationTemplate (kitchenGID)
+import HauntedHouse.Build.ObjectTemplate 
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.Object.Relation 

@@ -1,8 +1,8 @@
-module HauntedHouse.Game.Build.GameState where
+module HauntedHouse.Build.GameState where
 
-import HauntedHouse.Game.Build.Locations.Kitchen ( buildKitchen )
+import HauntedHouse.Build.Locations.Kitchen ( buildKitchen )
 import HauntedHouse.Game.Model (GameStateExceptT)
-import HauntedHouse.Game.Build.Locations.Hall (buildHall)
+import HauntedHouse.Build.Locations.Hall (buildHall)
 
 buildGameState :: GameStateExceptT ()
 buildGameState = do 

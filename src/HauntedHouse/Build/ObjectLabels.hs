@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.ObjectLabels where 
+module HauntedHouse.Build.ObjectLabels where 
 
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World  (Object)

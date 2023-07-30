@@ -1,13 +1,27 @@
-module HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Shelf
+module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
         (buildKitchenShelf) where
-import HauntedHouse.Game.Model
-import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..))
-import HauntedHouse.Game.Model.World 
-import qualified Data.Map.Strict (insert, fromList)
-import HauntedHouse.Game.Build.ObjectTemplate
-import HauntedHouse.Game.Build.LocationTemplate (kitchenGID)
-import HauntedHouse.Game.Model.Object.Relation
+
 import qualified Data.List.NonEmpty
+import HauntedHouse.Game.Model
+    ( GameState(_world'), GameStateExceptT )
+import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..))
+import HauntedHouse.Game.Model.World
+    ( World(_objectMap'),
+      ContainedBy(ByLocation),
+      Container(..),
+      Object(..) ) 
+import qualified Data.Map.Strict (insert, fromList)
+import HauntedHouse.Build.ObjectTemplate
+    ( kitchenSinkGID,
+      kitchenShelfGID,
+      kitchenCabinetAboveShelfGID,
+      kitchenCabinetBelowShelfGID )
+import HauntedHouse.Build.LocationTemplate (kitchenGID)
+import HauntedHouse.Game.Model.Object.Relation
+    ( RelatedObjects(..),
+      LeftOrRight(OnLeft),
+      Placeability(PlaceNextTo, PlaceIn, PlaceUnder, PlaceAbove),
+      Moveablility(NotMovable) )
 
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf =  do

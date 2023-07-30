@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.Exits where
+module HauntedHouse.Build.Exits where
 
 import Data.HashSet qualified
 import HauntedHouse.Tokenizer (directions, Lexeme)

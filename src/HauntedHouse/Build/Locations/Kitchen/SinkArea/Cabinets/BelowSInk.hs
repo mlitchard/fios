@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.Locations.Kitchen.Sink.Cabinets.BelowSink
+module HauntedHouse.Build.Locations.Kitchen.Sink.Cabinets.BelowSink
   where (kitchenSinkCabinetBelow)
 
 kitchenSinkCabinetBelow :: Maybe AttachedTo 

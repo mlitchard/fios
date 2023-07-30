@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.Template where
+module HauntedHouse.Build.Template where
 
 import Language.Haskell.TH
     ( mkName,

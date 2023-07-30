@@ -1,20 +1,17 @@
-module HauntedHouse.Game.Build.Locations.BuildFrame 
+module HauntedHouse.Build.Locations.BuildFrame
   (buildFrame) where
 
 import qualified Data.Map.Strict
-import qualified Data.List.NonEmpty
 
-import HauntedHouse.Game.Build.DirectionTemplate
-import HauntedHouse.Game.Build.LocationTemplate
-import HauntedHouse.Game.Location
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping
+    ( GIDToDataMapping(GIDToDataMapping, _unGIDMapping') )
 import HauntedHouse.Game.Model.World
-
+    ( World(_locationMap'), Location(..) )
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.World
+import HauntedHouse.Game.World ( throwMaybe )
 
-buildFrame :: (GID Location) -> Location -> GameStateExceptT ()
+buildFrame :: GID Location -> Location -> GameStateExceptT ()
 buildFrame locationGID (Location description mObjects exits) = do
   world :: World <- _world' <$> get
   let locationMap' = unLocationMap world
@@ -31,4 +28,4 @@ buildFrame locationGID (Location description mObjects exits) = do
   where
     errmsg = "location should have been in this map but wasn't"
     unLocationMap   = _unGIDMapping' . _locationMap'
-    
+

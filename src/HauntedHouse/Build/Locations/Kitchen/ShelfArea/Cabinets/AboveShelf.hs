@@ -1,16 +1,16 @@
-module HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
+module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
   (buildKitchenCabinetAboveShelf) where
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Mapping
 import qualified Data.Map.Strict
-import HauntedHouse.Game.Build.ObjectTemplate
+import HauntedHouse.Build.ObjectTemplate
         (kitchenCabinetAboveSinkGID, kitchenShelfGID)
 import HauntedHouse.Game.Model.Object.Relation
         (Moveablility(..), RelatedObjects (..), Placeability (..)
         , LeftOrRight (OnLeft))
 import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Build.LocationTemplate (kitchenGID)
+import HauntedHouse.Build.LocationTemplate (kitchenGID)
 
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do

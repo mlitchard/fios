@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Build.Default where 
+module HauntedHouse.Build.Default where 
 
 import Data.List qualified                      (replicate)
 import Data.List.NonEmpty qualified             (NonEmpty,fromList,singleton
@@ -6,19 +6,19 @@ import Data.List.NonEmpty qualified             (NonEmpty,fromList,singleton
 import Data.Map.Strict qualified                (fromList)
 import Data.Text qualified                      (empty)
 
-import HauntedHouse.Game.Build.LocationLabels
-import HauntedHouse.Game.Build.LocationTemplate
+import HauntedHouse.Build.LocationLabels
+import HauntedHouse.Build.LocationTemplate
 
-import HauntedHouse.Game.Build.ObjectLabels
+import HauntedHouse.Build.ObjectLabels
     ( sink, shelf, cabinet )
-import HauntedHouse.Game.Build.ObjectTemplate
+import HauntedHouse.Build.ObjectTemplate
     ( kitchenSinkGID,
       kitchenCabinetBelowSinkGID,
       kitchenCabinetAboveSinkGID,
       kitchenShelfGID,
       kitchenCabinetAboveShelfGID,
       kitchenCabinetBelowShelfGID )
-import HauntedHouse.Game.Build.ExitTemplate
+import HauntedHouse.Build.ExitTemplate
 
 import HauntedHouse.Game.Model
     ( Player(..), Narration(Narration), GameState(..) ) 
@@ -58,8 +58,8 @@ defaultNarration = Narration Nothing Nothing Nothing Nothing
 
 defaultPlayer :: Player
 defaultPlayer = Player
-  {_playerLocation = kitchenGID
-  , _p_inv = Nothing
+  {_playerLocation' = kitchenGID
+  , _p_inv'         = Nothing
   }
 
 defaultWorld :: World

@@ -105,6 +105,27 @@ common shared
 library
   import:          shared
   exposed-modules:
+    HauntedHouse.Build.Default
+    HauntedHouse.Build.DirectionTemplate
+    HauntedHouse.Build.Exits
+    HauntedHouse.Build.ExitTemplate
+    HauntedHouse.Build.GameState
+    HauntedHouse.Build.Initialize
+    HauntedHouse.Build.InitState
+    HauntedHouse.Build.LocationLabels
+    HauntedHouse.Build.Locations
+    HauntedHouse.Build.Locations.BuildFrame
+    HauntedHouse.Build.Locations.Hall
+    HauntedHouse.Build.Locations.Kitchen
+    HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
+    HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
+    HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
+    HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink
+    HauntedHouse.Build.LocationTemplate
+    HauntedHouse.Build.Objects
+    HauntedHouse.Build.ObjectLabels
+    HauntedHouse.Build.ObjectTemplate
+    HauntedHouse.Build.Template
     HauntedHouse.Game.Engine
     HauntedHouse.Game.Model.GID
     HauntedHouse.Game.Location
@@ -113,30 +134,10 @@ library
     HauntedHouse.Game.World
     HauntedHouse.Recognizer
     HauntedHouse.Tokenizer
+    HauntedHouse.TopLevel
     
   other-modules:
-    HauntedHouse.Game.Build.Default
-    HauntedHouse.Game.Build.DirectionTemplate
-    HauntedHouse.Game.Build.Exits
-    HauntedHouse.Game.Build.ExitTemplate
-    HauntedHouse.Game.Build.GameState
-    HauntedHouse.Game.Build.Initialize
-    HauntedHouse.Game.Build.InitState
-    HauntedHouse.Game.Build.LocationLabels
-    HauntedHouse.Game.Build.Locations
-    HauntedHouse.Game.Build.Locations.BuildFrame
-    HauntedHouse.Game.Build.Locations.Hall
-    HauntedHouse.Game.Build.Locations.Kitchen
-    HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Shelf
-    HauntedHouse.Game.Build.Locations.Kitchen.Sink.Sink
-    HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
-    HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
-    HauntedHouse.Game.Build.Locations.Kitchen.ShelfArea.Shelf
-    HauntedHouse.Game.Build.LocationTemplate
-    HauntedHouse.Game.Build.Objects
-    HauntedHouse.Game.Build.ObjectLabels
-    HauntedHouse.Game.Build.ObjectTemplate
-    HauntedHouse.Game.Build.Template
+
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator

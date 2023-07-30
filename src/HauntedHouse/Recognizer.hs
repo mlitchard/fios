@@ -1,5 +1,7 @@
 module HauntedHouse.Recognizer (
-  module HauntedHouse.Recognizer
+  module Text.Earley
+
+, module HauntedHouse.Recognizer
 , module HauntedHouse.Recognizer.WordClasses
 ) where
 
