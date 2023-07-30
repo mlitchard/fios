@@ -5,14 +5,14 @@ import qualified Data.Map.Strict
 
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping
-    ( GIDToDataMapping(GIDToDataMapping, _unGIDMapping') )
+    ( GIDToDataMapping(GIDToDataMapping, _unGIDMapping'), Label (Label) )
 import HauntedHouse.Game.Model.World
     ( World(_locationMap'), Location(..) )
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.World ( throwMaybe )
 
-buildFrame :: GID Location -> Location -> GameStateExceptT ()
-buildFrame locationGID (Location description mObjects exits) = do
+buildFrame :: GID Location -> Label Location -> Location -> GameStateExceptT ()
+buildFrame locationGID (Label label) (Location _ description mObjects exits) = do
   world :: World <- _world' <$> get
   let locationMap' = unLocationMap world
   location <- throwMaybe errmsg
@@ -20,9 +20,10 @@ buildFrame locationGID (Location description mObjects exits) = do
   let updatedMap = GIDToDataMapping
                     $ Data.Map.Strict.insert
                         locationGID updatedLocation locationMap'
-      updatedLocation = location{ _exits        = exits
-                                , _objects      = mObjects
-                                , _description  = description}
+      updatedLocation = location{ _title'       = toText label
+                                , _exits'       = exits
+                                , _objects'     = mObjects
+                                , _description' = description}
 
   modify' (\gs -> gs {_world' = world {_locationMap' = updatedMap}})
   where

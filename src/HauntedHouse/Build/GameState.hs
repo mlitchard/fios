@@ -7,9 +7,7 @@ import HauntedHouse.Build.Locations.Hall (buildHall)
 buildGameState :: GameStateExceptT ()
 buildGameState = do 
   liftIO $ print ("buildGameState" :: String)
-  buildWorld
-  gs <- get 
-  print gs
+  buildWorld 
   finalizeBuild
 
 finalizeBuild :: GameStateExceptT ()

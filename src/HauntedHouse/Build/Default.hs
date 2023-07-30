@@ -31,9 +31,10 @@ import HauntedHouse.Game.Model.World
 
 defaultLocation :: Location 
 defaultLocation = Location
-  { _description = Data.Text.empty 
-  , _objects = Nothing
-  , _exits = Nothing
+  { _title'       = Data.Text.empty 
+  , _description' = Data.Text.empty 
+  , _objects'     = Nothing
+  , _exits'       = Nothing
   }
 
 defaultObject :: Object 

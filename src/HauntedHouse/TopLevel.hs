@@ -1,4 +1,5 @@
-module HauntedHouse.TopLevel  where 
+module HauntedHouse.TopLevel (start) where 
+  
 import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Tokenizer (tokens, Lexeme, runParser)
 import System.Console.Haskeline 
@@ -9,10 +10,14 @@ import HauntedHouse.Game.Location (getLocationId, getLocation)
 import HauntedHouse.Game.Narration (displayScene)
 import HauntedHouse.Game.Engine (engine)
 import Control.Monad.Except (throwError)
+import HauntedHouse.Build.GameState (buildGameState)
 
 data GameInput
     = MkGameInput Text
     | Quit
+
+start :: GameStateExceptT ()
+start = buildGameState >> topLevel 
 
 topLevel :: GameStateExceptT ()
 topLevel = go

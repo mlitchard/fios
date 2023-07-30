@@ -27,13 +27,14 @@ data ContainedBy
   | ByPlayer deriving stock Show
 
 data Location = Location
-  { _description  :: Text
-  , _objects      :: Maybe Objects
-  , _exits        :: Maybe (LabelToGIDMapping Exit Location)
+  { _title'       :: Text
+  , _description' :: Text
+  , _objects'     :: Maybe Objects
+  , _exits'       :: Maybe (LabelToGIDMapping Exit Location)
   } deriving stock Show
 
 newtype Objects 
-  = Objects {_unObjects :: Data.List.NonEmpty.NonEmpty (GID Object)} 
+  = Objects {_unObjects' :: Data.List.NonEmpty.NonEmpty (GID Object)} 
         deriving stock Show
 
 data World = World
