@@ -11,6 +11,7 @@ import HauntedHouse.Game.Narration (displayScene)
 import HauntedHouse.Game.Engine (engine)
 import Control.Monad.Except (throwError)
 import HauntedHouse.Build.GameState (buildGameState)
+import qualified Data.Text
 
 data GameInput
     = MkGameInput Text
@@ -64,7 +65,7 @@ parseTokens :: [Lexeme] -> Either Text Imperative
 parseTokens toks =
   case parsed of
     (parsed':_) -> Right parsed'
-    _          -> Left ("Nonsense in" :: Text)
+    _          -> Left (Data.Text.concat ("Nonsense in parsed tokens " : toks'))
     where
-      parsed = fst $ fullParses (parser imperative) toks
-
+      parsed = fst $ fullParses (parser imperative) toks 
+      toks' = map toText toks 
