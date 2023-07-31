@@ -1,5 +1,6 @@
 module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf 
-  (buildKitchenCabinetBelowShelf) where
+  where
+    {-
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..))
 import HauntedHouse.Game.Model.World
@@ -44,3 +45,4 @@ relationToOtherObjects =
       [(PlaceIn, Nothing)
         ,(PlaceNextTo OnLeft, Just placeNextTo)]
     placeNextTo = Data.List.NonEmpty.fromList [kitchenCabinetBelowSinkGID]
+    -}

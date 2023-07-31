@@ -3,7 +3,7 @@ module HauntedHouse.Build.Default where
 import Data.List qualified                      (replicate)
 import Data.List.NonEmpty qualified             (NonEmpty,fromList,singleton
                                                 , length,toList,zip)
-import Data.Map.Strict qualified                (fromList)
+import Data.Map.Strict qualified                (fromList, empty)
 import Data.Text qualified                      (empty)
 
 import HauntedHouse.Build.LocationLabels
@@ -25,22 +25,21 @@ import HauntedHouse.Game.Model
 import HauntedHouse.Game.Model.GID              (GID)
 import HauntedHouse.Game.Model.Mapping
     (GIDToDataMapping (..), GIDToGIDMapping (..), LabelToGIDListMapping (..))
-import HauntedHouse.Game.Model.Object.Relation  (Moveablility (NotMovable))
+-- import HauntedHouse.Game.Model.Object.Relation  (Moveablility (NotMovable))
 import HauntedHouse.Game.Model.World
-    (Object (..), Location (..), World (..), Exit)
+    (Object (..), Location (..), World (..), Exit, Moveablility (NotMovable), Relations (VoidlessVoid))
 
 defaultLocation :: Location 
 defaultLocation = Location
   { _title'       = Data.Text.empty 
   , _description' = Data.Text.empty 
   , _objects'     = Nothing
-  , _exits'       = Nothing
+  , _directions'  = Nothing
   }
 
 defaultObject :: Object 
 defaultObject = Object 
-  { _container'     = Nothing
-  , _containedBy'   = Nothing
+  { _related     = VoidlessVoid
   , _moveability'   = NotMovable
   , _odescription'  = Data.Text.empty 
   }
@@ -72,9 +71,9 @@ defaultWorld = World
   , _exitMap'           = exitMap 
   }
 
-exitMap :: GIDToGIDMapping Exit Location
-exitMap = GIDToGIDMapping $ Data.Map.Strict.fromList 
-  [(kitchenEastExitGID, hallGID), (hallWestExitGID, kitchenGID)]
+exitMap :: GIDToDataMapping Exit
+exitMap = GIDToDataMapping Data.Map.Strict.empty
+  
 
 kitchenCabinets :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenCabinets = Data.List.NonEmpty.fromList 

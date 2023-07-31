@@ -110,8 +110,6 @@ library
     HauntedHouse.Build.Exits
     HauntedHouse.Build.ExitTemplate
     HauntedHouse.Build.GameState
-    HauntedHouse.Build.Initialize
-    HauntedHouse.Build.InitState
     HauntedHouse.Build.LocationLabels
     HauntedHouse.Build.Locations
     HauntedHouse.Build.Locations.BuildFrame
@@ -127,9 +125,9 @@ library
     HauntedHouse.Build.ObjectTemplate
     HauntedHouse.Build.Template
     HauntedHouse.Game.Engine
-    HauntedHouse.Game.Model.GID
     HauntedHouse.Game.Location
     HauntedHouse.Game.Model
+    HauntedHouse.Game.Model.GID
     HauntedHouse.Game.Narration
     HauntedHouse.Game.World
     HauntedHouse.Recognizer

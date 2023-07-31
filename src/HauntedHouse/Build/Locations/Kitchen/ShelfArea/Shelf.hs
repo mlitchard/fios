@@ -1,6 +1,6 @@
 module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
-        (buildKitchenShelf) where
-
+  where
+{-
 import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Model
     ( GameState(_world'), GameStateExceptT )
@@ -8,7 +8,6 @@ import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..))
 import HauntedHouse.Game.Model.World
     ( World(_objectMap'),
       ContainedBy(ByLocation),
-      Container(..),
       Object(..) ) 
 import qualified Data.Map.Strict (insert, fromList)
 import HauntedHouse.Build.ObjectTemplate
@@ -17,12 +16,7 @@ import HauntedHouse.Build.ObjectTemplate
       kitchenCabinetAboveShelfGID,
       kitchenCabinetBelowShelfGID )
 import HauntedHouse.Build.LocationTemplate (kitchenGID)
-import HauntedHouse.Game.Model.Object.Relation
-    ( RelatedObjects(..),
-      LeftOrRight(OnLeft),
-      Placeability(PlaceNextTo, PlaceIn, PlaceUnder, PlaceAbove),
-      Moveablility(NotMovable) )
-
+{-
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf =  do
   world <- _world' <$> get
@@ -46,7 +40,7 @@ buildShelfContainer = Container
   , _lockState'       = Nothing 
   , _relatedObjects'  = relationToOtherObjects 
   }
-
+-}
 relationToOtherObjects :: RelatedObjects Object 
 relationToOtherObjects = 
   RelatedObjects $ Data.Map.Strict.fromList relatedObjects
@@ -59,3 +53,4 @@ relationToOtherObjects =
     placeAbove = Data.List.NonEmpty.fromList [kitchenCabinetAboveShelfGID]
     placeUnder = Data.List.NonEmpty.fromList [kitchenCabinetBelowShelfGID]
     placeNextTo = Data.List.NonEmpty.fromList [kitchenSinkGID]
+    -}
