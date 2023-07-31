@@ -19,5 +19,5 @@ getLocation gid = do
   world <- _world' <$> get
   throwMaybe errmsg $ lookup gid (unLocationMap world)
   where
-    unLocationMap = _unGIDMapping' . _locationMap'
+    unLocationMap = _unGIDToDataMapping' . _locationMap'
     errmsg = "that location wasn;t found"

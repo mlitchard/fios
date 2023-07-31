@@ -22,7 +22,7 @@ newtype LabelToGIDMapping a b
         deriving stock Show 
 
 newtype GIDToDataMapping a 
-  = GIDToDataMapping {_unGIDMapping' :: Data.Map.Strict.Map (GID a) a} 
+  = GIDToDataMapping {_unGIDToDataMapping' :: Data.Map.Strict.Map (GID a) a} 
       deriving stock Show
 
 newtype GIDToGIDMapping a b 

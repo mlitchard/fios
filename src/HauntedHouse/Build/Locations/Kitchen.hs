@@ -27,6 +27,7 @@ buildKitchen :: GameStateExceptT ()
 buildKitchen = do
   location <- kitchenLocation <$> getLocation kitchenGID 
   buildFrame kitchenGID kitchenLabel location
+  updateWorldExitMap kitchenEastExitGID kitchenEastExit
  -- buildKitchenSink
  -- buildKitchenShelf
  -- buildKitchenCabinetAboveShelf
@@ -62,29 +63,6 @@ directionList = [(kitchenEastLabel, kitchenEastExitGID)]
 
 kitchenEastLabel :: Label Exit 
 kitchenEastLabel = Label EAST 
-
-{-
-
-newtype LabelToGIDMapping a b
-  = LabelToGIDMapping
-      { _unlabelToGIDListMapping :: Data.Map.Strict.Map (Label a) (GID b)}
-        deriving stock Show 
-
-data Location = Location
-  { _title'       :: Text
-  , _description' :: Text
-  , _objects'     :: Maybe Objects
-  , _directions'  :: Maybe Exits
-  } deriving stock Show
-
-newtype Exits
-  = Exits {_unExit' :: LabelToGIDMapping Exit Exit}
-      deriving stock Show
-
--}
-
-
-
 
 kitchenEastExit :: Exit 
 kitchenEastExit = Exit 
