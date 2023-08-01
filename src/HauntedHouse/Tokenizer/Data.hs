@@ -9,17 +9,17 @@ import Text.Megaparsec.Char.Lexer qualified as L
 type Parser = Parsec Void String
 
 nouns :: HashSet Lexeme
-nouns = HS.fromList (locations <> objects)
-locations :: [Lexeme]
-locations = [PALACE, BASEMENT, ATTIC, MAZE, DEN, PARLOUR, VOIDLESSVOID] :: [Lexeme]
-objects :: [Lexeme]
-objects = [PLANT, POT, BOOK, BELL, CANDLE, TEA, DOOR, CABINET, SINK] :: [Lexeme]
+nouns = locations <> objects <> directions
+locations :: HashSet Lexeme
+locations = HS.fromList [PALACE, BASEMENT, ATTIC, MAZE, DEN, PARLOUR, VOIDLESSVOID]
+objects :: HashSet Lexeme
+objects = HS.fromList [PLANT, POT, BOOK, BELL, CANDLE, TEA, DOOR, CABINET, SINK]
 
 -- https://stackoverflow.com/questions/44130436/how-to-have-a-sum-type-adt-with-a-known-set-of-string-literals
 
 verbs :: HashSet Lexeme
 verbs =
-  HS.fromList ([LOOK, MOVE, PLANT, PUT, PLACE, OPEN] :: [Lexeme])
+  HS.fromList ([LOOK, MOVE, PLANT, PUT, PLACE, OPEN, GO] :: [Lexeme])
 
 determiners :: HashSet Lexeme
 determiners = HS.fromList ([THAT, THIS, THE, A, MY] :: [Lexeme])

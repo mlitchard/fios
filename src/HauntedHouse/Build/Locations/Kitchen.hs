@@ -15,19 +15,20 @@ import HauntedHouse.Game.Model.World
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
-import HauntedHouse.Game.Location (getLocation)
+
+import qualified Data.List.NonEmpty
+import qualified Data.Map.Strict
+
+import HauntedHouse.Build.Locations.Kitchen.Exits ( buildExits )
+import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping 
         (LabelToGIDMapping (LabelToGIDMapping), Label (..))
-import HauntedHouse.Tokenizer (Lexeme (..))
-import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Model.GID (GID)
-import qualified Data.Map.Strict
+import HauntedHouse.Tokenizer ( Lexeme(..) )
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
-  location <- kitchenLocation <$> getLocation kitchenGID 
-  buildFrame kitchenGID kitchenLabel location
-  updateWorldExitMap kitchenEastExitGID kitchenEastExit
+  buildFrame kitchenGID kitchenLabel kitchenLocation
+  buildExits
  -- buildKitchenSink
  -- buildKitchenShelf
  -- buildKitchenCabinetAboveShelf
@@ -36,9 +37,9 @@ buildKitchen = do
 kitchenDescription :: Text 
 kitchenDescription = "It's a kitchen"
 
-kitchenLocation :: Location -> Location 
-kitchenLocation location = 
-  location {_title' = "The Test Kitchen"
+kitchenLocation :: Location 
+kitchenLocation = 
+  Location {_title' = "The Test Kitchen"
             , _description' = kitchenDescription
             , _objects' = Just kitchenObjects
             , _directions' = Just directions}
@@ -53,7 +54,8 @@ objectList =
   ,kitchenCabinetAboveShelfGID
   ,kitchenCabinetBelowShelfGID
   ,kitchenCabinetAboveSinkGID
-  ,kitchenCabinetBelowSinkGID]
+  ,kitchenCabinetBelowSinkGID
+  ,kitchenEastDoorGID]
 
 directions :: ExitGIDMap
 directions = ExitGIDMap $ LabelToGIDMapping $ Data.Map.Strict.fromList directionList 
@@ -63,11 +65,7 @@ directionList = [(kitchenEastLabel, kitchenEastExitGID)]
 
 kitchenEastLabel :: Label Exit 
 kitchenEastLabel = Label EAST 
-
+{-
 kitchenEastExit :: Exit 
-kitchenEastExit = Exit 
-  { _lockState'  = Unlockable 
-    , _isOpen'    = Nothing
-    ,_toLocation' = hallGID}
-
-
+kitchenEastExit = Exit {_toLocation' = hallGID}
+-}

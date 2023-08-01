@@ -27,7 +27,8 @@ objectNames =
   , "kitchenCabinetAboveSink"
   , "kitchenShelf"
   , "kitchenCabinetAboveShelf"
-  , "kitchenCabinetBelowShelf"]
+  , "kitchenCabinetBelowShelf"
+  , "kitchenEastDoor"]
 
 numberOfObjects :: [Integer]
 numberOfObjects = [1 .. (toInteger $ length objectNames)]

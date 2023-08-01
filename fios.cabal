@@ -115,6 +115,7 @@ library
     HauntedHouse.Build.Locations.BuildFrame
     HauntedHouse.Build.Locations.Hall
     HauntedHouse.Build.Locations.Kitchen
+    HauntedHouse.Build.Locations.Kitchen.Exits
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
@@ -129,20 +130,22 @@ library
     HauntedHouse.Game.Model
     HauntedHouse.Game.Model.GID
     HauntedHouse.Game.Narration
+    HauntedHouse.Game.Player
     HauntedHouse.Game.World
     HauntedHouse.Recognizer
     HauntedHouse.Tokenizer
     HauntedHouse.TopLevel
     
   other-modules:
-
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
+    HauntedHouse.Game.Engine.OnlyVerb.DoGo
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
     HauntedHouse.Game.Model.Mapping
     HauntedHouse.Game.Model.Object.Relation
     HauntedHouse.Game.Model.ToText 
     HauntedHouse.Game.Model.World
+    HauntedHouse.Internal
     HauntedHouse.Recognizer.WordClasses
     HauntedHouse.Tokenizer.Data
 executable fios

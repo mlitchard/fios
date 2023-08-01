@@ -39,9 +39,10 @@ defaultLocation = Location
 
 defaultObject :: Object 
 defaultObject = Object 
-  { _related     = VoidlessVoid
+  { _related        = VoidlessVoid
   , _moveability'   = NotMovable
   , _odescription'  = Data.Text.empty 
+  , _portal'        = Nothing 
   }
 
 defaultGameState :: GameState 

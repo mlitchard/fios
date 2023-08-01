@@ -9,9 +9,10 @@ import qualified Data.Map.Strict
 
 -- a is Object b is Location
 data Object = Object
-  { _related          :: Relations 
-  , _moveability'     :: Moveablility
-  , _odescription'    :: Text
+  { _related        :: Relations 
+  , _moveability'   :: Moveablility
+  , _odescription'  :: Text
+  , _portal'        :: Maybe Portal
   } deriving stock Show
 
 data Moveablility = Moveable | NotMovable deriving stock (Eq, Ord, Enum, Show)
@@ -21,7 +22,7 @@ data Placeability
   | PlaceUnder
   | PlaceAbove
   | PlaceIn
-  | PlaceExit 
+  | PlaceExit
   | PlaceNextTo LeftOrRight
       deriving stock (Eq,Ord,Show)
 
@@ -36,13 +37,17 @@ data Location = Location
   } deriving stock Show
 
 newtype ExitGIDMap
-  = ExitGIDMap {_unExit' :: LabelToGIDMapping Exit Exit}
+  = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Exit}
       deriving stock Show
 
-data Exit = Exit
+data Portal = Portal 
   { _lockState'   :: LockState
   , _isOpen'      :: Maybe Bool
-  , _toLocation'  :: GID Location
+  } deriving stock (Eq,Ord,Show)
+
+data Exit = Exit 
+  {_toLocation'  :: GID Location 
+  , _locationObjects' :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
   } deriving stock Show
 
 newtype Objects
@@ -59,7 +64,7 @@ data World = World
 
 data LockState = Locked | Unlocked | Unlockable deriving stock (Show, Eq, Ord)
 
-data Placeables 
+data Placeable
   = PlaceableObjects (Data.Map.Strict.Map 
                   Placeability 
                   (Data.List.NonEmpty.NonEmpty (GID Object)))
@@ -67,9 +72,9 @@ data Placeables
       deriving stock Show
                         
 newtype Anchor = Anchor {_unAnchor' :: GID Location} deriving stock Show
-newtype Containers = Containers {_unContainer' :: Placeables} 
+newtype Containers = Containers {_unContainer' :: Placeable} 
                         deriving stock Show
-newtype NotContainers = NotContainers {_unNotContainer :: Placeables}
+newtype NotContainers = NotContainers {_unNotContainer :: Placeable}
                          deriving stock Show
                          
 data Relations

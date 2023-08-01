@@ -15,6 +15,6 @@ finalizeBuild :: GameStateExceptT ()
 finalizeBuild = pass
     
 buildWorld :: GameStateExceptT () 
-buildWorld = do 
+buildWorld = do  
   buildKitchen
 --  buildHall

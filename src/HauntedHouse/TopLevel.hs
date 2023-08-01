@@ -1,12 +1,12 @@
-module HauntedHouse.TopLevel (start) where 
-  
+module HauntedHouse.TopLevel (start) where
+
 import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Tokenizer (tokens, Lexeme, runParser)
-import System.Console.Haskeline 
+import System.Console.Haskeline
         (InputT, getInputLine, runInputT, defaultSettings)
 import qualified Data.Char (toUpper)
 import HauntedHouse.Recognizer (Imperative, imperative, parser, fullParses)
-import HauntedHouse.Game.Location (getLocationId, getLocation)
+import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 import HauntedHouse.Game.Narration (displayScene)
 import HauntedHouse.Game.Engine (engine)
 import Control.Monad.Except (throwError)
@@ -18,27 +18,28 @@ data GameInput
     | Quit
 
 start :: GameStateExceptT ()
-start = buildGameState >> topLevel 
+start = buildGameState >> topLevel
 
 topLevel :: GameStateExceptT ()
 topLevel = go
   where
     go :: GameStateExceptT ()
-    go = getLocationId >>= 
-          getLocation  >>=
-          displayScene >> 
+    go = getLocationIdM >>=
+          getLocationM  >>=
+          displayScene >>
           go'
 
-    go' :: GameStateExceptT () 
-    go' = do 
-      input <- liftIO getInput 
-      case input of 
-        Nothing -> go 
-        Just Quit -> pass 
+    go' :: GameStateExceptT ()
+    go' = do
+      input <- liftIO getInput
+      case input of
+        Nothing -> go
+        Just Quit -> pass
         Just (MkGameInput input') -> do
+          liftIO $ print (("input debug go' " :: String) <> show input')
           case runParser tokens input' of
               Left _ -> putStrLn "parse failed" >> go
-              Right tokens' -> either throwError engine (parseTokens tokens') 
+              Right tokens' -> either throwError engine (parseTokens tokens')
                                 >> topLevel
 
 getInput :: IO (Maybe GameInput)
@@ -67,5 +68,5 @@ parseTokens toks =
     (parsed':_) -> Right parsed'
     _          -> Left (Data.Text.concat ("Nonsense in parsed tokens " : toks'))
     where
-      parsed = fst $ fullParses (parser imperative) toks 
-      toks' = map toText toks 
+      parsed = fst $ fullParses (parser imperative) toks
+      toks' = map toText toks

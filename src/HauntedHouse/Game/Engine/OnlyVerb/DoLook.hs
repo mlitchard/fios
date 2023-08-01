@@ -1,14 +1,13 @@
 module HauntedHouse.Game.Engine.OnlyVerb.DoLook where
 
 import HauntedHouse.Game.Model.World ( Location(..), Objects (..)) 
-import HauntedHouse.Game.Location (getLocationId, getLocation)
+import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 import HauntedHouse.Game.Model (GameStateExceptT)
 
 doLook :: GameStateExceptT ()
 doLook = do
   print ("entered doLook" :: String)
-  gid <- getLocationId
-  location' <- getLocation gid
+  location' <- getLocationM =<< getLocationIdM
   printTitle (_title' location') 
   printDescription (_description' location')
   printObjects (_objects' location')
@@ -22,5 +21,3 @@ printDescription _ = pass
 
 printObjects :: Maybe Objects -> GameStateExceptT () 
 printObjects _ = pass
-
-
