@@ -24,10 +24,10 @@ import HauntedHouse.Game.Model
     ( Player(..), Narration(Narration), GameState(..) ) 
 import HauntedHouse.Game.Model.GID              (GID)
 import HauntedHouse.Game.Model.Mapping
-    (GIDToDataMapping (..), GIDToGIDMapping (..), LabelToGIDListMapping (..))
+    (GIDToDataMapping (..), GIDToGIDMapping (..), LabelToGIDListMapping (..), NeighborMap (..))
 -- import HauntedHouse.Game.Model.Object.Relation  (Moveablility (NotMovable))
 import HauntedHouse.Game.Model.World
-    (Object (..), Location (..), World (..), Exit, Moveablility (NotMovable), Relations (VoidlessVoid))
+    (Object (..), Location (..), World (..), Exit, Moveablility (NotMovable), Position (VoidlessVoid), Relations (..))
 
 defaultLocation :: Location 
 defaultLocation = Location
@@ -37,12 +37,33 @@ defaultLocation = Location
   , _directions'  = Nothing
   }
 
+{-
+
+data Object = Object
+  { _related'       :: Relations
+  , _moveability'   :: Moveablility
+  , _odescription'  :: Text
+  , _isContainer'   :: Maybe Container
+  } deriving stock Show
+
+data Relations = Relations
+  {_position' :: Position
+  , _neighbors' :: NeighborMap Object Placeability
+  } deriving stock Show
+-}
+
+defaultRelations :: Relations 
+defaultRelations = Relations
+  {_position'  = VoidlessVoid
+  , _neighbors' = NeighborMap Data.Map.Strict.empty
+  }
+  
 defaultObject :: Object 
 defaultObject = Object 
-  { _related        = VoidlessVoid
+  { _related'        = defaultRelations 
   , _moveability'   = NotMovable
   , _odescription'  = Data.Text.empty 
-  , _portal'        = Nothing 
+  , _isContainer' = Nothing 
   }
 
 defaultGameState :: GameState 
