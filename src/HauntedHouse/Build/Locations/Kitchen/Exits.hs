@@ -45,23 +45,28 @@ kitchenEastDoor = do
   setObjectMapM kitchenEastDoorGID kitchenEastDoorObject
 
 {-
+
 data Object = Object
-  { _related'       :: Relations
+  { _shortName'     :: Text
+  , _related'       :: Relations
   , _moveability'   :: Moveablility
   , _odescription'  :: Text
   , _isContainer'   :: Maybe Container
   } deriving stock Show
+
 -}
 
 kitchenEastDoorObject :: Object
 kitchenEastDoorObject = Object
-  { _related'       = objectsRelatedToEastDoor
+  { _shortName'     = kitchenShortName
+  , _related'       = objectsRelatedToEastDoor
   , _moveability'   = NotMovable
   , _odescription'  = kitchenEastDoorDesc
   , _isContainer'   = Just kitchenEastDoorContainer
   }
   where
-    kitchenEastDoorDesc = "The door to the east hall."
+    kitchenShortName    = "The door to the east hall."
+    kitchenEastDoorDesc = "It's a door made from some mysterious substance."
 
 {-
 
@@ -84,9 +89,9 @@ kitchenEastDoorPortalInterface = Interface
   , _isOpen'   = True
   }
 -- newtype Portal
--- = Portal {_unPortal' :: GID Location} deriving stock (Eq,Ord,Show)
+-- = Portal {_unPortal' :: GID Exit} deriving stock (Eq,Ord,Show)
 kitchenEastDoorPortal :: Portal
-kitchenEastDoorPortal = Portal hallGID
+kitchenEastDoorPortal = Portal kitchenEastExitGID
 
 {-
 

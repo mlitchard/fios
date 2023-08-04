@@ -121,7 +121,6 @@ library
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
     HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink
     HauntedHouse.Build.LocationTemplate
-    HauntedHouse.Build.Objects
     HauntedHouse.Build.ObjectLabels
     HauntedHouse.Build.ObjectTemplate
     HauntedHouse.Build.Template
@@ -131,6 +130,7 @@ library
     HauntedHouse.Game.Model.GID
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Player
+    HauntedHouse.Game.Scene
     HauntedHouse.Game.World
     HauntedHouse.Recognizer
     HauntedHouse.Tokenizer

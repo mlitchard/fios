@@ -60,8 +60,8 @@ objectList =
 directions :: ExitGIDMap
 directions = ExitGIDMap $ LabelToGIDMapping $ Data.Map.Strict.fromList directionList 
 
-directionList :: [(Label Exit, GID Exit)]
-directionList = [(kitchenEastLabel, kitchenEastExitGID)]
+directionList :: [(Label Exit, GID Object)]
+directionList = [(kitchenEastLabel, kitchenEastDoorGID)]
 
 kitchenEastLabel :: Label Exit 
 kitchenEastLabel = Label EAST 

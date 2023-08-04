@@ -4,12 +4,10 @@ import Data.List.NonEmpty qualified
 
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.Mapping
--- import HauntedHouse.Game.Model.Object.Relation
-import qualified Data.Map.Strict
 
--- a is Object b is Location
 data Object = Object
-  { _related'       :: Relations
+  { _shortName'     :: Text
+  , _related'       :: Relations
   , _moveability'   :: Moveablility
   , _odescription'  :: Text
   , _isContainer'   :: Maybe Container
@@ -18,7 +16,6 @@ data Object = Object
 data Moveablility = Moveable | NotMovable deriving stock (Eq, Ord, Enum, Show)
 
 data LeftOrRight = OnLeft | OnRight deriving stock (Eq,Ord,Show)
--- a is Object
 
 data Location = Location
   { _title'       :: Text
@@ -28,7 +25,7 @@ data Location = Location
   } deriving stock Show
 
 newtype ExitGIDMap
-  = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Exit}
+  = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Object}
       deriving stock Show
 
 data Interface a = Interface
@@ -42,10 +39,11 @@ data Container = Container
   } deriving stock (Eq,Ord,Show)
 
 newtype Portal
-  = Portal {_unPortal' :: GID Location} deriving stock (Eq,Ord,Show)
+  = Portal {_unPortal' :: GID Exit} deriving stock (Eq,Ord,Show)
 
 data Exit = Exit
-  {_toLocation'       :: GID Location
+  { _exitLabel        :: Label Exit
+  , _toLocation'      :: GID Location
   , _locationObjects' :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
   } deriving stock Show
 
@@ -76,7 +74,6 @@ data Placeability
   | PlacedExit
   | PlacedNextTo LeftOrRight
       deriving stock (Eq,Ord,Show)
--- Position and Relation are seperate
 
 data Position
   = Anchored (GID Location)
@@ -89,4 +86,3 @@ data Relations = Relations
   {_position' :: Position
   , _neighbors' :: NeighborMap Object Placeability
   } deriving stock Show
-
