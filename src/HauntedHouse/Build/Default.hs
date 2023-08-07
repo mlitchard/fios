@@ -39,27 +39,21 @@ defaultLocation = Location
   , _directions'  = Nothing
   }
 
-{-
-
-data Object = Object
-  { _related'       :: Relations
-  , _moveability'   :: Moveablility
-  , _odescription'  :: Text
-  , _isContainer'   :: Maybe Container
-  } deriving stock Show
-
-data Relations = Relations
-  {_position' :: Position
-  , _neighbors' :: NeighborMap Object Placeability
-  } deriving stock Show
--}
-
 defaultRelations :: Relations 
 defaultRelations = Relations
   {_position'  = VoidlessVoid
   , _neighbors' = NeighborMap Data.Map.Strict.empty
+  , _containment' = Nothing
   }
-  
+
+defaultObject :: Object 
+defaultObject = Object 
+  {_shortName' = Data.Text.empty 
+  , _related' = defaultRelations 
+  , _moveability' = NotMovable 
+  , _odescription' = Data.Text.empty  
+  }
+{-
 defaultObject :: Object 
 defaultObject = Object 
   { _related'        = defaultRelations 
@@ -67,7 +61,7 @@ defaultObject = Object
   , _odescription'  = Data.Text.empty 
   , _isContainer' = Nothing 
   }
-
+-}
 defaultGameState :: GameState 
 defaultGameState = GameState 
   { _world' = defaultWorld 

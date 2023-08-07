@@ -3,6 +3,7 @@ module HauntedHouse.Game.Model.Mapping where
 import Data.Map.Strict qualified 
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Tokenizer (Lexeme)
+import qualified Data.List.NonEmpty
 
 -- ObjectLabel Map (Label Object) [GID Object]
 -- LocationLabel Map (Label Location) [GID Label]
@@ -11,6 +12,10 @@ import HauntedHouse.Tokenizer (Lexeme)
 -- LocationData Map (GID Label) Label 
 newtype Label a = Label {_unLabel' :: Lexeme} deriving stock (Show,Eq,Ord)
 
+newtype ContainerMap a = ContainerMap 
+  { _unContainerMap' :: Map (Label a) (Data.List.NonEmpty.NonEmpty (GID a))} 
+    deriving stock (Eq,Ord,Show)
+  
 newtype NeighborMap a b = NeighborMap {
   _unNeighborMap :: Data.Map.Strict.Map (GID a) b
 } deriving stock Show 

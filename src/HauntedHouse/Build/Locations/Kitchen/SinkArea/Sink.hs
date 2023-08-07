@@ -10,51 +10,45 @@ import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.Object.Relation 
 import HauntedHouse.Game.Model.World
-{-
+import Data.These (These(..))
+
 buildKitchenSink :: GameStateExceptT ()
 buildKitchenSink =  do
   world <- _world' <$> get
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = GIDToDataMapping $ Data.Map.Strict.insert kitchenSinkGID buildSink 
-                $ (_unGIDMapping' . _objectMap') world
+                $ (_unGIDToDataMapping' . _objectMap') world
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}}) 
 
 buildSink :: Object 
-buildSink = Object 
-  { _container' = Just buildSinkContainer 
-  , _containedBy' = Just (ByLocation kitchenGID)
+buildSink = Object
+  {_shortName' = "The kitchen sink"
+  , _related' = related 
   , _moveability' = NotMovable 
-  , _odescription' = "It's a sink. Don't try and turn it on yet"
+  , _odescription' = "This sink doesn't work. You can put small objects in it though."
   }
 
-  
-{-
-data Placeability
-  = PlaceOn
-  | PlaceUnder
-  | PlaceAbove
-  | PlaceIn
-      deriving stock (Eq,Ord,Show)
--}
-{-
-relationToOtherObjects :: RelatedObjects Object 
-relationToOtherObjects = 
-  RelatedObjects $ Data.Map.Strict.fromList relatedObjects
-  where 
-    relatedObjects = 
-      [(PlaceIn, Nothing)
-        ,(PlaceUnder, Just placeUnder)
-        ,(PlaceAbove, Just placeAbove)
-        ,(PlaceNextTo OnRight, Just placeNextTo)]
-    placeAbove = Data.List.NonEmpty.fromList [kitchenCabinetAboveSinkGID]
-    placeUnder = Data.List.NonEmpty.fromList [kitchenCabinetBelowSinkGID]
-    placeNextTo = Data.List.NonEmpty.fromList [kitchenShelfGID]
-    -}
-{-
--- a is Object
-newtype RelatedObjects a
-          = RelatedObjects (Data.Map.Strict.Map Placeability [GID a]) 
-              deriving stock Show
- 
--}
--}
+sinkContainer :: Container 
+sinkContainer = Container 
+  { _containerInterFace' = sinkInterface 
+  , _contained' = This sinkObjects  
+  }
+
+
+sinkInterface :: Interface Container 
+sinkInterface = Interface { _openState'  = Nothing }
+
+sinkObjects :: ContainedIn
+sinkObjects = ContainedIn $ ContainerMap  Data.Map.Strict.empty  
+
+related :: Relations 
+related = Relations 
+  { _position'    = Anchored kitchenGID 
+  , _neighbors'   = neighbors
+  , _containment' = (Just . Left) sinkContainer
+  }
+
+neighbors :: NeighborMap Object Proximity
+neighbors = NeighborMap $ Data.Map.Strict.fromList 
+  [(kitchenCabinetAboveSinkGID,PlacedAbove)]
+

@@ -4,13 +4,13 @@ import Data.List.NonEmpty qualified
 
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.Mapping
+import Data.These
 
 data Object = Object
   { _shortName'     :: Text
   , _related'       :: Relations
   , _moveability'   :: Moveablility
   , _odescription'  :: Text
-  , _isContainer'   :: Maybe Container
   } deriving stock Show
 
 data Moveablility = Moveable | NotMovable deriving stock (Eq, Ord, Enum, Show)
@@ -28,24 +28,12 @@ newtype ExitGIDMap
   = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Object}
       deriving stock Show
 
-data Interface a = Interface
-  {_lockState'   :: LockState
-  , _isOpen'      :: Bool
-  } deriving stock (Eq,Ord,Show)
+data OpenClosed = Open | Closed LockState deriving stock (Eq,Ord,Show)
 
-data Container = Container
-  { _containerInterFace'  :: Interface Container
-  , _portal'              :: Portal
-  } deriving stock (Eq,Ord,Show)
+newtype Interface a = Interface 
+  { _openState'  :: Maybe OpenClosed } deriving stock (Eq,Ord,Show)
 
-newtype Portal
-  = Portal {_unPortal' :: GID Exit} deriving stock (Eq,Ord,Show)
-
-data Exit = Exit
-  { _exitLabel        :: Label Exit
-  , _toLocation'      :: GID Location
-  , _locationObjects' :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
-  } deriving stock Show
+newtype Exit = Exit { _toLocation' :: GID Location} deriving stock Show
 
 newtype Objects
   = Objects {_unObjects' :: Data.List.NonEmpty.NonEmpty (GID Object)}
@@ -61,17 +49,11 @@ data World = World
 
 data LockState = Locked | Unlocked | Unlockable deriving stock (Show, Eq, Ord)
 
-data PlaceIn = PlaceIn
-  {_objectsHeld' :: Map (Label Object) (Data.List.NonEmpty.NonEmpty (GID Object))
-  ,_placeInProperties' :: Portal
-  } deriving stock Show
-
-data Placeability
+-- Containment and Proximity seperate concepts
+data Proximity
   = PlacedOn
   | PlacedUnder
   | PlacedAbove
-  | PlacedIn (Map (Label Object) (Data.List.NonEmpty.NonEmpty (GID Object)))
-  | PlacedExit
   | PlacedNextTo LeftOrRight
       deriving stock (Eq,Ord,Show)
 
@@ -83,6 +65,23 @@ data Position
       deriving stock (Show)
 
 data Relations = Relations
-  {_position' :: Position
-  , _neighbors' :: NeighborMap Object Placeability
+  {_position'     :: Position
+  , _neighbors'   :: NeighborMap Object Proximity
+  , _containment' :: Maybe (Either Container Portal) 
   } deriving stock Show
+
+data Container = Container
+  { _containerInterFace'  :: Interface Container
+  , _contained'           :: These ContainedIn ContainedOn
+  } deriving stock (Eq,Ord,Show)
+
+newtype ContainedIn = ContainedIn {_unContainedIn' :: ContainerMap Object}
+  deriving stock (Eq,Ord,Show)
+
+newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
+  deriving stock (Eq,Ord,Show)
+
+data Portal = Portal 
+  { _portalExit'      :: GID Exit
+  , _portalInterface' :: Interface Portal
+  } deriving stock (Eq,Ord,Show)

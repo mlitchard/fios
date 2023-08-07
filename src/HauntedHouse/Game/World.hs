@@ -5,12 +5,13 @@ import qualified Data.Map.Strict (insert, lookup, insertWith, Map)
 
 import HauntedHouse.Game.Model ( GameStateExceptT, GameState (_world') )
 import HauntedHouse.Game.Model.World (Exit (..), World (..), Object (..)
-        , Location (..), ExitGIDMap (..), Container (..), Portal (..))
+        , Location (..), ExitGIDMap (..), Container (..), Portal (..)
+        , Relations (..))
 import HauntedHouse.Game.Model.GID (GID (GID))
 import HauntedHouse.Game.Model.Mapping
     ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
       LabelToGIDListMapping(..),Label, LabelToGIDMapping (..))
-import HauntedHouse.Internal ( throwMaybeM )
+import HauntedHouse.Internal ( throwMaybeM, throwEitherM )
 import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 
 setWorldExitMapM :: GID Exit -> Exit -> GameStateExceptT ()
@@ -65,13 +66,24 @@ data World = World
   , _exitMap'           :: GIDToDataMapping Exit
   } deriving stock Show
 
+data Object = Object
+  { _shortName'     :: Text
+  , _related'       :: Relations
+  , _moveability'   :: Moveablility
+  , _odescription'  :: Text
+  } deriving stock Show
+
 -}
-getExitFromObjectM :: GID Object -> GameStateExceptT Exit 
-getExitFromObjectM objectGID = do
-  gidExit <- _unPortal' . _portal' 
-              <$> (throwMaybeM notExit . _isContainer' =<< getObjectM objectGID)
-  getExitM gidExit 
+getExitFromObjectM :: GID Object -> GameStateExceptT Exit
+getExitFromObjectM objectGID =
+  getContainment 
+    >>= throwMaybeM notContainer 
+    >>= throwEitherM notExit 
+    <&> _portalExit'
+    >>= getExitM
   where
+    getContainment = _containment' . _related' <$> getObjectM objectGID
+    notContainer = "Error: Not Container - " <> show objectGID
     notExit = "Error: Not Exit - " <> show objectGID
 
 

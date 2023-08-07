@@ -5,29 +5,17 @@ import HauntedHouse.Game.Model.Mapping ( NeighborMap(NeighborMap))
 import HauntedHouse.Game.Model.World ( Exit (..), Object (..)
       , Moveablility (NotMovable), LockState (Unlocked), Portal (..)
       , Relations (..), Container (..), Interface (..)
-      , Position (Anchored), Placeability (..), LeftOrRight (..))
+      , Position (Anchored), LeftOrRight (..), Proximity (..), OpenClosed (..))
 import HauntedHouse.Build.LocationTemplate (hallGID, kitchenGID)
 import HauntedHouse.Build.ExitTemplate (kitchenEastExitGID)
 import HauntedHouse.Game.World (setWorldExitMapM, setObjectMapM)
 import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID, kitchenShelfGID)
-import qualified Data.List.NonEmpty (singleton)
 import qualified Data.Map.Strict
 
 buildExits :: GameStateExceptT ()
 buildExits = do
   buildEastExit
 
-{-
-
-data World = World
-  { _objectMap'         :: GIDToDataMapping Object
-  , _objectLabelMap'    :: LabelToGIDListMapping Object
-  , _locationMap'       :: GIDToDataMapping Location
-  , _locationLabelMap'  :: LabelToGIDListMapping Location
-  , _exitMap'           :: GIDToDataMapping Exit
-  } deriving stock Show
-
--}
 buildEastExit :: GameStateExceptT ()
 buildEastExit = do
   setWorldExitMapM kitchenEastExitGID kitchenEastExit
@@ -35,10 +23,7 @@ buildEastExit = do
   pass
 
 kitchenEastExit :: Exit
-kitchenEastExit = Exit {
-  _toLocation' = hallGID
-  , _locationObjects' = Just $ Data.List.NonEmpty.singleton kitchenEastDoorGID
-  }
+kitchenEastExit = Exit {_toLocation' = hallGID }
 
 kitchenEastDoor :: GameStateExceptT ()
 kitchenEastDoor = do
@@ -51,18 +36,15 @@ data Object = Object
   , _related'       :: Relations
   , _moveability'   :: Moveablility
   , _odescription'  :: Text
-  , _isContainer'   :: Maybe Container
   } deriving stock Show
 
 -}
-
 kitchenEastDoorObject :: Object
 kitchenEastDoorObject = Object
   { _shortName'     = kitchenShortName
   , _related'       = objectsRelatedToEastDoor
   , _moveability'   = NotMovable
   , _odescription'  = kitchenEastDoorDesc
-  , _isContainer'   = Just kitchenEastDoorContainer
   }
   where
     kitchenShortName    = "The door to the east hall."
@@ -70,50 +52,49 @@ kitchenEastDoorObject = Object
 
 {-
 
-data Container = Container
-  { _containerInterFace'  :: Interface Container
-  , _portal'              :: Portal
-  } deriving stock (Eq,Ord,Show)
-
--}
-
-kitchenEastDoorContainer :: Container 
-kitchenEastDoorContainer = Container 
-  { _containerInterFace' = kitchenEastDoorPortalInterface 
-  , _portal' = kitchenEastDoorPortal
-  }
-  
-kitchenEastDoorPortalInterface :: Interface Container
-kitchenEastDoorPortalInterface = Interface
-  {_lockState' = Unlocked
-  , _isOpen'   = True
-  }
--- newtype Portal
--- = Portal {_unPortal' :: GID Exit} deriving stock (Eq,Ord,Show)
-kitchenEastDoorPortal :: Portal
-kitchenEastDoorPortal = Portal kitchenEastExitGID
-
-{-
-
 data Relations = Relations
-  {_position :: Position
-  , _neighbors :: Data.Map.Strict.Map (GID Object) Placeability
+  {_position'     :: Position
+  , _neighbors'   :: NeighborMap Object Proximity
+  , _containment' :: Either Container Portal 
   } deriving stock Show
 
 -}
+kitchenEastDoorContainer :: Relations 
+kitchenEastDoorContainer = Relations 
+  { _position' = Anchored kitchenGID 
+  , _neighbors' = objectsRelatedToEastDoorNeighbors
+  }
+{-
+  { _containerInterFace' = kitchenEastDoorPortalInterface 
+  , _portal' = kitchenEastDoorPortal
+  }
+ -} 
+kitchenEastDoorPortalInterface :: Interface Portal
+kitchenEastDoorPortalInterface = Interface
+  { _openState'   = Just Open }
+
+{-
+
+data Portal = Portal 
+  { _portalExit'      :: GID Exit
+  , _portalInterface' :: Interface Portal
+  } deriving stock (Eq,Ord,Show)
+
+-}
+kitchenEastDoorPortal :: Portal
+kitchenEastDoorPortal = Portal 
+  { _portalExit' = kitchenEastExitGID
+  , _portalInterface' = kitchenEastDoorPortalInterface
+  }
+
 
 objectsRelatedToEastDoor :: Relations 
 objectsRelatedToEastDoor = Relations
-  {_position' = objectsRelatedToEastDoorPosition
-  , _neighbors' = objectsRelatedToEastDoorNeghbors
+  {_position'     = Anchored kitchenGID
+  , _neighbors'   = objectsRelatedToEastDoorNeighbors
+  , _containment' = (Just . Right) kitchenEastDoorPortal
   }
 
-objectsRelatedToEastDoorPosition :: Position
-objectsRelatedToEastDoorPosition = Anchored kitchenGID
-
--- Data.Map.Strict.Map (GID Object) Placeability
-objectsRelatedToEastDoorNeghbors :: NeighborMap Object Placeability
-objectsRelatedToEastDoorNeghbors = NeighborMap
+objectsRelatedToEastDoorNeighbors :: NeighborMap Object Proximity
+objectsRelatedToEastDoorNeighbors = NeighborMap
   $ Data.Map.Strict.fromList [(kitchenShelfGID, PlacedNextTo OnLeft)]
-
-  
