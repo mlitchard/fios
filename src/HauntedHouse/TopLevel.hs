@@ -21,24 +21,25 @@ start :: GameStateExceptT ()
 start = buildGameState >> topLevel
 
 topLevel :: GameStateExceptT ()
-topLevel = go
+topLevel = displayScene'
   where
-    go :: GameStateExceptT ()
-    go = getLocationIdM >>=
-          getLocationM  >>=
-          displayScene >>
-          go'
+    displayScene' :: GameStateExceptT ()
+    displayScene' =
+      getLocationIdM >>=
+      getLocationM  >>=
+      displayScene >>
+      go'
 
     go' :: GameStateExceptT ()
     go' = do
       input <- liftIO getInput
       case input of
-        Nothing -> go
+        Nothing -> displayScene'
         Just Quit -> pass
         Just (MkGameInput input') -> do
           liftIO $ print (("input debug go' " :: String) <> show input')
           case runParser tokens input' of
-              Left _ -> putStrLn "parse failed" >> go
+              Left _ -> putStrLn "parse failed" >> displayScene'
               Right tokens' -> either throwError engine (parseTokens tokens')
                                 >> topLevel
 

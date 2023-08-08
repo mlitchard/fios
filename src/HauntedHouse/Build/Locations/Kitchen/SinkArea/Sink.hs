@@ -24,7 +24,7 @@ buildSink :: Object
 buildSink = Object
   {_shortName' = "The kitchen sink"
   , _related' = related 
-  , _moveability' = NotMovable 
+  , _moveability' = NotMoveable 
   , _odescription' = "This sink doesn't work. You can put small objects in it though."
   }
 
@@ -43,9 +43,8 @@ sinkObjects = ContainedIn $ ContainerMap  Data.Map.Strict.empty
 
 related :: Relations 
 related = Relations 
-  { _position'    = Anchored kitchenGID 
+  { _position'    = AnchoredByRoom kitchenGID 
   , _neighbors'   = neighbors
-  , _containment' = (Just . Left) sinkContainer
   }
 
 neighbors :: NeighborMap Object Proximity

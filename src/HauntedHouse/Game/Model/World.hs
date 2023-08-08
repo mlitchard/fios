@@ -8,21 +8,34 @@ import Data.These
 
 data Object = Object
   { _shortName'     :: Text
-  , _related'       :: Relations
-  , _moveability'   :: Moveablility
+  , _moveability'   :: Moveability
+  , _containment'   :: Maybe (Either Container Portal) 
   , _odescription'  :: Text
   } deriving stock Show
 
-data Moveablility = Moveable | NotMovable deriving stock (Eq, Ord, Enum, Show)
+data Moveability = Moveable | NotMoveable deriving stock (Eq, Ord, Enum, Show)
 
 data LeftOrRight = OnLeft | OnRight deriving stock (Eq,Ord,Show)
 
 data Location = Location
-  { _title'       :: Text
-  , _description' :: Text
-  , _objects'     :: Maybe Objects
-  , _directions'  :: Maybe ExitGIDMap
+  { _title'           :: Text
+  , _description'     :: Text
+  , _anchoredObjects' :: Maybe AnchoredObjects
+  , _floorInventory'  :: Maybe Objects
+  , _directions'      :: Maybe ExitGIDMap
   } deriving stock Show
+
+data AnchoredObjects = AnchoredObjects 
+  {_anchoredEast'       :: Maybe (GID Object,Relations)
+  , _anchoredWest'      :: Maybe (GID Object, Relations)
+  , _anchoredSouth'     :: Maybe (GID Object, Relations)
+  , _anchoredNorth'     :: Maybe (GID Object,Relations)
+  , _anchoredNorthEast' :: Maybe (GID Object,Relations)
+  , _anchoredNorthWest' :: Maybe (GID Object,Relations)
+  , _anchoredSouthEast' :: Maybe (GID Object,Relations)
+  , _anchoredSouthWest' :: Maybe (GID Object,Relations)
+  , _anchoredCenter     :: Maybe (GID Object,Relations)
+  } deriving stock Show 
 
 newtype ExitGIDMap
   = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Object}
@@ -58,16 +71,18 @@ data Proximity
       deriving stock (Eq,Ord,Show)
 
 data Position
-  = Anchored (GID Location)
-  | Inventory
-  | ContainedBy (GID Object)
+  = AnchoredByRoom (GID Location)
+  | RoomInventory
+  | AnchoredByObject (GID Object,Proximity)
   | VoidlessVoid 
       deriving stock (Show)
 
 data Relations = Relations
   {_position'     :: Position
-  , _neighbors'   :: NeighborMap Object Proximity
-  , _containment' :: Maybe (Either Container Portal) 
+  -- other objects anchored to room
+  , _primaryNeighbors'   :: NeighborMap Object Proximity
+  -- objects anchored to a primary
+  , _secondaryNeighbors' :: NeighborMap Object Proximity
   } deriving stock Show
 
 data Container = Container

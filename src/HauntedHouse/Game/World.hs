@@ -82,7 +82,7 @@ getExitFromObjectM objectGID =
     <&> _portalExit'
     >>= getExitM
   where
-    getContainment = _containment' . _related' <$> getObjectM objectGID
+    getContainment = _containment' <$> getObjectM objectGID
     notContainer = "Error: Not Container - " <> show objectGID
     notExit = "Error: Not Exit - " <> show objectGID
 

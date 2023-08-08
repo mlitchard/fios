@@ -11,27 +11,14 @@ import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Internal  ( throwMaybeM )
 import HauntedHouse.Game.Model.World (Location (..), World (_locationMap' ))
 
-buildFrame :: GID Location -> Label Location -> Location -> GameStateExceptT ()
-buildFrame locationGID (Label label) location = do
+buildFrame :: GID Location -> Location -> GameStateExceptT ()
+buildFrame locationGID location = do
   world :: World <- _world' <$> get
-  let locationMap' = unLocationMap world
-  location' <- throwMaybeM errmsg
-                $ Data.Map.Strict.lookup locationGID locationMap'
-  let updatedMap = GIDToDataMapping
+  let locationMap' = unLocationMap world  
+      updatedMap = GIDToDataMapping
                     $ Data.Map.Strict.insert
-                        locationGID updatedLocation locationMap'
-      updatedLocation = location'
-                          { _title'       = title
-                          , _description' = description
-                          , _objects'     = mObjects
-                          , _directions' = directions
-                          }
-
+                        locationGID location locationMap'
   modify' (\gs -> gs {_world' = world {_locationMap' = updatedMap}})
   where
-    errmsg = "location should have been in this map but wasn't"
     unLocationMap = _unGIDToDataMapping' . _locationMap'
-    title       = toText label
-    description = _description' location
-    mObjects    = _objects' location
-    directions  = _directions' location
+    

@@ -28,7 +28,7 @@ import HauntedHouse.Game.Model.Mapping
     , NeighborMap (..))
 
 import HauntedHouse.Game.Model.World
-    (Object (..), Location (..), World (..), Exit, Moveablility (NotMovable)
+    (Object (..), Location (..), World (..), Exit, Moveability (NotMoveable)
     , Position (VoidlessVoid), Relations (..))
 
 defaultLocation :: Location 
@@ -50,7 +50,7 @@ defaultObject :: Object
 defaultObject = Object 
   {_shortName' = Data.Text.empty 
   , _related' = defaultRelations 
-  , _moveability' = NotMovable 
+  , _moveability' = NotMoveable 
   , _odescription' = Data.Text.empty  
   }
 {-
@@ -87,7 +87,7 @@ defaultNarration = Narration {
   _playerAction' = Data.List.NonEmpty.singleton playerAction
   , _enviroment' = Data.List.NonEmpty.singleton environment
   , _npcResponse' = Data.List.NonEmpty.singleton hectorSays
-  , _scene        = defaultScene 
+  , _scene'       = defaultScene 
 }
   where
     playerAction = "You look around"
@@ -113,7 +113,8 @@ defaultScene = Scene
     , _visibleExits'      = noExits
   }
   where
-    noContained = Data.List.NonEmpty.singleton Data.Text.empty
+    noContained 
+      = Data.List.NonEmpty.singleton (Data.Text.empty, Data.Text.empty)
     emptyRoom = Data.List.NonEmpty.singleton "It's an empty room"
     noExits   = Data.List.NonEmpty.singleton "You don't see any visible exits"
 

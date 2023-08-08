@@ -26,15 +26,17 @@ data Verbosity
 data Narration = Narration
   {_playerAction' :: Data.List.NonEmpty.NonEmpty Text
   ,_enviroment'   :: Data.List.NonEmpty.NonEmpty Text
-  , _npcResponse' ::Data.List.NonEmpty.NonEmpty Text
-  , _scene        :: Scene
+  , _npcResponse' :: Data.List.NonEmpty.NonEmpty Text
+  , _scene'       :: Scene
   } deriving stock Show
+
+
 
 data Scene = Scene
   {_roomTitle'         :: Text
   , _roomDescription'  :: Text
   , _anchoredObjects'  :: Data.List.NonEmpty.NonEmpty Text
-  , _visibleContained' :: Data.List.NonEmpty.NonEmpty Text
+  , _visibleContained' :: Data.List.NonEmpty.NonEmpty (Text,Text)
   , _visibleExits'     :: Data.List.NonEmpty.NonEmpty Text
   } deriving stock Show
 

@@ -28,7 +28,7 @@ import HauntedHouse.Tokenizer ( Lexeme(..) )
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
   buildFrame kitchenGID kitchenLabel kitchenLocation
-  buildExits
+  buildExits 
  -- buildKitchenSink
  -- buildKitchenShelf
  -- buildKitchenCabinetAboveShelf
