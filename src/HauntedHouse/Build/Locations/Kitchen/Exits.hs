@@ -4,8 +4,8 @@ import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.Mapping ( NeighborMap(NeighborMap))
 import HauntedHouse.Game.Model.World ( Exit (..), Object (..)
       , Moveability (NotMoveable), LockState (Unlocked), Portal (..)
-      , Relations (..), Container (..), Interface (..)
-      , Position (..), LeftOrRight (..), Proximity (..), OpenClosed (..))
+      , Container (..), Interface (..), LeftOrRight (..), Proximity (..)
+      , OpenClosed (..))
 import HauntedHouse.Build.LocationTemplate (hallGID, kitchenGID)
 import HauntedHouse.Build.ExitTemplate (kitchenEastExitGID)
 import HauntedHouse.Game.World (setWorldExitMapM, setObjectMapM)
@@ -13,7 +13,8 @@ import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID, kitchenShelfGID)
 import qualified Data.Map.Strict
 
 buildExits :: GameStateExceptT ()
-buildExits = do
+buildExits = pass -- do
+  {-
   buildEastExit
 
 buildEastExit :: GameStateExceptT ()
@@ -60,3 +61,5 @@ objectsRelatedToEastDoor = Relations
 objectsRelatedToEastDoorNeighbors :: NeighborMap Object Proximity
 objectsRelatedToEastDoorNeighbors = NeighborMap
   $ Data.Map.Strict.fromList [(kitchenShelfGID, PlacedNextTo OnLeft)]
+
+-}

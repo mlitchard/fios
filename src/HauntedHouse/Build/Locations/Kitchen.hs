@@ -26,7 +26,8 @@ import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Tokenizer ( Lexeme(..) )
 
 buildKitchen :: GameStateExceptT ()
-buildKitchen = do
+buildKitchen = pass -- do
+  {-
   buildFrame kitchenGID kitchenLabel kitchenLocation
   buildExits 
  -- buildKitchenSink
@@ -68,4 +69,5 @@ kitchenEastLabel = Label EAST
 {-
 kitchenEastExit :: Exit 
 kitchenEastExit = Exit {_toLocation' = hallGID}
+-}
 -}

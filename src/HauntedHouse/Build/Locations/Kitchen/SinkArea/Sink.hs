@@ -13,18 +13,30 @@ import HauntedHouse.Game.Model.World
 import Data.These (These(..))
 
 buildKitchenSink :: GameStateExceptT ()
-buildKitchenSink =  do
+buildKitchenSink =  pass -- do
+{-
   world <- _world' <$> get
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = GIDToDataMapping $ Data.Map.Strict.insert kitchenSinkGID buildSink 
                 $ (_unGIDToDataMapping' . _objectMap') world
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}}) 
 
+{-
+
+data Object = Object
+  { _shortName'     :: Text
+  , _moveability'   :: Moveability
+  , _containment'   :: Maybe (Either Container Portal) 
+  , _odescription'  :: Text
+  } deriving stock Show
+
+-}
+
 buildSink :: Object 
 buildSink = Object
   {_shortName' = "The kitchen sink"
-  , _related' = related 
-  , _moveability' = NotMoveable 
+  , _moveability' = NotMoveable
+  , _containment' = (Just . Left) sinkContainer 
   , _odescription' = "This sink doesn't work. You can put small objects in it though."
   }
 
@@ -33,7 +45,6 @@ sinkContainer = Container
   { _containerInterFace' = sinkInterface 
   , _contained' = This sinkObjects  
   }
-
 
 sinkInterface :: Interface Container 
 sinkInterface = Interface { _openState'  = Nothing }
@@ -51,3 +62,4 @@ neighbors :: NeighborMap Object Proximity
 neighbors = NeighborMap $ Data.Map.Strict.fromList 
   [(kitchenCabinetAboveSinkGID,PlacedAbove)]
 
+-}

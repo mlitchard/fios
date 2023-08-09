@@ -5,8 +5,7 @@ import qualified Data.Map.Strict (insert, lookup, insertWith, Map)
 
 import HauntedHouse.Game.Model ( GameStateExceptT, GameState (_world') )
 import HauntedHouse.Game.Model.World (Exit (..), World (..), Object (..)
-        , Location (..), ExitGIDMap (..), Container (..), Portal (..)
-        , Relations (..))
+        , Location (..), ExitGIDMap (..), Container (..), Portal (..))
 import HauntedHouse.Game.Model.GID (GID (GID))
 import HauntedHouse.Game.Model.Mapping
     ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),

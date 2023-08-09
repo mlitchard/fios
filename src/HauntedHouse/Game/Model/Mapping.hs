@@ -17,7 +17,7 @@ newtype ContainerMap a = ContainerMap
     deriving stock (Eq,Ord,Show)
   
 newtype NeighborMap a b = NeighborMap {
-  _unNeighborMap :: Data.Map.Strict.Map (GID a) b
+  _unNeighborMap :: Data.Map.Strict.Map a (Data.List.NonEmpty.NonEmpty (GID b))
 } deriving stock Show 
 
 newtype LabelToGIDListMapping a 
