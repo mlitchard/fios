@@ -82,14 +82,20 @@ data Proximity
 
 newtype Neighbors = Neighbors 
   {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show 
-
+{-
 data Container = Container
   { _containerInterFace'  :: Interface Container
   , _contained'           :: These ContainedIn ContainedOn
   } deriving stock (Eq,Ord,Show)
+-}
 
-newtype ContainedIn = ContainedIn {_unContainedIn' :: ContainerMap Object}
-  deriving stock (Eq,Ord,Show)
+newtype Container = Container 
+  {_unContainer :: These ContainedIn ContainedOn } deriving stock Show
+
+data ContainedIn = ContainedIn 
+  { _interface :: Interface Container 
+  , _containedOn' :: ContainerMap Object
+  } deriving stock (Eq,Ord,Show)
 
 newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
   deriving stock (Eq,Ord,Show)

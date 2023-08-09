@@ -5,7 +5,8 @@ import HauntedHouse.Game.Model
 import HauntedHouse.Game.Model.World
         (Location (..), Objects (..), Object (..)
         , Moveability (..), RoomAnchors (..), RoomAnchor, ObjectAnchors (..)
-        , Neighbors (..), Portal (..), Container (..), Proximity (..))
+        , Neighbors (..), Portal (..), Container (..), Proximity (..)
+        , Interface (..), ContainedIn (..), ContainedOn (..))
 import HauntedHouse.Game.World (getObjectM)
 import qualified Data.List.NonEmpty (filter, partition, NonEmpty)
 import Data.List.NonEmpty ((<|))
@@ -15,6 +16,7 @@ import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.GID (GID)
 import Data.Aeson (object)
 import HauntedHouse.Game.Model.Mapping (NeighborMap(..))
+import Data.These (These(..))
 
 updateNarration :: Narration -> GameStateExceptT ()
 updateNarration narration =  modify' (\g -> g {_narration' = narration})
@@ -64,6 +66,12 @@ newtype NeighborMap a b = NeighborMap {
   _unNeighborMap :: Data.Map.Strict.Map a (Data.List.NonEmpty.NonEmpty (GID b))
 } deriving stock Show 
 
+data Object = Object
+  { _shortName'     :: Text
+  , _moveability'   :: Moveability
+  , _containment'   :: Maybe (Either Container Portal)
+  , _odescription'  :: Text
+  } deriving stock Show
 -}
 displayLocationArea :: (GID Object, Neighbors) -> GameStateExceptT ()
 displayLocationArea (objectGID, Neighbors (NeighborMap relations)) = do
@@ -76,8 +84,40 @@ displayLocationArea (objectGID, Neighbors (NeighborMap relations)) = do
 displayPortal :: Portal -> GameStateExceptT ()
 displayPortal _ = pass
 
+{-
+
+data Container = Container
+  { _containerInterFace'  :: Interface Container
+  , _contained'           :: These ContainedIn ContainedOn
+  } deriving stock (Eq,Ord,Show)
+
+newtype Container = Container {_unContainer :: These ContainedIn ContainedOn } 
+
+newtype Interface a = Interface
+  { _openState'  :: Maybe OpenClosed } deriving stock (Eq,Ord,Show)
+
+newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
+  deriving stock (Eq,Ord,Show)
+
+newtype ContainedIn = ContainedIn {
+  _interface :: Interface Container 
+  _containedOn' :: ContainerMap Object}
+  deriving stock (Eq,Ord,Show)
+-}
 displayContainer :: Container -> GameStateExceptT ()
-displayContainer _ = pass
+displayContainer (Container contained) = do
+  case contained of
+    This containedIn -> displayContainedInInitial containedIn 
+    That containedOn -> displayContainedOn containedOn 
+    These containedIn containedOn -> do
+                                        displayContainedInInitial containedIn
+                                        displayContainedOn containedOn 
+
+displayContainedInInitial :: ContainedIn -> GameStateExceptT ()
+displayContainedInInitial containedIn = pass
+
+displayContainedOn :: ContainedOn -> GameStateExceptT () 
+displayContainedOn containedOn = pass 
 
 displayRelations :: Text
                       -> Proximity
