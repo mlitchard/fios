@@ -129,8 +129,8 @@ library
     HauntedHouse.Game.Model
     HauntedHouse.Game.Model.GID
     HauntedHouse.Game.Narration
+    HauntedHouse.Game.Object
     HauntedHouse.Game.Player
-    HauntedHouse.Game.Scene
     HauntedHouse.Game.World
     HauntedHouse.Recognizer
     HauntedHouse.Tokenizer
@@ -145,6 +145,8 @@ library
     HauntedHouse.Game.Model.Object.Relation
     HauntedHouse.Game.Model.ToText 
     HauntedHouse.Game.Model.World
+    HauntedHouse.Game.Narration.Anchored
+    HauntedHouse.Game.Narration.Containers
     HauntedHouse.Internal
     HauntedHouse.Recognizer.WordClasses
     HauntedHouse.Tokenizer.Data

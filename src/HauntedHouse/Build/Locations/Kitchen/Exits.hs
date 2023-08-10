@@ -4,11 +4,10 @@ import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.Mapping ( NeighborMap(NeighborMap))
 import HauntedHouse.Game.Model.World ( Exit (..), Object (..)
       , Moveability (NotMoveable), LockState (Unlocked), Portal (..)
-      , Container (..), Interface (..), LeftOrRight (..), Proximity (..)
-      , OpenClosed (..))
+      , Container (..), Interface (..), LeftOrRight (..), Proximity (..))
 import HauntedHouse.Build.LocationTemplate (hallGID, kitchenGID)
 import HauntedHouse.Build.ExitTemplate (kitchenEastExitGID)
-import HauntedHouse.Game.World (setWorldExitMapM, setObjectMapM)
+import HauntedHouse.Game.World (setWorldExitMapM)
 import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID, kitchenShelfGID)
 import qualified Data.Map.Strict
 

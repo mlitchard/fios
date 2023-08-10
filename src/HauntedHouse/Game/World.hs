@@ -5,13 +5,14 @@ import qualified Data.Map.Strict (insert, lookup, insertWith, Map)
 
 import HauntedHouse.Game.Model ( GameStateExceptT, GameState (_world') )
 import HauntedHouse.Game.Model.World (Exit (..), World (..), Object (..)
-        , Location (..), ExitGIDMap (..), Container (..), Portal (..))
-import HauntedHouse.Game.Model.GID (GID (GID))
+        , Location (..), ExitGIDMap (..), Portal (..))
 import HauntedHouse.Game.Model.Mapping
     ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
       LabelToGIDListMapping(..),Label, LabelToGIDMapping (..))
 import HauntedHouse.Internal ( throwMaybeM, throwEitherM )
 import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
+import HauntedHouse.Game.Model.GID (GID)
+import HauntedHouse.Game.Object (getObjectM)
 
 setWorldExitMapM :: GID Exit -> Exit -> GameStateExceptT ()
 setWorldExitMapM gid exit = do
@@ -19,23 +20,6 @@ setWorldExitMapM gid exit = do
   let updated = GIDToDataMapping $ Data.Map.Strict.insert gid exit
                   $ (_unGIDToDataMapping' . _exitMap') world
   modify' (\gs -> gs {_world' = world {_exitMap' = updated}})
-
-getObjectM :: GID Object -> GameStateExceptT Object
-getObjectM gid@(GID gid') = do
-  throwMaybeM objErr . (Data.Map.Strict.lookup gid <$> unwrappedMap) =<< get
-  where
-    objErr = toText $ ("Could not find object with gid " :: String) <> show gid'
-    unwrappedMap = _unGIDToDataMapping' . _objectMap' . _world'
-
-setObjectMapM :: GID Object -> Object -> GameStateExceptT ()
-setObjectMapM gid object = do
-  world <- _world' <$> get
-  let objectMap = _objectMap' world
-      gidToDataMap  = GIDToDataMapping
-                          . Data.Map.Strict.insert gid object
-                          $ _unGIDToDataMapping' objectMap
-  modify' (\gs -> gs {_world' = world {_objectMap' = gidToDataMap }})
-  pass
 
 getExitM :: GID Exit -> GameStateExceptT Exit
 getExitM gid = do
@@ -55,24 +39,6 @@ getExitObjectM exitLabel = do
       noExit = "Error: Exit does not exist " <> show exitLabel
       dirErr = "Error: No Exits"
 
-{-
-
-data World = World
-  { _objectMap'         :: GIDToDataMapping Object
-  , _objectLabelMap'    :: LabelToGIDListMapping Object
-  , _locationMap'       :: GIDToDataMapping Location
-  , _locationLabelMap'  :: LabelToGIDListMapping Location
-  , _exitMap'           :: GIDToDataMapping Exit
-  } deriving stock Show
-
-data Object = Object
-  { _shortName'     :: Text
-  , _related'       :: Relations
-  , _moveability'   :: Moveablility
-  , _odescription'  :: Text
-  } deriving stock Show
-
--}
 getExitFromObjectM :: GID Object -> GameStateExceptT Exit
 getExitFromObjectM objectGID =
   getContainment 

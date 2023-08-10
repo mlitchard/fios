@@ -50,10 +50,7 @@ newtype ExitGIDMap
   = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Object}
       deriving stock Show
 
-data OpenClosed = Open | Closed LockState deriving stock (Eq,Ord,Show)
-
-newtype Interface a = Interface
-  { _openState'  :: Maybe OpenClosed } deriving stock (Eq,Ord,Show)
+data Interface a = Open | Closed LockState deriving stock (Eq,Ord,Show)
 
 newtype Exit = Exit { _toLocation' :: GID Location} deriving stock Show
 
@@ -82,19 +79,13 @@ data Proximity
 
 newtype Neighbors = Neighbors 
   {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show 
-{-
-data Container = Container
-  { _containerInterFace'  :: Interface Container
-  , _contained'           :: These ContainedIn ContainedOn
-  } deriving stock (Eq,Ord,Show)
--}
 
 newtype Container = Container 
   {_unContainer :: These ContainedIn ContainedOn } deriving stock Show
 
 data ContainedIn = ContainedIn 
   { _interface :: Interface Container 
-  , _containedOn' :: ContainerMap Object
+  , _containedIn' :: ContainerMap Object
   } deriving stock (Eq,Ord,Show)
 
 newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}

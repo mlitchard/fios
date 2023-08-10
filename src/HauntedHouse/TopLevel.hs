@@ -7,7 +7,7 @@ import System.Console.Haskeline
 import qualified Data.Char (toUpper)
 import HauntedHouse.Recognizer (Imperative, imperative, parser, fullParses)
 import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
-import HauntedHouse.Game.Narration (displayScene)
+import HauntedHouse.Game.Narration (displaySceneM)
 import HauntedHouse.Game.Engine (engine)
 import Control.Monad.Except (throwError)
 import HauntedHouse.Build.GameState (buildGameState)
@@ -27,7 +27,7 @@ topLevel = displayScene'
     displayScene' =
       getLocationIdM >>=
       getLocationM  >>=
-      displayScene >>
+      displaySceneM >>
       go'
 
     go' :: GameStateExceptT ()

@@ -1,9 +1,6 @@
 module HauntedHouse.Game.Engine.OnlyVerb.DoLook where
 
-import HauntedHouse.Game.Model.World ( Location(..), Objects (..), Object (..)) 
-import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 import HauntedHouse.Game.Model (GameStateExceptT)
-import HauntedHouse.Game.World (getObjectM)
 
 doLookM :: GameStateExceptT ()
 doLookM = do
