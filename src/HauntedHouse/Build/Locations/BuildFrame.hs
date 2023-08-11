@@ -1,5 +1,4 @@
-module HauntedHouse.Build.Locations.BuildFrame
-  (buildFrame) where
+module HauntedHouse.Build.Locations.BuildFrame where
 
 import qualified Data.Map.Strict
 
@@ -11,8 +10,8 @@ import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Internal  ( throwMaybeM )
 import HauntedHouse.Game.Model.World (Location (..), World (_locationMap' ))
 
-buildFrame :: GID Location -> Location -> GameStateExceptT ()
-buildFrame locationGID location = do
+buildLocationMap :: GID Location -> Location -> GameStateExceptT ()
+buildLocationMap locationGID location = do
   world :: World <- _world' <$> get
   let locationMap' = unLocationMap world  
       updatedMap = GIDToDataMapping
@@ -21,4 +20,5 @@ buildFrame locationGID location = do
   modify' (\gs -> gs {_world' = world {_locationMap' = updatedMap}})
   where
     unLocationMap = _unGIDToDataMapping' . _locationMap'
+ 
     

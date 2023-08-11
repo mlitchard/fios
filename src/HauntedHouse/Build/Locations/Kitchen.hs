@@ -35,8 +35,8 @@ import HauntedHouse.Build.ObjectTemplate
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
-  buildFrame kitchenGID kitchenLocation
---  buildExits 
+  buildLocationMap kitchenGID kitchenLocation
+  buildExits 
  -- buildKitchenSink
  -- buildKitchenShelf
  -- buildKitchenCabinetAboveShelf

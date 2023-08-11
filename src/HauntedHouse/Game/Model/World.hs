@@ -12,7 +12,7 @@ data Object = Object
   , _moveability'   :: Moveability
   , _containment'   :: Maybe (Either Container Portal)
   , _odescription'  :: Text
-  , _descriptors    :: [Label Adjective]
+  , _descriptors'   :: [Label Adjective]
   } deriving stock Show
 
 data Moveability = Moveable | NotMoveable deriving stock (Eq, Ord, Enum, Show)

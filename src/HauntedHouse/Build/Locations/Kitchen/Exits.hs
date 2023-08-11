@@ -5,15 +5,15 @@ import HauntedHouse.Game.Model.Mapping ( NeighborMap(NeighborMap))
 import HauntedHouse.Game.Model.World ( Exit (..), Object (..)
       , Moveability (NotMoveable), LockState (Unlocked), Portal (..)
       , Container (..), Interface (..), LeftOrRight (..), Proximity (..))
-import HauntedHouse.Build.LocationTemplate (hallGID, kitchenGID)
+import HauntedHouse.Build.LocationTemplate (hallGID)
 import HauntedHouse.Build.ExitTemplate (kitchenEastExitGID)
 import HauntedHouse.Game.World (setWorldExitMapM)
-import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID, kitchenShelfGID)
+import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID)
 import qualified Data.Map.Strict
+import HauntedHouse.Game.Object (setObjectMapM)
 
 buildExits :: GameStateExceptT ()
-buildExits = pass -- do
-  {-
+buildExits =   
   buildEastExit
 
 buildEastExit :: GameStateExceptT ()
@@ -32,33 +32,20 @@ kitchenEastDoor = do
 kitchenEastDoorObject :: Object
 kitchenEastDoorObject = Object
   { _shortName'     = kitchenShortName
-  , _related'       = objectsRelatedToEastDoor
   , _moveability'   = NotMoveable
+  , _containment'   = (Just . Right) kitchenEastDoorPortal 
   , _odescription'  = kitchenEastDoorDesc
+  , _descriptors'   = []
   }
   where
     kitchenShortName    = "The door to the east hall."
     kitchenEastDoorDesc = "It's a door made from some mysterious substance."
 
 kitchenEastDoorPortalInterface :: Interface Portal
-kitchenEastDoorPortalInterface = Interface
-  { _openState'   = Just Open }
+kitchenEastDoorPortalInterface = Open
 
 kitchenEastDoorPortal :: Portal
 kitchenEastDoorPortal = Portal 
   { _portalExit' = kitchenEastExitGID
   , _portalInterface' = kitchenEastDoorPortalInterface
   }
-
-objectsRelatedToEastDoor :: Relations 
-objectsRelatedToEastDoor = Relations
-  {_position'     = AnchoredByRoom kitchenGID
-  , _neighbors'   = objectsRelatedToEastDoorNeighbors
-  , _containment' = (Just . Right) kitchenEastDoorPortal
-  }
-
-objectsRelatedToEastDoorNeighbors :: NeighborMap Object Proximity
-objectsRelatedToEastDoorNeighbors = NeighborMap
-  $ Data.Map.Strict.fromList [(kitchenShelfGID, PlacedNextTo OnLeft)]
-
--}
