@@ -5,23 +5,29 @@ import Data.Map.Strict (Map)
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.Mapping
 import Data.These
+import HauntedHouse.Recognizer (Adjective)
 
 data Object = Object
   { _shortName'     :: Text
   , _moveability'   :: Moveability
   , _containment'   :: Maybe (Either Container Portal)
   , _odescription'  :: Text
+  , _descriptors    :: [Label Adjective]
   } deriving stock Show
 
 data Moveability = Moveable | NotMoveable deriving stock (Eq, Ord, Enum, Show)
 
 data LeftOrRight = OnLeft | OnRight deriving stock (Eq,Ord,Show)
 
+data Visibility = Visible | NotVisible deriving stock (Eq,Show,Ord) 
+
 data Location = Location
   { _title'           :: Text
   , _description'     :: Text
   , _anchoredObjects' :: RoomAnchors
   , _floorInventory'  :: Maybe Objects
+  , _objectLabelMap'  :: LabelToGIDListMapping Object
+  , _visibilityList'  :: LocationObjectList Visibility Object
   , _directions'      :: Maybe ExitGIDMap
   } deriving stock Show
 
@@ -60,9 +66,7 @@ newtype Objects
 
 data World = World
   { _objectMap'         :: GIDToDataMapping Object
-  , _objectLabelMap'    :: LabelToGIDListMapping Object
   , _locationMap'       :: GIDToDataMapping Location
-  , _locationLabelMap'  :: LabelToGIDListMapping Location
   , _exitMap'           :: GIDToDataMapping Exit
   } deriving stock Show
 

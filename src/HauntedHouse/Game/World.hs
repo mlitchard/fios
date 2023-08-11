@@ -3,14 +3,17 @@ module HauntedHouse.Game.World where
 import qualified Data.List.NonEmpty
 import qualified Data.Map.Strict (insert, lookup, insertWith, Map)
 
-import HauntedHouse.Game.Model ( GameStateExceptT, GameState (_world') )
-import HauntedHouse.Game.Model.World (Exit (..), World (..), Object (..)
-        , Location (..), ExitGIDMap (..), Portal (..))
+import HauntedHouse.Game.Model
+        ( GameStateExceptT, GameState (_world',_player'), Player (..))
+import HauntedHouse.Game.Model.World 
+        (Exit (..), World (..), Object (..), Location (..), ExitGIDMap (..)
+          , Portal (..))
 import HauntedHouse.Game.Model.Mapping
-    ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
-      LabelToGIDListMapping(..),Label, LabelToGIDMapping (..))
+        (GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
+          LabelToGIDListMapping(..),Label, LabelToGIDMapping (..), GIDList)
 import HauntedHouse.Internal ( throwMaybeM, throwEitherM )
 import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
+
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Object (getObjectM)
 
@@ -41,9 +44,9 @@ getExitObjectM exitLabel = do
 
 getExitFromObjectM :: GID Object -> GameStateExceptT Exit
 getExitFromObjectM objectGID =
-  getContainment 
-    >>= throwMaybeM notContainer 
-    >>= throwEitherM notExit 
+  getContainment
+    >>= throwMaybeM notContainer
+    >>= throwEitherM notExit
     <&> _portalExit'
     >>= getExitM
   where
@@ -51,59 +54,40 @@ getExitFromObjectM objectGID =
     notContainer = "Error: Not Container - " <> show objectGID
     notExit = "Error: Not Exit - " <> show objectGID
 
-
-{-
-getExitObjectM :: Label Exit -> GameStateExceptT Object
-getExitObjectM exitLabel = do
-  exitMap <- _unGIDToDataMapping' . _exitMap' ._world' <$> get
-  exitGID :: GID Object <- throwExitGID . _unExitGIDMap' 
-                =<< (throwMaybeM directionErr . _directions'
-                =<< (getLocationM =<< getLocationIdM))
-  throwMaybeM attemptFailedMSG 
-    $ Data.Map.Strict.lookup exitGID exitMap
-    where
-      attemptFailedMSG = "You can't go that way"
-
-      throwExitGID :: LabelToGIDMapping Exit Object -> GameStateExceptT (GID Exit)
-      throwExitGID ltgMapping = throwMaybeM exitGIDErr
-        $ Data.Map.Strict.lookup exitLabel
-        $ _unLabelToGIDMapping' ltgMapping
-
-      _getExitGIDMap = throwMaybeM exitGIDMapErr . _directions'
-                                =<< (getLocationM =<< getLocationIdM)
-                                
-      directionErr = "direction map does not exist"
-      exitGIDMapErr = "ExitGIDmap does not exist "
-      exitGIDErr = ("Could not find Exit GID from Exit label " :: Text) 
-                    <> show exitLabel
--}
-{-
-
-newtype LabelToGIDMapping a b
-  = LabelToGIDMapping
-      { _unlabelToGIDListMapping :: Data.Map.Strict.Map (Label a) (GID b)}
-        deriving stock Show 
-
-newtype GIDToDataMapping a 
-  = GIDToDataMapping {_unGIDToDataMapping' :: Data.Map.Strict.Map (GID a) a} 
-      deriving stock Show
-
--}
-getGIDListM :: Label Object -> GameStateExceptT (NonEmpty (GID Object))
-getGIDListM label = do
-  -- throwMaybe objErr . (Data.Map.Strict.lookup gid <$> unwrappedMap) =<< get
-  throwMaybeM labelErr . (Data.Map.Strict.lookup label <$> unwrappedMap) =<< get
+getGIDListM :: GID Location
+                -> Label Object
+                -> GameStateExceptT (NonEmpty (GID Object))
+getGIDListM locationGID label =
+  throwMaybeM labelErr . lookupLabel
+    =<< throwMaybeM locationErr . lookupGID
+    =<< get
   where
+    locationErr = "location does not exist " <> show locationGID
     labelErr = "Could not find that gid list based on label " <> show label
-    unwrappedMap = _unLabelToGIDListMapping' . _objectLabelMap' . _world'
+    lookupLabel = Data.Map.Strict.lookup label <$> unwrappedObjectMap
+    lookupGID = Data.Map.Strict.lookup locationGID <$> unwrappedLocationMap
+    unwrappedLocationMap = _unGIDToDataMapping' . _locationMap' . _world'
+    unwrappedObjectMap = _unLabelToGIDListMapping' . _objectLabelMap'
 
 setObjectLabelMapM :: Label Object -> GID Object -> GameStateExceptT ()
-setObjectLabelMapM label gid = do
+setObjectLabelMapM objectLabel objectGid = do
+  location :: Location <-  getLocationM . _playerLocation' . _player' =<< get
+  let unwrappedMap :: Data.Map.Strict.Map (Label Object) (GIDList Object)
+      unwrappedMap = (_unLabelToGIDListMapping' ._objectLabelMap') location
+      updatedMap = LabelToGIDListMapping
+        $ Data.Map.Strict.insertWith (<>) objectLabel objectGid' unwrappedMap
+      location' = location {_objectLabelMap' = updatedMap}
+  setLocationM location'
+  where 
+    objectGid' = Data.List.NonEmpty.singleton objectGid
+
+setLocationM :: Location -> GameStateExceptT ()
+setLocationM location = do
+  lgid <- _playerLocation' . _player' <$> get
   world <- _world' <$> get
-  let objectLabelMap = _objectLabelMap' world
-      labelToGIDListMap  = LabelToGIDListMapping
-                          . Data.Map.Strict.insertWith (<>) label gid'
-                          $ _unLabelToGIDListMapping' objectLabelMap
-  modify' (\gs -> gs{_world' = world {_objectLabelMap' = labelToGIDListMap}})
-  where
-    gid' = Data.List.NonEmpty.singleton gid
+  locationMap <- GIDToDataMapping
+                  . Data.Map.Strict.insert lgid location
+                  . unwrappedMap <$> get
+  modify' (\gs -> gs{_world' = world{_locationMap' = locationMap} })
+    where
+      unwrappedMap = _unGIDToDataMapping' . _locationMap' . _world'

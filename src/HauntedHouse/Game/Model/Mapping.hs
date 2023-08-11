@@ -12,18 +12,25 @@ import qualified Data.List.NonEmpty
 -- LocationData Map (GID Label) Label 
 newtype Label a = Label {_unLabel' :: Lexeme} deriving stock (Show,Eq,Ord)
 
+type GIDList a = (Data.List.NonEmpty.NonEmpty (GID a))
+
 newtype ContainerMap a = ContainerMap 
-  { _unContainerMap' :: Map (Label a) (Data.List.NonEmpty.NonEmpty (GID a))} 
+  { _unContainerMap' :: Map (Label a) (GIDList a)} 
     deriving stock (Eq,Ord,Show)
   
 newtype NeighborMap a b = NeighborMap {
-  _unNeighborMap :: Data.Map.Strict.Map a (Data.List.NonEmpty.NonEmpty (GID b))
+  _unNeighborMap :: Data.Map.Strict.Map a (GIDList b)
 } deriving stock Show 
 
 newtype LabelToGIDListMapping a 
   = LabelToGIDListMapping 
-    { _unLabelToGIDListMapping' :: Data.Map.Strict.Map (Label a) (NonEmpty (GID a))}
+    { _unLabelToGIDListMapping' :: Data.Map.Strict.Map (Label a) (GIDList a)}
       deriving stock Show 
+
+newtype LocationObjectList a b 
+  = LocationObjectList 
+      {_unLocationObjectList :: Data.Map.Strict.Map a (GIDList b)}
+        deriving stock Show
 
 newtype LabelToGIDMapping a b
   = LabelToGIDMapping

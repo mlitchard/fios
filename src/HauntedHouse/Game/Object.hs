@@ -13,7 +13,7 @@ import HauntedHouse.Game.Narration.Containers (displayContainer)
 
 displayObjectM :: GID Object -> GameStateExceptT ()
 displayObjectM gidObject = do
-  (Object shortname _ mContainment _) <- getObjectM gidObject
+  (Object shortname _ mContainment _ _ ) <- getObjectM gidObject
   print (shortname <> "\n")
   whenJust mContainment (`whenLeft_` displayContainer)
   pass

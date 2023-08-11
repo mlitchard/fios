@@ -21,9 +21,21 @@ displayByLocation (key, ObjectAnchors objectRelationsMap) = do
   liftIO $ print (("In the " :: String) <> show key <> " you see")
   mapM_ displayByLocationArea $ Data.Map.Strict.toList objectRelationsMap
 
+{-
+
+data Object = Object
+  { _shortName'     :: Text
+  , _moveability'   :: Moveability
+  , _containment'   :: Maybe (Either Container Portal)
+  , _odescription'  :: Text
+  , _descriptors    :: [Label Adjective]
+  } deriving stock Show
+
+-}
+
 displayByLocationArea :: (GID Object, Neighbors) -> GameStateExceptT ()
 displayByLocationArea (objectGID, Neighbors (NeighborMap relations)) = do
-  (Object shortName _ mContainment description) <- getObjectM objectGID
+  (Object shortName _ mContainment description _) <- getObjectM objectGID
   print (shortName <> "\n")
   print (description <> "\n")
   whenJust mContainment (either displayContainer displayPortal)

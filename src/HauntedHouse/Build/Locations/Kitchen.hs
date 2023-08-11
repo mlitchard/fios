@@ -11,25 +11,32 @@ import HauntedHouse.Build.Locations.BuildFrame
 import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.World
         (Location (..), Objects (..), Object, Exit (..)
-        , LockState (Unlockable), ExitGIDMap (..))
+        , LockState (Unlockable), ExitGIDMap (..), Proximity (..)
+        , RoomAnchor (..), RoomAnchors (..), ObjectAnchors (..)
+        , Neighbors (..), Visibility (Visible))
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
 
-import qualified Data.List.NonEmpty
+import qualified Data.List.NonEmpty (singleton, NonEmpty, fromList)
 import qualified Data.Map.Strict
-
+ 
 import HauntedHouse.Build.Locations.Kitchen.Exits ( buildExits )
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.Model.Mapping 
-        (LabelToGIDMapping (LabelToGIDMapping), Label (..))
+import HauntedHouse.Game.Model.Mapping
+        (LabelToGIDMapping (LabelToGIDMapping), Label (..)
+        , NeighborMap (..), LabelToGIDListMapping (..), GIDList
+        , LocationObjectList (..))
 import HauntedHouse.Tokenizer ( Lexeme(..) )
+import HauntedHouse.Build.ObjectLabels (cabinet, sink, shelf)
+import HauntedHouse.Build.ObjectTemplate 
+        (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID
+        , kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID)
 
 buildKitchen :: GameStateExceptT ()
-buildKitchen = pass -- do
-  {-
-  buildFrame kitchenGID kitchenLabel kitchenLocation
-  buildExits 
+buildKitchen = do
+  buildFrame kitchenGID kitchenLocation
+--  buildExits 
  -- buildKitchenSink
  -- buildKitchenShelf
  -- buildKitchenCabinetAboveShelf
@@ -39,24 +46,75 @@ kitchenDescription :: Text
 kitchenDescription = "It's a kitchen"
 
 kitchenLocation :: Location 
-kitchenLocation = 
-  Location {_title' = "The Test Kitchen"
-            , _description' = kitchenDescription
-            , _objects' = Just kitchenObjects
-            , _directions' = Just directions}
+kitchenLocation = Location 
+  { _title' = "The Test Kitchen"
+  , _description' = kitchenDescription
+  , _anchoredObjects' = kitchenAnchors
+  , _floorInventory' = Nothing
+  , _objectLabelMap' = kitchenObjectLabelMap
+  , _visibilityList' = visibilityList
+  , _directions' = Just directions
+  }
 
-kitchenObjects :: Objects 
-kitchenObjects = Objects (Data.List.NonEmpty.fromList objectList)
-
-objectList :: [GID Object]
+visibilityList :: LocationObjectList Visibility Object
+visibilityList = LocationObjectList $ Data.Map.Strict.fromList 
+  [(Visible, Data.List.NonEmpty.fromList objectList)]
+objectList :: [GID Object] 
 objectList = 
   [kitchenShelfGID
-  ,kitchenSinkGID
-  ,kitchenCabinetAboveShelfGID
-  ,kitchenCabinetBelowShelfGID
-  ,kitchenCabinetAboveSinkGID
-  ,kitchenCabinetBelowSinkGID
-  ,kitchenEastDoorGID]
+  , kitchenCabinetAboveShelfGID
+  , kitchenCabinetBelowShelfGID
+  , kitchenSinkGID
+  , kitchenCabinetAboveSinkGID
+  , kitchenCabinetBelowSinkGID] 
+kitchenObjectLabelMap :: LabelToGIDListMapping Object
+kitchenObjectLabelMap = LabelToGIDListMapping $ Data.Map.Strict.fromList 
+  [(cabinet,kitchenCabinets),(sink, kitchenSink),(shelf, kitchenShelf)]
+
+kitchenSink :: Data.List.NonEmpty.NonEmpty (GID Object)
+kitchenSink = Data.List.NonEmpty.singleton kitchenSinkGID
+
+kitchenShelf :: Data.List.NonEmpty.NonEmpty (GID Object)
+kitchenShelf = Data.List.NonEmpty.singleton kitchenShelfGID 
+
+kitchenCabinets :: Data.List.NonEmpty.NonEmpty (GID Object)
+kitchenCabinets = Data.List.NonEmpty.fromList 
+  [kitchenCabinetAboveSinkGID
+  , kitchenCabinetBelowSinkGID
+  , kitchenCabinetAboveShelfGID
+  , kitchenCabinetBelowShelfGID]
+ 
+kitchenAnchors :: RoomAnchors 
+kitchenAnchors = 
+  RoomAnchors $ Data.Map.Strict.fromList [(EastAnchor, objectAnchors)]
+
+objectAnchors :: ObjectAnchors 
+objectAnchors = ObjectAnchors $ Data.Map.Strict.fromList 
+  [(kitchenSinkGID,sinkNeighbors),(kitchenShelfGID,shelfNeighbors)]
+
+shelfNeighbors :: Neighbors 
+shelfNeighbors = Neighbors shelfNeighborMap
+
+shelfNeighborMap :: NeighborMap Proximity Object 
+shelfNeighborMap = NeighborMap $ Data.Map.Strict.fromList shelfNeighborsList
+
+shelfNeighborsList :: [(Proximity, GIDList Object)]
+shelfNeighborsList =
+  [(PlacedAbove, Data.List.NonEmpty.singleton kitchenCabinetAboveShelfGID)
+  , (PlacedUnder, Data.List.NonEmpty.singleton kitchenCabinetBelowShelfGID)
+  , (PlacedLeft, Data.List.NonEmpty.singleton kitchenSinkGID)]
+
+sinkNeighbors :: Neighbors 
+sinkNeighbors = Neighbors sinkNeighborMap 
+
+sinkNeighborMap :: NeighborMap Proximity Object 
+sinkNeighborMap = NeighborMap $ Data.Map.Strict.fromList sinkNeighborsList
+
+sinkNeighborsList :: [(Proximity, GIDList Object)]
+sinkNeighborsList = 
+  [(PlacedAbove, Data.List.NonEmpty.singleton kitchenCabinetAboveSinkGID)
+  ,(PlacedUnder, Data.List.NonEmpty.singleton kitchenCabinetBelowSinkGID)
+  ,(PlacedRight,Data.List.NonEmpty.singleton kitchenShelfGID)]
 
 directions :: ExitGIDMap
 directions = ExitGIDMap $ LabelToGIDMapping $ Data.Map.Strict.fromList directionList 
@@ -66,8 +124,3 @@ directionList = [(kitchenEastLabel, kitchenEastDoorGID)]
 
 kitchenEastLabel :: Label Exit 
 kitchenEastLabel = Label EAST 
-{-
-kitchenEastExit :: Exit 
-kitchenEastExit = Exit {_toLocation' = hallGID}
--}
--}
