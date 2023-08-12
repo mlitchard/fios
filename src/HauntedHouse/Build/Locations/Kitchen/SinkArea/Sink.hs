@@ -10,7 +10,6 @@ import HauntedHouse.Build.LocationTemplate (kitchenGID)
 import HauntedHouse.Build.ObjectTemplate 
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping
-import HauntedHouse.Game.Model.Object.Relation 
 import HauntedHouse.Game.Model.World
 
 buildKitchenSink :: GameStateExceptT ()

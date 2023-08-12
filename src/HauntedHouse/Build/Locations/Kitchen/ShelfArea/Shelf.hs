@@ -16,18 +16,7 @@ import HauntedHouse.Build.ObjectTemplate
 import HauntedHouse.Build.LocationTemplate (kitchenGID)
 import Data.These (These(..))
 import HauntedHouse.Build.DescriptiveTemplate ( kitchenLabel ) 
-{-
 
-buildKitchenSink :: GameStateExceptT ()
-buildKitchenSink = do
-  world <- _world' <$> get
-  let objectMap' :: GIDToDataMapping Object 
-      objectMap' = 
-        GIDToDataMapping $ Data.Map.Strict.insert kitchenSinkGID buildSink 
-          $ (_unGIDToDataMapping' . _objectMap') world
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}}) 
-
--}
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf =  do
   world <- _world' <$> get

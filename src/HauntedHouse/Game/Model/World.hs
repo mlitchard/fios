@@ -89,7 +89,7 @@ newtype Container = Container
   {_unContainer :: These ContainedIn ContainedOn } deriving stock Show
 
 data ContainedIn = ContainedIn 
-  { _interface :: Interface Container 
+  { _interface' :: Interface Container 
   , _containedIn' :: ContainerMap Object
   } deriving stock (Eq,Ord,Show)
 
