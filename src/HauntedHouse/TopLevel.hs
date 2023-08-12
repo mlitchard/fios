@@ -24,11 +24,7 @@ topLevel :: GameStateExceptT ()
 topLevel = displayScene'
   where
     displayScene' :: GameStateExceptT ()
-    displayScene' =
-      getLocationIdM >>=
-      getLocationM  >>=
-      displaySceneM >>
-      go'
+    displayScene' = getLocationIdM >>= getLocationM  >>= displaySceneM >> go'
 
     go' :: GameStateExceptT ()
     go' = do

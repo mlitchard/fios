@@ -14,7 +14,6 @@ import HauntedHouse.Game.Object (getObjectM, displayObjectM)
 displayAnchoredM :: RoomAnchors -> GameStateExceptT ()
 displayAnchoredM (RoomAnchors roomAnchorMap) = do
   mapM_ displayByLocation $ Data.Map.Strict.toList roomAnchorMap
-  pass
 
 displayByLocation :: (RoomAnchor, ObjectAnchors) -> GameStateExceptT ()
 displayByLocation (key, ObjectAnchors objectRelationsMap) = do

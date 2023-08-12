@@ -35,6 +35,7 @@ import HauntedHouse.Game.Model.Mapping
         , NeighborMap (..), LabelToGIDListMapping (..), GIDList
         , LocationObjectList (..))
 import HauntedHouse.Tokenizer ( Lexeme(..) )
+import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf (buildKitchenShelf)
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
@@ -42,7 +43,7 @@ buildKitchen = do
   buildDescriptorMap descriptiveMap
   buildExits 
   buildKitchenSink
- -- buildKitchenShelf
+  buildKitchenShelf
  -- buildKitchenCabinetAboveShelf
  -- buildKitchenCabinetBelowShelf
 

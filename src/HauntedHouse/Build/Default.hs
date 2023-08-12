@@ -11,8 +11,7 @@ import HauntedHouse.Game.Model
 import HauntedHouse.Game.Model.Mapping
     (GIDToDataMapping (..), LabelToGIDListMapping (..), LocationObjectList (..))
 import HauntedHouse.Game.Model.World
-    (Location (..), World (..), RoomAnchors (..), Objects (..), Object
-    , Visibility)
+    (Location (..), World (..), RoomAnchors (..), Object, Visibility)
 
 defaultGameState :: GameState 
 defaultGameState = GameState 
