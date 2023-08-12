@@ -106,6 +106,8 @@ library
   import:          shared
   exposed-modules:
     HauntedHouse.Build.Default
+    HauntedHouse.Build.Descriptives
+    HauntedHouse.Build.DescriptiveTemplate
     HauntedHouse.Build.DirectionTemplate
     HauntedHouse.Build.Exits
     HauntedHouse.Build.ExitTemplate

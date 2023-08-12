@@ -7,6 +7,8 @@ import HauntedHouse.Game.Model.Mapping
 import Data.These
 import HauntedHouse.Recognizer (Adjective)
 
+data Descriptive 
+  
 data Object = Object
   { _shortName'     :: Text
   , _moveability'   :: Moveability

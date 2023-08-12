@@ -2,17 +2,7 @@ module HauntedHouse.Build.Exits where
 
 import Data.HashSet qualified
 import HauntedHouse.Tokenizer (directions, Lexeme)
-import Data.Char qualified (toLower, toUpper)
-{-
-objectNames :: [String] 
-objectNames = 
-  ["kitchenSink"
-  ,"kitchenCabinetBelowSink"
-  , "kitchenCabinetAboveSink"
-  , "kitchenShelf"
-  , "kitchenCabinetAboveShelf"
-  , "kitchenCabinetBelowShelf"]
--}
+import Data.Char qualified (toLower)
 
 directions' :: [Lexeme]
 directions' = Data.HashSet.toList directions
