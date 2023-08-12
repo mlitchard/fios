@@ -4,8 +4,8 @@ import HauntedHouse.Tokenizer (Lexeme (..))
 import HauntedHouse.Game.Model.Mapping  (Label (..))
 import HauntedHouse.Game.Model.World    (Location)
 
-kitchenLabel :: Label Location 
-kitchenLabel = Label KITCHEN 
+kitchenLocationLabel :: Label Location 
+kitchenLocationLabel = Label KITCHEN 
 
-hallLabel :: Label Location 
-hallLabel = Label HALL
+hallLocationLabel :: Label Location 
+hallLocationLabel = Label HALL

@@ -22,9 +22,9 @@ newtype NeighborMap a b = NeighborMap {
   _unNeighborMap :: Data.Map.Strict.Map a (GIDList b)
 } deriving stock Show 
 
-newtype LabelToGIDListMapping a 
+newtype LabelToGIDListMapping a b 
   = LabelToGIDListMapping 
-    { _unLabelToGIDListMapping' :: Data.Map.Strict.Map (Label a) (GIDList a)}
+    { _unLabelToGIDListMapping' :: Data.Map.Strict.Map (Label a) (GIDList b)}
       deriving stock Show 
 
 newtype LocationObjectList a b 

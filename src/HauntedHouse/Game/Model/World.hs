@@ -7,8 +7,6 @@ import HauntedHouse.Game.Model.Mapping
 import Data.These
 import HauntedHouse.Recognizer (Adjective)
 
-data Descriptive 
-  
 data Object = Object
   { _shortName'     :: Text
   , _moveability'   :: Moveability
@@ -28,7 +26,7 @@ data Location = Location
   , _description'     :: Text
   , _anchoredObjects' :: RoomAnchors
   , _floorInventory'  :: Maybe Objects
-  , _objectLabelMap'  :: LabelToGIDListMapping Object
+  , _objectLabelMap'  :: LabelToGIDListMapping Object Object
   , _visibilityList'  :: LocationObjectList Visibility Object
   , _directions'      :: Maybe ExitGIDMap
   } deriving stock Show
@@ -69,6 +67,7 @@ newtype Objects
 data World = World
   { _objectMap'         :: GIDToDataMapping Object
   , _locationMap'       :: GIDToDataMapping Location
+  , _descriptiveMap'    :: LabelToGIDListMapping Adjective Object
   , _exitMap'           :: GIDToDataMapping Exit
   } deriving stock Show
 

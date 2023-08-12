@@ -28,6 +28,7 @@ defaultWorld :: World
 defaultWorld = World 
   { _objectMap'     = GIDToDataMapping Data.Map.Strict.empty
     , _locationMap' = GIDToDataMapping Data.Map.Strict.empty
+    , _descriptiveMap' = LabelToGIDListMapping Data.Map.Strict.empty
     , _exitMap'     = GIDToDataMapping Data.Map.Strict.empty 
   }
 
@@ -82,7 +83,7 @@ defaultLocation = Location
 defaultVisibilityList :: LocationObjectList Visibility Object
 defaultVisibilityList = LocationObjectList Data.Map.Strict.empty
 
-defaultObjectLabelMap :: LabelToGIDListMapping Object
+defaultObjectLabelMap :: LabelToGIDListMapping Object Object
 defaultObjectLabelMap = LabelToGIDListMapping Data.Map.Strict.empty
 
 defaultRoomAnchors :: RoomAnchors 
