@@ -5,7 +5,7 @@ import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Mapping
 import qualified Data.Map.Strict
-import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID)
+import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenCabinetAboveShelfGID)
 import HauntedHouse.Build.DescriptiveTemplate 
 import Data.These (These(This))
 
@@ -16,7 +16,7 @@ buildKitchenCabinetAboveShelf = do
       objectMap' = 
         GIDToDataMapping 
           $ Data.Map.Strict.insert 
-              kitchenCabinetAboveSinkGID buildCabinet 
+              kitchenCabinetAboveShelfGID buildCabinet 
                 $ (_unGIDToDataMapping' . _objectMap') world
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
@@ -26,7 +26,7 @@ buildCabinet = Object
   , _moveability' = NotMoveable
   , _containment' = (Just . Left) cabinetContainer
   , _odescription' = "You can put things in it."
-  , _descriptors'  = [kitchenLabel]}
+  , _descriptors'  = [kitchenLabel, unlockedLabel]}
 
 cabinetContainer :: Container
 cabinetContainer = (Container . This) containedIn

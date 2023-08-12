@@ -121,6 +121,8 @@ library
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
+    HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink
+    HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink
     HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink
     HauntedHouse.Build.LocationTemplate
     HauntedHouse.Build.ObjectLabels

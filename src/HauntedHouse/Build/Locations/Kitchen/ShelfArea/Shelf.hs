@@ -35,10 +35,6 @@ buildShelf= Object
   , _descriptors' = [kitchenLabel]
   }
 
-{-
-newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
-  deriving stock (Eq,Ord,Show)
--}
 shelfContainer :: Container
 shelfContainer = (Container . That) containedOn 
   where 

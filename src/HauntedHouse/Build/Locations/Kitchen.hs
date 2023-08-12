@@ -11,8 +11,7 @@ import HauntedHouse.Recognizer (Adjective)
 -- import HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink
 import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.World
-        (Location (..), Objects (..), Object, Exit (..)
-        , LockState (Unlockable), ExitGIDMap (..), Proximity (..)
+        (Location (..), Object, Exit (..), ExitGIDMap (..), Proximity (..)
         , RoomAnchor (..), RoomAnchors (..), ObjectAnchors (..)
         , Neighbors (..), Visibility (Visible))
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
@@ -37,6 +36,12 @@ import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Tokenizer ( Lexeme(..) )
 import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf (buildKitchenShelf)
 import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
+    ( buildKitchenCabinetAboveShelf )
+import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
+    ( buildKitchenCabinetBelowShelf )
+import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink
+    ( buildKitchenCabinetAboveSink )
+import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
@@ -46,7 +51,9 @@ buildKitchen = do
   buildKitchenSink
   buildKitchenShelf
   buildKitchenCabinetAboveShelf
- -- buildKitchenCabinetBelowShelf
+  buildKitchenCabinetBelowShelf
+  buildKitchenCabinetAboveSink
+  buildKitchenCabinetBelowSink
 
 kitchenDescription :: Text 
 kitchenDescription = "It's a kitchen"

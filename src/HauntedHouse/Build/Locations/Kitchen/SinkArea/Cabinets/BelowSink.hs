@@ -1,25 +1,23 @@
-module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf 
-  where
-  
+module HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink where
+
+import HauntedHouse.Build.DescriptiveTemplate
+    ( unlockedLabel, kitchenLabel )  
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
-        (Object (..) , World (..), Container (..), LockState (Unlocked), Moveability (..), ContainedIn (..), Interface (..))
-import qualified Data.Map.Strict (insert, fromList, empty)
-
-import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID, kitchenCabinetBelowShelfGID)
-import HauntedHouse.Build.LocationTemplate (kitchenGID)
-import HauntedHouse.Build.DescriptiveTemplate
+        (Object (..), World (..), Container (..), ContainedIn (..), Moveability (..), Interface (..))
+import qualified Data.Map.Strict
+import HauntedHouse.Build.ObjectTemplate (kitchenCabinetBelowSinkGID)
 import Data.These (These(..))
 
-buildKitchenCabinetBelowShelf :: GameStateExceptT ()
-buildKitchenCabinetBelowShelf = do
+buildKitchenCabinetBelowSink :: GameStateExceptT ()
+buildKitchenCabinetBelowSink = do
   world <- _world' <$> get 
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = 
         GIDToDataMapping 
           $ Data.Map.Strict.insert 
-              kitchenCabinetBelowShelfGID buildCabinet 
+              kitchenCabinetBelowSinkGID buildCabinet 
                 $ (_unGIDToDataMapping' . _objectMap') world
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
