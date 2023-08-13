@@ -1,6 +1,7 @@
 module HauntedHouse.TopLevel (start) where
 
-import HauntedHouse.Game.Model (GameStateExceptT)
+import HauntedHouse.Game.Model 
+        (GameStateExceptT, Verbosity (..), GameState (..))
 import HauntedHouse.Tokenizer (tokens, Lexeme, runParser)
 import System.Console.Haskeline
         (InputT, getInputLine, runInputT, defaultSettings)
@@ -15,6 +16,7 @@ import qualified Data.Text
 
 data GameInput
     = MkGameInput Text
+    | Verbose
     | Quit
 
 start :: GameStateExceptT ()
@@ -31,6 +33,7 @@ topLevel = displayScene'
       input <- liftIO getInput
       case input of
         Nothing -> displayScene'
+        Just Verbose -> setVerbosityM >> topLevel
         Just Quit -> pass
         Just (MkGameInput input') -> do
           liftIO $ print (("input debug go' " :: String) <> show input')
@@ -45,11 +48,11 @@ getInput = do
     case str of
         ""     -> pure Nothing
         "quit" -> pure $ Just Quit
+        "verbose" -> pure $ Just Verbose
         input  -> pure $ Just (mkGameInput input)
     where
         go :: InputT IO String
         go = do
-           -- displayScene
             minput <- getInputLine "% "
             case minput of
                 Nothing -> go
@@ -58,6 +61,18 @@ getInput = do
 
 mkGameInput :: String -> GameInput
 mkGameInput str = MkGameInput (toText $ map Data.Char.toUpper str)
+
+setVerbosityM :: GameStateExceptT ()
+setVerbosityM = do
+  (verbosity,report) <- setVerbose . _verbosity' <$> get
+  liftIO $ print report
+  modify' (\gs -> gs{_verbosity' = verbosity})
+  pass
+
+setVerbose :: Verbosity -> (Verbosity,Text)
+setVerbose Quiet = (Normal, "verbosity set to normal")
+setVerbose Normal = (Loud, "verbosity set to loud") 
+setVerbose Loud = (Quiet, "verbosity set to quiet")
 
 parseTokens :: [Lexeme] -> Either Text Imperative
 parseTokens toks =

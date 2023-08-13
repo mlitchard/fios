@@ -123,6 +123,7 @@ data Lexeme
   | SHELF
   | LOCKED
   | UNLOCKED
+  | VERBOSE
   | SEPERATOR
   deriving stock (Show, Eq, Enum, Ord)
 
@@ -210,4 +211,5 @@ term =
     <|> SHELF <$ symbol "SHELF"
     <|> LOCKED <$ symbol "LOCKED"
     <|> UNLOCKED <$ symbol "UNLOCKED"
+    <|> VERBOSE <$ symbol "VERBOSE"
     <|> SEPERATOR <$ symbol ","

@@ -13,7 +13,7 @@ data GameState = GameState
   , _report'        :: [Text]
   , _player'        :: Player
   , _narration'     :: Narration
-  , _verbosity      :: Verbosity
+  , _verbosity'     :: Verbosity
   , _clarification' :: Maybe (NonEmpty Text)
   } deriving stock Show
 

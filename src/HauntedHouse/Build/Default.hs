@@ -19,7 +19,7 @@ defaultGameState = GameState
   , _report' = [] 
   , _player' = defaultPlayer
   , _narration' = defaultNarration 
-  , _verbosity = Loud
+  , _verbosity' = Loud
   , _clarification' = Nothing
   }
 
