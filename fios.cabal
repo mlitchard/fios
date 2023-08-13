@@ -94,6 +94,7 @@ common shared
     , profunctors
     , relude        >=1.0
     , shower
+    , split
     , template-haskell
     , time
     , these == 1.2

@@ -23,7 +23,7 @@ buildKitchenCabinetBelowSink = do
 
 buildCabinet :: Object 
 buildCabinet = Object 
-  { _shortName' = "A cabinet, above the sink."
+  { _shortName' = "A cabinet, under the sink."
   , _moveability' = NotMoveable
   , _containment' = (Just . Left) cabinetContainer
   , _odescription' = "You can put things in it."

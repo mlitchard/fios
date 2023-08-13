@@ -6,6 +6,7 @@ import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.Mapping
 import Data.These
 import HauntedHouse.Recognizer (Adjective)
+import qualified Data.Text
 
 data Object = Object
   { _shortName'     :: Text
@@ -82,8 +83,13 @@ data Proximity
   | PlacedRight
       deriving stock (Eq,Ord,Show)
 
+fromProximity :: Proximity -> Text 
+fromProximity proximity = 
+  Data.Text.toLower . snd $ Data.Text.breakOnEnd "Placed" $ show proximity
+  
 newtype Neighbors = Neighbors 
   {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show 
+
 
 newtype Container = Container 
   {_unContainer :: These ContainedIn ContainedOn } deriving stock Show

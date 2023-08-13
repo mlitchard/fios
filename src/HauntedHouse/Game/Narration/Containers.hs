@@ -25,13 +25,13 @@ displayContainer (Container contained) = do
 displayContainedInInitial :: ContainedIn -> GameStateExceptT ()
 displayContainedInInitial (ContainedIn Open (ContainerMap containerMap)) = do
   if Data.Map.Strict.null containerMap
-    then print ("You don't see anything inside.\n" :: String)
-    else print ("There's something inside.\n" :: String)
+    then print ("You don't see anything inside." :: Text)
+    else print ("There's something inside." :: Text)
 displayContainedInInitial (ContainedIn (Closed _) _) = 
-  print ("It's closed.\n" :: String)
+  print ("It's closed." :: Text)
 
 displayContainedOnInitial :: ContainedOn -> GameStateExceptT ()
 displayContainedOnInitial (ContainedOn (ContainerMap containerMap)) = do 
   if Data.Map.Strict.null containerMap
-    then print ("There's nothing on it.\n" :: String)
-    else print ("You see some things on it.\n" :: String)
+    then print ("There's nothing on it." :: Text)
+    else print ("You see some things on it." :: Text)
