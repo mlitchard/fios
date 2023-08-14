@@ -10,14 +10,21 @@ import HauntedHouse.Tokenizer.Data (Lexeme(VERBOSE))
 updateNarration :: Narration -> GameStateExceptT ()
 updateNarration narration =  modify' (\g -> g {_narration' = narration})
 
-displaySceneM :: Location -> GameStateExceptT ()
-displaySceneM (Location title description anchored floor' _ _ _) = do
-  verbosity <- _verbosity' <$> get 
-  case verbosity of 
-    Quiet -> displayQuietM
-    Normal -> displayNormalM
-    Loud -> displayLoudM 
+displaySceneM :: Bool -> Location -> GameStateExceptT ()
+displaySceneM useVerbosity location =
+  if useVerbosity
+    then do
+            verbosity <- _verbosity' <$> get 
+            case verbosity of 
+              Quiet -> displayQuietM
+              Normal -> displayNormalM
+              Loud -> displayLoudM
+  else displayLoudM  
   where
+    title = _title' location
+    description = _description' location
+    anchored = _anchoredObjects' location
+    floor' = _floorInventory' location
     (RoomAnchors anchored') = anchored
     emptyRoom = Data.Map.Strict.null anchored' && isNothing floor'
     displayQuietM = liftIO $ print ("You are in the " <> title)

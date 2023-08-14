@@ -10,6 +10,7 @@ import HauntedHouse.Recognizer (Imperative, imperative, parser, fullParses)
 import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 import HauntedHouse.Game.Narration (displaySceneM)
 import HauntedHouse.Game.Engine (engine)
+import HauntedHouse.Internal ( setVerbosityM )
 import Control.Monad.Except (throwError)
 import HauntedHouse.Build.GameState (buildGameState)
 import qualified Data.Text
@@ -26,7 +27,8 @@ topLevel :: GameStateExceptT ()
 topLevel = displayScene'
   where
     displayScene' :: GameStateExceptT ()
-    displayScene' = getLocationIdM >>= getLocationM  >>= displaySceneM >> go'
+    displayScene' = 
+      getLocationIdM >>= getLocationM  >>= displaySceneM True >> go'
 
     go' :: GameStateExceptT ()
     go' = do
@@ -61,18 +63,6 @@ getInput = do
 
 mkGameInput :: String -> GameInput
 mkGameInput str = MkGameInput (toText $ map Data.Char.toUpper str)
-
-setVerbosityM :: GameStateExceptT ()
-setVerbosityM = do
-  (verbosity,report) <- setVerbose . _verbosity' <$> get
-  liftIO $ print report
-  modify' (\gs -> gs{_verbosity' = verbosity})
-  pass
-
-setVerbose :: Verbosity -> (Verbosity,Text)
-setVerbose Quiet = (Normal, "verbosity set to normal")
-setVerbose Normal = (Loud, "verbosity set to loud") 
-setVerbose Loud = (Quiet, "verbosity set to quiet")
 
 parseTokens :: [Lexeme] -> Either Text Imperative
 parseTokens toks =
