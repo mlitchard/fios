@@ -9,10 +9,14 @@ import HauntedHouse.Recognizer (Adjective)
 import qualified Data.Text
 import Data.These
 
+data Container = Container 
+  {_container'      :: Either Containment Portal
+  , _containerGid'  :: GID Object
+  } 
 data Object = Object
   { _shortName'     :: Text
   , _moveability'   :: Moveability
-  , _containment'   :: Maybe (Either Containment Portal)
+  , _containment'   :: Maybe Container
   , _odescription'  :: Text
   , _descriptors'   :: [Label Adjective]
   } deriving stock Show

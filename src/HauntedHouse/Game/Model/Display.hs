@@ -7,7 +7,7 @@ import HauntedHouse.Game.Model.World
         , Object (..), Containment (..))
 import HauntedHouse.Game.Model.Mapping (ContainerMap(..))
 import HauntedHouse.Game.Object (displayObjectM, getObjectM)
-import HauntedHouse.Internal ( throwMaybeM, throwEitherM )
+import HauntedHouse.Internal ( throwMaybeM, throwRightM, throwLeftM)
 import qualified Data.List.NonEmpty
 import Data.These
 
@@ -74,8 +74,23 @@ instance Display ContainedBy where
   displayScene (ContainedBy _) = pass
 
   display :: ContainedBy -> GameStateExceptT ()
-  display (ContainedBy gid)= do
-    object :: Containment <- throwEitherM "Not a container" 
-                =<< throwMaybeM "Not contained by" . _containment' 
-                =<< getObjectM gid
+  display (ContainedBy gid) = do
+    object <- getObjectM gid
+    these' <- _unContainment' 
+                <$> (throwRightM "Not a container" 
+                      =<< throwMaybeM "Not contained by" (_containment' object))
+  
+  {-
+  data ContainedIn = ContainedIn 
+  { _interface' :: Interface Containment 
+  , _containedIn' :: ContainerMap Object
+  } deriving stock (Eq,Ord,Show)
+  -}
+    case these' of 
+      This containedIn -> pass 
+      That e -> do 
+                  containedOn <- throwRightM "Not contained On" e
+                  pass
+      These containedIn _ -> pass
+      
     pass
