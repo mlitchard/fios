@@ -31,7 +31,7 @@ prepositions =
 adjectives :: HashSet Lexeme
 adjectives = 
   HS.fromList [MIND, BLUE, RED, GREAT, LONG, OLD, DRUNK, PLANT, POT, TEA
-              , CABINET, LOCKED, UNLOCKED, KITCHEN]
+              , CABINET, LOCKED, UNLOCKED, KITCHEN, VISIBLE]
 
 directions :: HashSet Lexeme
 directions = HS.fromList [NORTH, EAST, SOUTH, WEST, DOWN, UP]
@@ -124,6 +124,7 @@ data Lexeme
   | LOCKED
   | UNLOCKED
   | VERBOSE
+  | VISIBLE
   | SEPERATOR
   deriving stock (Show, Eq, Enum, Ord)
 
@@ -212,4 +213,5 @@ term =
     <|> LOCKED <$ symbol "LOCKED"
     <|> UNLOCKED <$ symbol "UNLOCKED"
     <|> VERBOSE <$ symbol "VERBOSE"
+    <|> VISIBLE <$ symbol "VISBILE"
     <|> SEPERATOR <$ symbol ","

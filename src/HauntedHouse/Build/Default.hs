@@ -11,7 +11,7 @@ import HauntedHouse.Game.Model
 import HauntedHouse.Game.Model.Mapping
     (GIDToDataMapping (..), LabelToGIDListMapping (..), LocationObjectList (..))
 import HauntedHouse.Game.Model.World
-    (Location (..), World (..), RoomAnchors (..), Object, Visibility)
+    (Location (..), World (..), RoomAnchors (..), Object)
 
 defaultGameState :: GameState 
 defaultGameState = GameState 
@@ -75,12 +75,8 @@ defaultLocation = Location
   , _anchoredObjects' = defaultRoomAnchors
   , _floorInventory' = Nothing
   , _objectLabelMap' = defaultObjectLabelMap
-  , _visibilityList' = defaultVisibilityList
   , _directions'  = Nothing
   }
-
-defaultVisibilityList :: LocationObjectList Visibility Object
-defaultVisibilityList = LocationObjectList Data.Map.Strict.empty
 
 defaultObjectLabelMap :: LabelToGIDListMapping Object Object
 defaultObjectLabelMap = LabelToGIDListMapping Data.Map.Strict.empty

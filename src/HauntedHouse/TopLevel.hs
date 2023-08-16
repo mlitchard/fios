@@ -1,4 +1,4 @@
-module HauntedHouse.TopLevel (start) where
+module HauntedHouse.TopLevel where
 
 import HauntedHouse.Game.Model 
         (GameStateExceptT, Verbosity (..), GameState (..))

@@ -4,7 +4,7 @@ module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
-        (Object (..) , World (..), Container (..), LockState (Unlocked), Moveability (..), ContainedIn (..), Interface (..))
+        (Object (..) , World (..), Containment (..), LockState (Unlocked), Moveability (..), ContainedIn (..), Interface (..))
 import qualified Data.Map.Strict (insert, fromList, empty)
 
 import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID, kitchenCabinetBelowShelfGID)
@@ -31,8 +31,8 @@ buildCabinet = Object
   , _odescription' = "You can put things in it."
   , _descriptors'  = [kitchenLabel,unlockedLabel]}
 
-cabinetContainer :: Container
-cabinetContainer = (Container . This) containedIn
+cabinetContainer :: Containment
+cabinetContainer = (Containment . This) containedIn
 
 containedIn :: ContainedIn
 containedIn = ContainedIn 

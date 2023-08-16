@@ -28,8 +28,8 @@ buildCabinet = Object
   , _odescription' = "You can put things in it."
   , _descriptors'  = [kitchenLabel, unlockedLabel]}
 
-cabinetContainer :: Container
-cabinetContainer = (Container . This) containedIn
+cabinetContainer :: Containment
+cabinetContainer = (Containment . This) containedIn
 
 containedIn :: ContainedIn
 containedIn = ContainedIn 

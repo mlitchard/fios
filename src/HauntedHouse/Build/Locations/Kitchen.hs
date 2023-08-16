@@ -13,7 +13,7 @@ import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.World
         (Location (..), Object, Exit (..), ExitGIDMap (..), Proximity (..)
         , RoomAnchor (..), RoomAnchors (..), ObjectAnchors (..)
-        , Neighbors (..), Visibility (Visible))
+        , Neighbors (..))
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
 -- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
@@ -65,13 +65,9 @@ kitchenLocation = Location
   , _anchoredObjects' = kitchenAnchors
   , _floorInventory' = Nothing
   , _objectLabelMap' = kitchenObjectLabelMap
-  , _visibilityList' = visibilityList
   , _directions' = Just directions
   }
 
-visibilityList :: LocationObjectList Visibility Object
-visibilityList = LocationObjectList $ Data.Map.Strict.fromList 
-  [(Visible, Data.List.NonEmpty.fromList objectList)]
 objectList :: [GID Object] 
 objectList = 
   [kitchenShelfGID

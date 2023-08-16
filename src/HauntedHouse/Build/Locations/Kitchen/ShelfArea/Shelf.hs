@@ -6,7 +6,8 @@ import HauntedHouse.Game.Model
     ( GameState(_world'), GameStateExceptT )
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
-    ( World(_objectMap'), Object(..), ContainedOn (..), Container (..), Moveability (NotMoveable)) 
+    ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..)
+    , Moveability (NotMoveable)) 
 import qualified Data.Map.Strict (insert, fromList, empty)
 import HauntedHouse.Build.ObjectTemplate
     ( kitchenSinkGID,
@@ -35,8 +36,8 @@ buildShelf= Object
   , _descriptors' = [kitchenLabel]
   }
 
-shelfContainer :: Container
-shelfContainer = (Container . That) containedOn 
+shelfContainer :: Containment
+shelfContainer = (Containment . That) (Left containedOn) 
   where 
     containedOn :: ContainedOn 
     containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty 

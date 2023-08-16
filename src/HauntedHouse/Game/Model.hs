@@ -4,6 +4,8 @@ import Data.List.NonEmpty qualified             (NonEmpty)
 import HauntedHouse.Game.Model.World
 import System.Console.Haskeline (InputT)
 import HauntedHouse.Game.Model.GID (GID)
+import HauntedHouse.Game.Model.Mapping
+import HauntedHouse.Recognizer (Adjective)
 
 type GameStateExceptT = ExceptT Text (StateT GameState IO)
 type InputGameStateExceptT = InputT GameStateExceptT

@@ -7,7 +7,7 @@ import HauntedHouse.Game.Model (GameStateExceptT)
 import qualified Data.Map.Strict (toList)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping (NeighborMap(..))
-import HauntedHouse.Game.Narration.Containers (displayContainer, displayPortal)
+import HauntedHouse.Game.Narration.Containers (displayContainment, displayPortal)
 import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Object (getObjectM, displayObjectM)
 import qualified Data.List.Split
@@ -31,7 +31,7 @@ displayByLocationArea (objectGID, Neighbors (NeighborMap relations)) = do
   (Object shortName _ mContainment description _) <- getObjectM objectGID
   print shortName
   print description
-  whenJust mContainment (either displayContainer displayPortal)
+  whenJust mContainment (either displayContainment displayPortal)
   mapM_ (displayRelations shortName) $ Data.Map.Strict.toList relations
 
 displayRelations :: Text

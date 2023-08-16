@@ -1,11 +1,11 @@
 module HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink where
 
 import HauntedHouse.Build.DescriptiveTemplate
-    ( unlockedLabel, kitchenLabel )  
+    ( unlockedLabel, kitchenLabel, visibleLabel )  
 import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
-        (Object (..), World (..), Container (..), ContainedIn (..), Moveability (..), Interface (..))
+        (Object (..), World (..), Containment (..), ContainedIn (..), Moveability (..), Interface (..))
 import qualified Data.Map.Strict
 import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID)
 import Data.These (These(..))
@@ -27,10 +27,10 @@ buildCabinet = Object
   , _moveability' = NotMoveable
   , _containment' = (Just . Left) cabinetContainer
   , _odescription' = "You can put things in it."
-  , _descriptors'  = [kitchenLabel,unlockedLabel]}
+  , _descriptors'  = [kitchenLabel,unlockedLabel,visibleLabel]}
 
-cabinetContainer :: Container
-cabinetContainer = (Container . This) containedIn
+cabinetContainer :: Containment
+cabinetContainer = (Containment . This) containedIn
 
 containedIn :: ContainedIn
 containedIn = ContainedIn 

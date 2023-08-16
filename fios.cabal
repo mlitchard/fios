@@ -146,6 +146,9 @@ library
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.OnlyVerb.DoGo
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
+    HauntedHouse.Game.Engine.VerbPhraseTwo
+    HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look
+    HauntedHouse.Game.Model.Display
     HauntedHouse.Game.Model.Mapping
     HauntedHouse.Game.Model.Object.Relation
     HauntedHouse.Game.Model.ToText 

@@ -23,15 +23,15 @@ buildKitchenSink = do
 
 buildSink :: Object 
 buildSink = Object 
-  { _shortName' = "A kitchen sink."
-  , _moveability' = NotMoveable
-  , _containment' = (Just . Left) sinkContainer
-  , _odescription' = "This sink is broken. You can put things in it."
-  , _descriptors' = [kitchenLabel]
+  { _shortName'     = "A kitchen sink."
+  , _moveability'   = NotMoveable
+  , _containment'   = (Just . Left) sinkContainer
+  , _odescription'  = "This sink is broken. You can put things in it."
+  , _descriptors'   = [kitchenLabel, visibleLabel]
   }
 
-sinkContainer :: Container 
-sinkContainer = (Container . Data.These.That) containedOn 
+sinkContainer :: Containment 
+sinkContainer = (Containment . Data.These.That) (Left containedOn) 
 
 containedOn :: ContainedOn 
 containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty

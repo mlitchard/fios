@@ -7,9 +7,13 @@ throwMaybeM :: Text -> Maybe a -> GameStateExceptT a
 throwMaybeM _ (Just a) = pure a
 throwMaybeM errmsg Nothing  = throwError errmsg
 
-throwEitherM :: Text -> Either a b -> GameStateExceptT b 
-throwEitherM _ (Right b)     = pure b
-throwEitherM errmsg (Left _) = throwError errmsg 
+throwLeftM :: Text -> Either a b -> GameStateExceptT b 
+throwLeftM _ (Right b)     = pure b
+throwLeftM errmsg (Left _) = throwError errmsg 
+
+throwRightM :: Text -> Either a b -> GameStateExceptT a
+throwRightM _ (Left a)       = pure a 
+throwRightM errmsg (Right _) = throwError errmsg 
 
 setVerbosityM :: GameStateExceptT ()
 setVerbosityM = do

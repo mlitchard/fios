@@ -4,14 +4,15 @@ import Data.List.NonEmpty qualified
 import Data.Map.Strict (Map)
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.Mapping
-import Data.These
+
 import HauntedHouse.Recognizer (Adjective)
 import qualified Data.Text
+import Data.These
 
 data Object = Object
   { _shortName'     :: Text
   , _moveability'   :: Moveability
-  , _containment'   :: Maybe (Either Container Portal)
+  , _containment'   :: Maybe (Either Containment Portal)
   , _odescription'  :: Text
   , _descriptors'   :: [Label Adjective]
   } deriving stock Show
@@ -20,7 +21,7 @@ data Moveability = Moveable | NotMoveable deriving stock (Eq, Ord, Enum, Show)
 
 data LeftOrRight = OnLeft | OnRight deriving stock (Eq,Ord,Show)
 
-data Visibility = Visible | NotVisible deriving stock (Eq,Show,Ord) 
+-- data Visibility = Visible | NotVisible deriving stock (Eq,Show,Ord) 
 
 data Location = Location
   { _title'           :: Text
@@ -28,7 +29,7 @@ data Location = Location
   , _anchoredObjects' :: RoomAnchors
   , _floorInventory'  :: Maybe Objects
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
-  , _visibilityList'  :: LocationObjectList Visibility Object
+  -- , _visibilityList'  :: LocationObjectList Visibility Object
   , _directions'      :: Maybe ExitGIDMap
   } deriving stock Show
 
@@ -72,9 +73,12 @@ data World = World
   , _exitMap'           :: GIDToDataMapping Exit
   } deriving stock Show
 
-data LockState = Locked | Unlocked | Unlockable deriving stock (Show, Eq, Ord)
+data LockState 
+  = Locked 
+  | Unlocked 
+  | Unlockable 
+      deriving stock (Show, Eq, Ord)
 
--- Containment and Proximity seperate concepts
 data Proximity
   = PlacedOn
   | PlacedUnder
@@ -90,14 +94,17 @@ fromProximity proximity =
 newtype Neighbors = Neighbors 
   {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show 
 
-
-newtype Container = Container 
-  {_unContainer :: These ContainedIn ContainedOn } deriving stock Show
+newtype Containment = Containment 
+  {_unContainment' :: These ContainedIn (Either ContainedOn ContainedBy)} 
+    deriving stock (Eq, Ord, Show)
 
 data ContainedIn = ContainedIn 
-  { _interface' :: Interface Container 
+  { _interface' :: Interface Containment 
   , _containedIn' :: ContainerMap Object
   } deriving stock (Eq,Ord,Show)
+
+newtype ContainedBy = ContainedBy { _unContainedBy' :: GID Object} 
+  deriving stock (Eq,Ord,Show)
 
 newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
   deriving stock (Eq,Ord,Show)
