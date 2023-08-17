@@ -40,4 +40,4 @@ displaySceneM useVerbosity location =
     testEmpty =
       if emptyRoom
         then print ("An empty room" :: Text)
-        else displayAnchoredM anchored -- add displayFloorM
+        else displayScene anchored -- add displayFloorM

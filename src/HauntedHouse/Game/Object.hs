@@ -7,16 +7,8 @@ import HauntedHouse.Game.Model.Mapping
     ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping') )
 import HauntedHouse.Game.Model.GID (GID (GID))
 import HauntedHouse.Game.Model (GameState (..), GameStateExceptT)
-import HauntedHouse.Game.Model.World 
-        (World (..), Object (..), ContainedIn, ContainedOn)
-import HauntedHouse.Game.Narration.Containers (displayContainment)
-
-displayObjectM :: GID Object -> GameStateExceptT ()
-displayObjectM gidObject = do
-  (Object shortname _ mContainment _ _ ) <- getObjectM gidObject
-  print shortname
-  whenJust mContainment (`whenLeft_` displayContainment)
-  pass
+import HauntedHouse.Game.Model.World (World (..), Object (..))
+-- import HauntedHouse.Game.Narration.Containers (displayContainment)
 
 getObjectM :: GID Object -> GameStateExceptT Object
 getObjectM gid@(GID gid') = do

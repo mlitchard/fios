@@ -9,14 +9,10 @@ import HauntedHouse.Recognizer (Adjective)
 import qualified Data.Text
 import Data.These
 
-data Container = Container 
-  {_container'      :: Either Containment Portal
-  , _containerGid'  :: GID Object
-  } 
 data Object = Object
   { _shortName'     :: Text
   , _moveability'   :: Moveability
-  , _containment'   :: Maybe Container
+  , _containment'   :: Maybe (Either Containment Portal)
   , _odescription'  :: Text
   , _descriptors'   :: [Label Adjective]
   } deriving stock Show
@@ -53,6 +49,7 @@ newtype ObjectAnchors
           = ObjectAnchors {
               _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors
             } deriving stock Show
+            
 newtype RoomAnchors
           = RoomAnchors {
               _unRoomAnchors :: Data.Map.Strict.Map RoomAnchor ObjectAnchors
@@ -99,7 +96,7 @@ newtype Neighbors = Neighbors
   {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show 
 
 newtype Containment = Containment 
-  {_unContainment' :: These ContainedIn (Either ContainedOn ContainedBy)} 
+  { _unContainment' :: These ContainedIn (Either ContainedOn ContainedBy)}
     deriving stock (Eq, Ord, Show)
 
 data ContainedIn = ContainedIn 
@@ -107,8 +104,10 @@ data ContainedIn = ContainedIn
   , _containedIn' :: ContainerMap Object
   } deriving stock (Eq,Ord,Show)
 
-newtype ContainedBy = ContainedBy { _unContainedBy' :: GID Object} 
-  deriving stock (Eq,Ord,Show)
+data ContainedBy = ContainedBy 
+  { _containedBy' :: GID Object
+  , _objectContained' :: GID Object
+  } deriving stock (Eq,Ord,Show)
 
 newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
   deriving stock (Eq,Ord,Show)

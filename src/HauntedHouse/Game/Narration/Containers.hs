@@ -6,7 +6,7 @@ import HauntedHouse.Game.Model.World
         (Portal (..), ContainedIn (..), ContainedOn (..), Interface (..), Containment)
 import Data.These (These(..))
 import HauntedHouse.Game.Model.Mapping (ContainerMap(..))
-
+{-
 displayPortal :: Portal -> GameStateExceptT ()
 displayPortal (Portal _ interface) =
   case interface of
@@ -26,6 +26,7 @@ data Threes a b c
     deriving stock (Show, Eq, Ord)
 
 -}
+
 displayContainment :: Containment -> GameStateExceptT () 
 displayContainment _ = pass 
 {-
@@ -62,4 +63,5 @@ displayContainedOnInitial (ContainedOn (ContainerMap containerMap)) = do
 {-
 displayContainedBy :: ContainedBy -> GameStateExceptT () 
 displayContainedBy _ = pass 
+-}
 -}

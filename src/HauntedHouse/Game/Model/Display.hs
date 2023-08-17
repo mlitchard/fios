@@ -1,29 +1,95 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module HauntedHouse.Game.Model.Display where
 
-import Data.Map.Strict qualified (null, elems)
+import Data.Map.Strict qualified (null, elems, toList)
 import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.World
         (ContainedIn (..), ContainedOn (..), ContainedBy (..), Interface (..)
-        , Object (..), Containment (..))
-import HauntedHouse.Game.Model.Mapping (ContainerMap(..))
-import HauntedHouse.Game.Object (displayObjectM, getObjectM)
-import HauntedHouse.Internal ( throwMaybeM, throwRightM, throwLeftM)
+        , Object (..), Containment (..), Proximity, Neighbors (..), Portal (..), fromProximity)
+import HauntedHouse.Game.Model.Mapping (ContainerMap(..), NeighborMap (..))
+import HauntedHouse.Game.Object (getObjectM)
+import HauntedHouse.Internal
+        ( throwMaybeM, throwRightM, throwLeftM, VisibleObject (..))
 import qualified Data.List.NonEmpty
 import Data.These
+import HauntedHouse.Game.Model.GID (GID)
+
+data DisplayRelation = DisplayRelation
+  { _proximity'         :: Proximity
+  , _proximitObjects'   :: Data.List.NonEmpty.NonEmpty (GID Object)
+  , _proximitShortName' :: Text
+  }
 
 class Display a where
     displayScene :: a -> GameStateExceptT ()
 
     display :: a -> GameStateExceptT ()
 
+instance Display (GID Object) where
+
+  displayScene :: GID Object -> GameStateExceptT ()
+  displayScene gid = do
+    (Object shortname _ mContainment _ _ ) <- getObjectM gid
+    print shortname
+    whenJust mContainment (`whenLeft_` display)
+
+  display = displayScene
+
+instance Display (GID Object, Neighbors) where
+
+  displayScene :: (GID Object, Neighbors) -> GameStateExceptT ()
+  displayScene (objectGID, Neighbors (NeighborMap relations)) = do
+    (Object shortName _ mContainment description _) <- getObjectM objectGID
+    print shortName
+    print description
+    whenJust mContainment (either display display)
+    mapM_ display
+      $ toDisplayRelation shortName
+      <$> Data.Map.Strict.toList relations
+    where
+      toDisplayRelation shortName (proximity, proximitObjects) = DisplayRelation
+        {_proximity' = proximity
+        , _proximitObjects' = proximitObjects
+        , _proximitShortName' = shortName}
+
+  display = displayScene
+
+instance Display Portal where
+  displayScene :: Portal -> GameStateExceptT ()
+  displayScene (Portal _ interface) =
+    case interface of
+      Open       -> print ("It's open" :: Text)
+      (Closed _) -> print ("It's closed" :: Text)
+
+  display = displayScene
+
 {-
-
-data ContainedIn = ContainedIn 
-  { _interface' :: Interface Containment 
-  , _containedIn' :: ContainerMap Object
-  } deriving stock (Eq,Ord,Show)
-
+newtype Containment = Containment 
+  {_unContainment' :: These ContainedIn (Either ContainedOn ContainedBy)} 
+    deriving stock (Eq, Ord, Show)
 -}
+instance Display Containment where
+
+  displayScene :: Containment -> GameStateExceptT ()
+  displayScene containment = case _unContainment' containment of
+    (This containedIn) -> display containedIn
+    (That onOrBy)      -> either display display onOrBy
+    (These containedIn onOrBy) -> do
+                                    display containedIn
+                                    either display display onOrBy
+
+
+  display = displayScene
+
+
+instance Display DisplayRelation where
+
+  displayScene :: DisplayRelation -> GameStateExceptT ()
+  displayScene (DisplayRelation proximity gidObjects shortName) = do
+    print (fromProximity proximity <> " " <> shortName)
+    mapM_ display gidObjects
+
+  display = displayScene
 
 instance Display ContainedIn where
 
@@ -36,7 +102,7 @@ instance Display ContainedIn where
 
   display :: ContainedIn -> GameStateExceptT ()
   display (ContainedIn Open (ContainerMap containedIn)) =
-    mapM_ displayObjectM flatten
+    mapM_ display flatten
     where
       flatten = concatMap Data.List.NonEmpty.toList
                   $ Data.Map.Strict.elems containedIn
@@ -52,45 +118,60 @@ instance Display ContainedOn where
 
   display :: ContainedOn -> GameStateExceptT ()
   display (ContainedOn (ContainerMap containedOn)) =
-    mapM_ displayObjectM flatten
+    mapM_ display flatten
     where
       flatten = concatMap Data.List.NonEmpty.toList
                   $ Data.Map.Strict.elems containedOn
 
 {-
+newtype Containment = Containment 
+  { _unContainment' :: These ContainedIn (Either ContainedOn ContainedBy)}
+    deriving stock (Eq, Ord, Show)
+-}
+instance Display ContainedBy where
+-- these :: (a -> c) -> (b -> c) -> (a -> b -> c) -> These a b -> c
+  displayScene :: ContainedBy -> GameStateExceptT ()
+  displayScene (ContainedBy containedBy objectContained) = do
+    options <- _unContainment' <$> (throwRightM "Not a container"
+                  =<< throwMaybeM "supposed to be container but isn't" . _containment'
+                  =<< getObjectM containedBy)
+    case options of
+      (This containedIn) -> do
+                              isVisible' <- isVisible containedIn
+                              if isVisible'
+                                then displayScene objectContained 
+                                else print ("You can't see that" :: Text)
+      (That onOrBy)      -> pass
+      _                  -> pass
 
-data Object = Object
-  { _shortName'     :: Text
-  , _moveability'   :: Moveability
-  , _containment'   :: Maybe (Either Containment Portal)
-  , _odescription'  :: Text
-  , _descriptors'   :: [Label Adjective]
-  } deriving stock Show
+  display = displayScene
+
+instance VisibleObject ContainedIn where
+  isVisible (ContainedIn Open _) = pure True
+  isVisible _                    = pure False
+
+instance VisibleObject ContainedOn where
+  isVisible _ = pure True
+{-
+
+data ContainedBy = ContainedBy 
+  { _containedBy' :: GID Object
+  , _objectContained' :: GID Object
+  } deriving stock (Eq,Ord,Show)
 
 -}
+instance VisibleObject ContainedBy where
+  isVisible (ContainedBy gid _) = do
+    either isVisible isVisible
+      =<< throwMaybeM "Not a container" . _containment'
+      =<< getObjectM gid
 
-instance Display ContainedBy where
-  displayScene :: ContainedBy -> GameStateExceptT ()
-  displayScene (ContainedBy _) = pass
-
-  display :: ContainedBy -> GameStateExceptT ()
-  display (ContainedBy gid) = do
-    object <- getObjectM gid
-    these' <- _unContainment' 
-                <$> (throwRightM "Not a container" 
-                      =<< throwMaybeM "Not contained by" (_containment' object))
-  
-  {-
-  data ContainedIn = ContainedIn 
-  { _interface' :: Interface Containment 
-  , _containedIn' :: ContainerMap Object
-  } deriving stock (Eq,Ord,Show)
-  -}
-    case these' of 
-      This containedIn -> pass 
-      That e -> do 
-                  containedOn <- throwRightM "Not contained On" e
-                  pass
-      These containedIn _ -> pass
-      
-    pass
+{-
+{ _unContainment' :: These ContainedIn (Either ContainedOn ContainedBy)}
+-}
+instance VisibleObject Containment where
+  isVisible (Containment containment) =
+    these isVisible 
+            (either isVisible isVisible ) 
+            (\x y -> isVisible x >> either isVisible isVisible y) 
+            containment
