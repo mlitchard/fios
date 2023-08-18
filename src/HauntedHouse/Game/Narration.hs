@@ -3,9 +3,10 @@ module HauntedHouse.Game.Narration where
 import HauntedHouse.Game.Model
         (Narration (..), GameStateExceptT, GameState (..), Verbosity (..))
 import HauntedHouse.Game.Model.World (Location (..), RoomAnchors (..), Objects (..))
-import HauntedHouse.Game.Narration.Anchored (displayAnchoredM)
+import HauntedHouse.Game.Narration.Anchored
 import qualified Data.Map.Strict (null)
 import HauntedHouse.Tokenizer.Data (Lexeme(VERBOSE))
+import HauntedHouse.Game.Model.Display (Display(..))
 
 updateNarration :: Narration -> GameStateExceptT ()
 updateNarration narration =  modify' (\g -> g {_narration' = narration})
@@ -40,4 +41,4 @@ displaySceneM useVerbosity location =
     testEmpty =
       if emptyRoom
         then print ("An empty room" :: Text)
-        else displayScene anchored -- add displayFloorM
+        else display anchored -- add displayFloorM

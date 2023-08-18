@@ -5,14 +5,15 @@ import Data.Map.Strict qualified (null, elems, toList)
 import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.World
         (ContainedIn (..), ContainedOn (..), ContainedBy (..), Interface (..)
-        , Object (..), Containment (..), Proximity, Neighbors (..), Portal (..), fromProximity)
+        , Object (..), Containment (..), Proximity, Neighbors (..), Portal (..), fromProximity, RoomAnchors (..), ObjectAnchors (..), RoomAnchor)
 import HauntedHouse.Game.Model.Mapping (ContainerMap(..), NeighborMap (..))
 import HauntedHouse.Game.Object (getObjectM)
 import HauntedHouse.Internal
-        ( throwMaybeM, throwRightM, throwLeftM, VisibleObject (..))
+        ( throwMaybeM, throwRightM, VisibleObject (..))
 import qualified Data.List.NonEmpty
 import Data.These
 import HauntedHouse.Game.Model.GID (GID)
+import HauntedHouse.Game.Narration.Anchored (directionFromRoomAnchor)
 
 data DisplayRelation = DisplayRelation
   { _proximity'         :: Proximity
@@ -78,9 +79,7 @@ instance Display Containment where
                                     display containedIn
                                     either display display onOrBy
 
-
   display = displayScene
-
 
 instance Display DisplayRelation where
 
@@ -123,11 +122,7 @@ instance Display ContainedOn where
       flatten = concatMap Data.List.NonEmpty.toList
                   $ Data.Map.Strict.elems containedOn
 
-{-
-newtype Containment = Containment 
-  { _unContainment' :: These ContainedIn (Either ContainedOn ContainedBy)}
-    deriving stock (Eq, Ord, Show)
--}
+
 instance Display ContainedBy where
 -- these :: (a -> c) -> (b -> c) -> (a -> b -> c) -> These a b -> c
   displayScene :: ContainedBy -> GameStateExceptT ()
@@ -136,13 +131,16 @@ instance Display ContainedBy where
                   =<< throwMaybeM "supposed to be container but isn't" . _containment'
                   =<< getObjectM containedBy)
     case options of
-      (This containedIn) -> do
-                              isVisible' <- isVisible containedIn
-                              if isVisible'
-                                then displayScene objectContained 
-                                else print ("You can't see that" :: Text)
-      (That onOrBy)      -> pass
-      _                  -> pass
+      (This containedIn) -> doContainedIn containedIn
+      (That onOrBy)      -> either display display onOrBy
+      (These containedIn onOrBy) -> doContainedIn containedIn 
+                                      >> either display display onOrBy
+      where 
+        doContainedIn containedIn = do
+          isVisible' <- isVisible containedIn
+          if isVisible'
+            then displayScene objectContained 
+            else print ("You can't see that" :: Text)
 
   display = displayScene
 
@@ -152,26 +150,38 @@ instance VisibleObject ContainedIn where
 
 instance VisibleObject ContainedOn where
   isVisible _ = pure True
-{-
 
-data ContainedBy = ContainedBy 
-  { _containedBy' :: GID Object
-  , _objectContained' :: GID Object
-  } deriving stock (Eq,Ord,Show)
-
--}
 instance VisibleObject ContainedBy where
   isVisible (ContainedBy gid _) = do
     either isVisible isVisible
       =<< throwMaybeM "Not a container" . _containment'
       =<< getObjectM gid
 
-{-
-{ _unContainment' :: These ContainedIn (Either ContainedOn ContainedBy)}
--}
+instance VisibleObject Portal where
+  isVisible _ = pure True 
+
 instance VisibleObject Containment where
   isVisible (Containment containment) =
     these isVisible 
             (either isVisible isVisible ) 
             (\x y -> isVisible x >> either isVisible isVisible y) 
             containment
+
+instance Display RoomAnchors where
+
+  displayScene :: RoomAnchors -> GameStateExceptT ()
+  displayScene (RoomAnchors roomAnchorMap) = do
+    mapM_ displayScene $ Data.Map.Strict.toList roomAnchorMap
+  
+  display :: RoomAnchors -> GameStateExceptT ()
+  display = displayScene
+
+instance Display (RoomAnchor, ObjectAnchors) where
+
+  displayScene :: (RoomAnchor, ObjectAnchors) -> GameStateExceptT ()
+  displayScene (key, ObjectAnchors objectRelationsMap) = do
+    liftIO 
+      $ print (("In the " :: Text) <> directionFromRoomAnchor key <> " you see")
+    mapM_ displayScene $ Data.Map.Strict.toList objectRelationsMap
+  
+  display = displayScene

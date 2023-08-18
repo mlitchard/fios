@@ -11,7 +11,7 @@ import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
           LabelToGIDListMapping(..),Label, LabelToGIDMapping (..), GIDList)
-import HauntedHouse.Internal ( throwMaybeM, throwEitherM )
+import HauntedHouse.Internal ( throwMaybeM, throwLeftM)
 import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 
 import HauntedHouse.Game.Model.GID (GID)
@@ -46,7 +46,7 @@ getExitFromObjectM :: GID Object -> GameStateExceptT Exit
 getExitFromObjectM objectGID =
   getContainment
     >>= throwMaybeM notContainer
-    >>= throwEitherM notExit
+    >>= throwLeftM notExit
     <&> _portalExit'
     >>= getExitM
   where
