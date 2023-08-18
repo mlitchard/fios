@@ -1,6 +1,6 @@
 module HauntedHouse.TopLevel where
 
-import HauntedHouse.Game.Model 
+import HauntedHouse.Game.Model
         (GameStateExceptT, Verbosity (..), GameState (..))
 import HauntedHouse.Tokenizer (tokens, Lexeme, runParser)
 import System.Console.Haskeline
@@ -11,9 +11,10 @@ import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 import HauntedHouse.Game.Narration (displaySceneM)
 import HauntedHouse.Game.Engine (engine)
 import HauntedHouse.Internal ( setVerbosityM )
-import Control.Monad.Except (throwError)
+import Control.Monad.Except (throwError, MonadError (catchError))
 import HauntedHouse.Build.GameState (buildGameState)
 import qualified Data.Text
+import HauntedHouse.Clarifier (clarifier)
 
 data GameInput
     = MkGameInput Text
@@ -24,10 +25,10 @@ start :: GameStateExceptT ()
 start = buildGameState >> topLevel
 
 topLevel :: GameStateExceptT ()
-topLevel = displayScene'
+topLevel = report >> displayScene'
   where
     displayScene' :: GameStateExceptT ()
-    displayScene' = 
+    displayScene' =
       getLocationIdM >>= getLocationM  >>= displaySceneM True >> go'
 
     go' :: GameStateExceptT ()
@@ -41,8 +42,15 @@ topLevel = displayScene'
           liftIO $ print (("input debug go' " :: String) <> show input')
           case runParser tokens input' of
               Left _ -> putStrLn "parse failed" >> displayScene'
-              Right tokens' -> either throwError engine (parseTokens tokens')
+              Right tokens' -> either throwError catchEngine (parseTokens tokens')
                                 >> topLevel
+          where
+            catchEngine parsed = engine parsed `catchError` clarifier
+
+report :: GameStateExceptT ()
+report = do
+  report' <- _report' <$> get  
+  mapM_ print report'
 
 getInput :: IO (Maybe GameInput)
 getInput = do

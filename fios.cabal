@@ -129,6 +129,7 @@ library
     HauntedHouse.Build.ObjectLabels
     HauntedHouse.Build.ObjectTemplate
     HauntedHouse.Build.Template
+    HauntedHouse.Clarifier
     HauntedHouse.Game.Engine
     HauntedHouse.Game.Location
     HauntedHouse.Game.Model

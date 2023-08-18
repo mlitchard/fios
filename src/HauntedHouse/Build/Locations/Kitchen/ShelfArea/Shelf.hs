@@ -33,7 +33,7 @@ buildShelf= Object
   , _moveability' = NotMoveable
   , _containment' = (Just . Left) shelfContainer   
   , _odescription' = "It's a shelf. You can put things on it"
-  , _descriptors' = [kitchenLabel]
+  , _conditions' = [kitchenLabel]
   }
 
 shelfContainer :: Containment

@@ -27,7 +27,7 @@ buildSink = Object
   , _moveability'   = NotMoveable
   , _containment'   = (Just . Left) sinkContainer
   , _odescription'  = "This sink is broken. You can put things in it."
-  , _descriptors'   = [kitchenLabel, visibleLabel]
+  , _conditions'   = [kitchenLabel, visibleLabel]
   }
 
 sinkContainer :: Containment 

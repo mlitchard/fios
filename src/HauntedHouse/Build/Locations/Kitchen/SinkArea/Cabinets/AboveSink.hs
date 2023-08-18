@@ -27,7 +27,7 @@ buildCabinet = Object
   , _moveability' = NotMoveable
   , _containment' = (Just . Left) cabinetContainer
   , _odescription' = "You can put things in it."
-  , _descriptors'  = [kitchenLabel,unlockedLabel,visibleLabel]}
+  , _conditions'  = [kitchenLabel,unlockedLabel,visibleLabel]}
 
 cabinetContainer :: Containment
 cabinetContainer = (Containment . This) containedIn

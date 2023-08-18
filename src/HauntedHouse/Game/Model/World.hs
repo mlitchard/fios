@@ -14,7 +14,7 @@ data Object = Object
   , _moveability'   :: Moveability
   , _containment'   :: Maybe (Either Containment Portal)
   , _odescription'  :: Text
-  , _descriptors'   :: [Label Adjective]
+  , _conditions'    :: [Label Adjective]
   } deriving stock Show
 
 data Moveability = Moveable | NotMoveable deriving stock (Eq, Ord, Enum, Show)

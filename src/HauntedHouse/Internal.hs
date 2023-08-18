@@ -2,7 +2,6 @@ module HauntedHouse.Internal where
 import HauntedHouse.Game.Model 
         (GameStateExceptT, Verbosity (..), GameState (..))
 import Control.Monad.Except (throwError)
-import HauntedHouse.Game.Model.World (Interface)
 
 throwMaybeM :: Text -> Maybe a -> GameStateExceptT a
 throwMaybeM _ (Just a) = pure a
@@ -30,3 +29,6 @@ setVerbose Loud = (Quiet, "verbosity set to quiet")
 
 class VisibleObject a where 
   isVisible :: a -> GameStateExceptT Bool 
+
+
+    

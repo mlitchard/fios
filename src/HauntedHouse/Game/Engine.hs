@@ -1,7 +1,5 @@
 module HauntedHouse.Game.Engine where
 
-import Control.Monad.Except (throwError)
-
 import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Engine.OnlyVerb ( evalOnlyVerb )
 import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
@@ -9,7 +7,6 @@ import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
 import HauntedHouse.Recognizer.WordClasses
     ( Imperative(..), VerbPhrase(..) )
 import HauntedHouse.Game.Engine.VerbPhraseTwo 
-
 
 engine :: Imperative -> GameStateExceptT ()
 engine (ImperativeClause (OnlyVerb verb)) = evalOnlyVerb verb

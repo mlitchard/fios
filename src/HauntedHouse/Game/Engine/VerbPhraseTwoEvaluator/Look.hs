@@ -1,16 +1,22 @@
 module HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look where
-import HauntedHouse.Recognizer.WordClasses (PrepPhrase (..), NounPhrase (..))
+import HauntedHouse.Recognizer.WordClasses
+        (PrepPhrase (..), NounPhrase (..))
 import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Tokenizer (Lexeme (..))
-import HauntedHouse.Game.Model.World (Location(..))
+import HauntedHouse.Game.Model.World (Location(..), Object (..), Objects)
 import Control.Monad.Except (throwError)
 import HauntedHouse.Game.Location (getLocationM, getLocationIdM)
 import HauntedHouse.Game.Model.Mapping
     ( LabelToGIDListMapping(_unLabelToGIDListMapping'), Label (..) )
 import qualified Data.Map.Strict (lookup)
+import HauntedHouse.Internal ( throwMaybeM, isVisible )
+import Relude.Extra (fmapToFst)
+import HauntedHouse.Game.Model.GID (GID)
+import HauntedHouse.Build.DescriptiveTemplate (visibleLabel)
+import HauntedHouse.Game.Object (getObjectM)
+import HauntedHouse.Clarifier (clarifyNotThere, clarifyWhich)
+import HauntedHouse.Game.Model.Display (Display(..))
 import qualified Data.List.NonEmpty
-import HauntedHouse.Internal ( throwMaybeM )
-import Relude.Extra (toFst, fmapToFst)
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
 doLookObjectM (PrepPhrase AT np ) = evaluateATNounPhrase np
@@ -20,25 +26,26 @@ doLookObjectM (PrepPhrase p _)   =
 doLookObjectM (Preposition p) = throwError ("simple preposition "
                                   <> show p <> "not evaluated in doLookObjectM")
 
-{-
-
-data NounPhrase
-  = NounPhrase1 Determiner NounPhrase
-  | NounPhrase2 Determiner AdjPhrase NounPhrase
-  | NounPhrase3 Number NounPhrase
-  | NounPhrase4 NounPhrase PrepPhrase
-  | NounPhrase5 AdjPhrase NounPhrase
-  | Noun Noun
-
--}
 evaluateATNounPhrase :: NounPhrase -> GameStateExceptT ()
 evaluateATNounPhrase (Noun noun) = do
   labelMap <- _unLabelToGIDListMapping' . _objectLabelMap'
                 <$> (getLocationM =<< getLocationIdM)
-  (_l,objectList) <- fmapToFst length
-                      $ throwMaybeM "nope" 
-                      $ Data.Map.Strict.lookup (Label noun) labelMap
-  -- if | l == 0 clarifyNotThere
-  print (("There are " <> (show . Data.List.NonEmpty.length $ objectList)) :: Text)
+  objectList <- Data.List.NonEmpty.toList
+                <$> throwMaybeM maybeErr 
+                    (Data.Map.Strict.lookup (Label noun) labelMap)
+
+  visibleObjects <- catMaybes <$> mapM visibility objectList
+  when (null visibleObjects) clarifyNotThere
+  let visibleObjects' = Data.List.NonEmpty.fromList visibleObjects
+  if length visibleObjects' == 1
+    then display (head visibleObjects')
+    else clarifyWhich visibleObjects'
+  where
+    maybeErr = "You don't see that here."
 
 evaluateATNounPhrase _ = throwError "evaluateATNounPhrase incomplete"
+
+visibility :: GID Object -> GameStateExceptT (Maybe (GID Object))
+visibility gid = do
+    conditions <- _conditions' <$> getObjectM gid
+    pure $ if visibleLabel `elem` conditions then Just gid else Nothing

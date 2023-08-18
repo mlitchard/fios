@@ -37,7 +37,7 @@ kitchenEastDoorObject = Object
   , _moveability'   = NotMoveable
   , _containment'   = (Just . Right) kitchenEastDoorPortal 
   , _odescription'  = kitchenEastDoorDesc
-  , _descriptors'   = [lockedLabel, visibleLabel]
+  , _conditions'   = [lockedLabel, visibleLabel]
   }
   where
     kitchenShortName    = "The door to the east hall."
