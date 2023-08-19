@@ -13,10 +13,7 @@ import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.World
         (Location (..), Object, Exit (..), ExitGIDMap (..), Proximity (..)
         , RoomAnchor (..), RoomAnchors (..), ObjectAnchors (..)
-        , Neighbors (..))
--- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
--- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
--- import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
+        , Neighbors (..), SecondaryObjects (..))
 
 import qualified Data.List.NonEmpty (singleton, NonEmpty, fromList)
 import qualified Data.Map.Strict
@@ -31,8 +28,7 @@ import HauntedHouse.Build.ObjectTemplate
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping
         (LabelToGIDMapping (LabelToGIDMapping), Label (..)
-        , NeighborMap (..), LabelToGIDListMapping (..), GIDList
-        , LocationObjectList (..))
+        , NeighborMap (..), LabelToGIDListMapping (..), GIDList)
 import HauntedHouse.Tokenizer ( Lexeme(..) )
 import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf (buildKitchenShelf)
 import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
@@ -62,12 +58,46 @@ kitchenLocation :: Location
 kitchenLocation = Location 
   { _title' = "The Test Kitchen"
   , _description' = kitchenDescription
+  , _anchoredTo' = kitchenAnchoredTo
   , _anchoredObjects' = kitchenAnchors
   , _floorInventory' = Nothing
   , _objectLabelMap' = kitchenObjectLabelMap
   , _directions' = Just directions
   }
 
+{-
+newtype SecondaryObjects 
+          = SecondaryObjects {
+            _unSecondaryObjects :: Data.Map.Strict.Map (GID Object) Neighbors
+          } deriving stock Show 
+-}
+kitchenAnchoredTo :: AnchoredTo
+kitchenAnchoredTo = 
+  AnchoredTo $ Data.Map.Strict.fromList anchoredToList
+
+anchoredToList :: [(GID Object,(GID Object,Proximity))]
+anchoredToList = 
+  [(kitchenCabinetAboveShelfGID,(kitchenShelfGID,PlacedAbove))
+  , (kitchenCabinetBelowShelfGID, (kitchenShelfGID,PlacedBelow))
+  , (kitchenCabinetAboveSinkGID,(kitchenSinkGID,PlacedAbove))
+  , (kitchenCabinetBelowSinkGID, (kitchenSinkGID,PlacedBelow))] 
+
+kitchenCabinetAboveShelfNeighbors :: Neighbors 
+kitchenCabinetAboveShelfNeighbors = 
+  (Neighbors . NeighborMap) Data.Map.Strict.empty 
+
+kitchenCabinetBelowShelfNeighbors :: Neighbors 
+kitchenCabinetBelowShelfNeighbors =
+  (Neighbors . NeighborMap) Data.Map.Strict.empty
+
+kitchenCabinetAboveSinkNeighbors :: Neighbors 
+kitchenCabinetAboveSinkNeighbors = 
+  (Neighbors . NeighborMap) Data.Map.Strict.empty
+
+kitchenCabinetBelowSinkNeighbors :: Neighbors 
+kitchenCabinetBelowSinkNeighbors = 
+  (Neighbors . NeighborMap) Data.Map.Strict.empty
+  
 objectList :: [GID Object] 
 objectList = 
   [kitchenShelfGID

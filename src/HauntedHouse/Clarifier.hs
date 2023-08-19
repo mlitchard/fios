@@ -11,7 +11,7 @@ clarifier report = do
   modify' (\gs -> gs{_report' = currentReport <> [report]})
 
 clarifyWhich :: NonEmpty (GID Object) -> GameStateExceptT () 
-clarifyWhich _ = pass 
+clarifyWhich _fuzzyObjects = pass 
 
 clarifyNotThere :: GameStateExceptT () 
 clarifyNotThere = throwError "You don't see that here"

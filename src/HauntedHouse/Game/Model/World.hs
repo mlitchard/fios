@@ -11,15 +11,32 @@ import Data.These
 
 data Object = Object
   { _shortName'     :: Text
-  , _moveability'   :: Moveability
-  , _containment'   :: Maybe (Either Containment Portal)
   , _odescription'  :: Text
-  , _conditions'    :: [Label Adjective]
+  , _conditions'    :: [Conditions]
+  , _descriptives'  :: [Label Adjective]
   } deriving stock Show
 
-data Moveability = Moveable | NotMoveable deriving stock (Eq, Ord, Enum, Show)
+newtype Nexus = Nexus {_unNexus' :: Either Containment Portal}  
+                        deriving stock (Eq, Ord,Show) 
 
-data LeftOrRight = OnLeft | OnRight deriving stock (Eq,Ord,Show)
+data Conditions
+  = Mobility' Moveability
+  | Perceptibility' Perceptibility
+  | Nexus' Nexus
+  | AnchoredTo' AnchoredTo 
+     deriving stock (Eq, Ord, Show)
+
+data Moveability 
+  = Moveable 
+  | NotMoveable AnchoredTo 
+      deriving stock (Eq, Ord, Show)
+
+data Perceptibility 
+  = Perceptible 
+  | Imperceptible 
+      deriving stock (Eq, Ord, Show)
+
+-- data LeftOrRight = OnLeft | OnRight deriving stock (Eq,Ord,Show)
 
 -- data Visibility = Visible | NotVisible deriving stock (Eq,Show,Ord) 
 
@@ -27,6 +44,7 @@ data Location = Location
   { _title'           :: Text
   , _description'     :: Text
   , _anchoredObjects' :: RoomAnchors
+  , _anchoredTo'      :: AnchoredTo 
   , _floorInventory'  :: Maybe Objects
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
   -- , _visibilityList'  :: LocationObjectList Visibility Object
@@ -49,7 +67,11 @@ newtype ObjectAnchors
           = ObjectAnchors {
               _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors
             } deriving stock Show
-            
+
+newtype AnchoredTo = AnchoredTo 
+  { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)} 
+    deriving stock (Show, Eq, Ord) 
+
 newtype RoomAnchors
           = RoomAnchors {
               _unRoomAnchors :: Data.Map.Strict.Map RoomAnchor ObjectAnchors
@@ -86,6 +108,8 @@ data Proximity
   | PlacedAbove
   | PlacedLeft
   | PlacedRight
+  | PlacedFront 
+  | PlacedBack
       deriving stock (Eq,Ord,Show)
 
 fromProximity :: Proximity -> Text 
@@ -116,3 +140,6 @@ data Portal = Portal
   { _portalExit'      :: GID Exit
   , _portalInterface' :: Interface Portal
   } deriving stock (Eq,Ord,Show)
+
+
+   
