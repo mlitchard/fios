@@ -5,9 +5,9 @@ import qualified Data.Map.Strict (insert, lookup, insertWith, Map)
 
 import HauntedHouse.Game.Model
         ( GameStateExceptT, GameState (_world',_player'), Player (..))
-import HauntedHouse.Game.Model.World 
+import HauntedHouse.Game.Model.World
         (Exit (..), World (..), Object (..), Location (..), ExitGIDMap (..)
-          , Portal (..))
+          , Portal (..), Conditions (..), Nexus (_unNexus'))
 import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
           LabelToGIDListMapping(..),Label, LabelToGIDMapping (..), GIDList)
@@ -16,6 +16,7 @@ import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Object (getObjectM)
+import qualified Data.List
 
 setWorldExitMapM :: GID Exit -> Exit -> GameStateExceptT ()
 setWorldExitMapM gid exit = do
@@ -42,18 +43,29 @@ getExitObjectM exitLabel = do
       noExit = "Error: Exit does not exist " <> show exitLabel
       dirErr = "Error: No Exits"
 
-getExitFromObjectM :: GID Object -> GameStateExceptT Exit
-getExitFromObjectM objectGID =
+getExitFromObjectM :: GID Object -> GameStateExceptT () -- Exit
+getExitFromObjectM objectGID = do
+  c <-  _conditions' <$> getObjectM objectGID
+  let nexus = catMaybes maybeNexus c
+  pass
+  where 
+    maybeNexus :: Condition -> Maybe Nexus
+    maybeNexus (Nexus nexus) = Just nexus
+    maybeNexus _ = Nothing
+    
+  {-
   getContainment
     >>= throwMaybeM notContainer
     >>= throwLeftM notExit
     <&> _portalExit'
     >>= getExitM
+    -}
+    {-
   where
-    getContainment = _containment' <$> getObjectM objectGID
+    getContainment = throwMaybeM notContainer =<< Data.List.find (== Nexus') <$> (_conditions' <$> getObjectM objectGID)
     notContainer = "Error: Not Container - " <> show objectGID
     notExit = "Error: Not Exit - " <> show objectGID
-
+-}
 getGIDListM :: GID Location
                 -> Label Object
                 -> GameStateExceptT (NonEmpty (GID Object))
@@ -78,7 +90,7 @@ setObjectLabelMapM objectLabel objectGid = do
         $ Data.Map.Strict.insertWith (<>) objectLabel objectGid' unwrappedMap
       location' = location {_objectLabelMap' = updatedMap}
   setLocationM location'
-  where 
+  where
     objectGid' = Data.List.NonEmpty.singleton objectGid
 
 setLocationM :: Location -> GameStateExceptT ()

@@ -12,19 +12,21 @@ import Data.These
 data Object = Object
   { _shortName'     :: Text
   , _odescription'  :: Text
-  , _conditions'    :: [Conditions]
+  , _conditions'    :: [Condition]
   , _descriptives'  :: [Label Adjective]
   } deriving stock Show
 
 newtype Nexus = Nexus {_unNexus' :: Either Containment Portal}  
                         deriving stock (Eq, Ord,Show) 
 
-data Conditions
+data Condition
   = Mobility' Moveability
   | Perceptibility' Perceptibility
   | Nexus' Nexus
   | AnchoredTo' AnchoredTo 
+  | Inventory 
      deriving stock (Eq, Ord, Show)
+
 
 data Moveability 
   = Moveable 
@@ -36,10 +38,6 @@ data Perceptibility
   | Imperceptible 
       deriving stock (Eq, Ord, Show)
 
--- data LeftOrRight = OnLeft | OnRight deriving stock (Eq,Ord,Show)
-
--- data Visibility = Visible | NotVisible deriving stock (Eq,Show,Ord) 
-
 data Location = Location
   { _title'           :: Text
   , _description'     :: Text
@@ -47,7 +45,6 @@ data Location = Location
   , _anchoredTo'      :: AnchoredTo 
   , _floorInventory'  :: Maybe Objects
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
-  -- , _visibilityList'  :: LocationObjectList Visibility Object
   , _directions'      :: Maybe ExitGIDMap
   } deriving stock Show
 
