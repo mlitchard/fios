@@ -1,6 +1,6 @@
 module HauntedHouse.Game.Narration where
 
-import HauntedHouse.Game.Model
+import HauntedHouse.Game.World
         (Narration (..), GameStateExceptT, GameState (..), Verbosity (..))
 import HauntedHouse.Game.Model.World (Location (..), RoomAnchors (..), Objects (..))
 import HauntedHouse.Game.Narration.Anchored

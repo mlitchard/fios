@@ -3,12 +3,13 @@ module HauntedHouse.Game.Object where
 
 import qualified Data.Map.Strict (lookup, insert)
 
-import HauntedHouse.Internal ( throwMaybeM, VisibleObject (..))
+
 import HauntedHouse.Game.Model.Mapping
     ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping') )
 import HauntedHouse.Game.Model.GID (GID (GID))
-import HauntedHouse.Game.Model (GameState (..), GameStateExceptT)
-import HauntedHouse.Game.Model.World (World (..), Object (..), Conditions (..), Perceptibility (..))
+
+import HauntedHouse.Game.Model.World 
+import HauntedHouse.Game.Model.Condition
 
 getObjectM :: GID Object -> GameStateExceptT Object
 getObjectM gid@(GID gid') = do
@@ -39,5 +40,5 @@ data Object = Object
 instance VisibleObject (GID Object) where
   isVisible :: GID Object -> GameStateExceptT Bool
   isVisible gid = do
-    conditions <- _conditions' <$> getObjectM gid
+    conditions <- _metaConditions' <$> getObjectM gid
     pure $ Perceptibility' Perceptible `elem` conditions

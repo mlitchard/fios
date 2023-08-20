@@ -17,6 +17,7 @@ import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Object (getObjectM)
 import qualified Data.List
+import Data.Aeson (Object)
 
 setWorldExitMapM :: GID Exit -> Exit -> GameStateExceptT ()
 setWorldExitMapM gid exit = do
@@ -33,6 +34,7 @@ getExitM gid = do
     throwLookup exitMap = throwMaybeM lookupErr $ Data.Map.Strict.lookup gid exitMap
     lookupErr = "Not found: exit gid " <> show gid
 
+
 getExitObjectM :: Label Exit -> GameStateExceptT Exit
 getExitObjectM exitLabel = do
   (ExitGIDMap (LabelToGIDMapping objGIDMap)) <- (throwMaybeM dirErr . _directions')
@@ -43,16 +45,17 @@ getExitObjectM exitLabel = do
       noExit = "Error: Exit does not exist " <> show exitLabel
       dirErr = "Error: No Exits"
 
-getExitFromObjectM :: GID Object -> GameStateExceptT () -- Exit
-getExitFromObjectM objectGID = do
+{-
+gefObjectM :: GID Object -> GameStateExceptT () -- Exit
+gefObjectM objectGID = do
   c <-  _conditions' <$> getObjectM objectGID
-  let nexus = catMaybes maybeNexus c
-  pass
+  -- let nexus = catMaybes maybeNexus c
+--  pass
   where 
     maybeNexus :: Condition -> Maybe Nexus
     maybeNexus (Nexus nexus) = Just nexus
     maybeNexus _ = Nothing
-    
+-}    
   {-
   getContainment
     >>= throwMaybeM notContainer

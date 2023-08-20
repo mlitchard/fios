@@ -130,9 +130,8 @@ library
     HauntedHouse.Build.ObjectTemplate
     HauntedHouse.Build.Template
     HauntedHouse.Clarifier
+    HauntedHouse.Game.Exit
     HauntedHouse.Game.Engine
-    HauntedHouse.Game.Location
-    HauntedHouse.Game.Model
     HauntedHouse.Game.Model.GID
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Object
@@ -149,14 +148,12 @@ library
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
     HauntedHouse.Game.Engine.VerbPhraseTwo
     HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look
+    HauntedHouse.Game.Model.Condition
     HauntedHouse.Game.Model.Display
+    HauntedHouse.Game.Model.Interface
     HauntedHouse.Game.Model.Mapping
     HauntedHouse.Game.Model.Object.Relation
-    HauntedHouse.Game.Model.ToText 
     HauntedHouse.Game.Model.World
-    HauntedHouse.Game.Narration.Anchored
-    HauntedHouse.Game.Narration.Containers
-    HauntedHouse.Internal
     HauntedHouse.Recognizer.WordClasses
     HauntedHouse.Tokenizer.Data
 executable fios

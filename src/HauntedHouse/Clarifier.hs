@@ -1,8 +1,7 @@
 module HauntedHouse.Clarifier where
 
-import Control.Monad.Except
-import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
-import HauntedHouse.Game.Model.World (Object)
+import Control.Monad.Except ( MonadError(throwError) )
+import HauntedHouse.Game.Model.World (Object, GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.GID (GID)
 
 clarifier :: Text -> GameStateExceptT ()
