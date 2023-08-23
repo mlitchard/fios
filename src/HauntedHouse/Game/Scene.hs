@@ -1,52 +1,17 @@
 module HauntedHouse.Game.Scene where
-import HauntedHouse.Game.Model.World 
+import HauntedHouse.Game.Model.World
         (GameStateExceptT, RoomAnchors (..), RoomAnchor, ObjectAnchors (..)
         , directionFromRoomAnchor, Neighbors (..), Object (..)
-        , SceneAnchored (..))
+        , SceneAnchored (..), isPerceived)
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.Model.Mapping (NeighborMap(..))
+import HauntedHouse.Game.Model.Mapping (NeighborMap(..), GIDList)
 import HauntedHouse.Game.Object (getObjectM)
+import HauntedHouse.Game.Model.Condition (Proximity (..))
+import qualified Data.List.NonEmpty
 
 -- text builder for Scene
 
-{-
-
-instance Display RoomAnchors where
-
-  displayScene :: RoomAnchors -> GameStateExceptT ()
-  displayScene (RoomAnchors roomAnchorMap) = do
-    mapM_ displayScene $ Data.Map.Strict.toList roomAnchorMap
-  
-  display :: RoomAnchors -> GameStateExceptT ()
-  display = displayScene
-
-instance Display (RoomAnchor, ObjectAnchors) where
-
-  displayScene :: (RoomAnchor, ObjectAnchors) -> GameStateExceptT ()
-  displayScene (key, ObjectAnchors objectRelationsMap) = do
-    liftIO 
-      $ print (("In the " :: Text) <> directionFromRoomAnchor key <> " you see")
-    mapM_ displayScene $ Data.Map.Strict.toList objectRelationsMap
-  
-  display = displayScene
--}
-{-
-
-data SceneAnchored = SceneAnchored {
-  _sceneAnchored' :: Text
-, _sceneRelated' :: [Text] 
-} deriving stock Show
-
-data Scene = Scene
-  {_sceneTitle'         :: Text
-  , _sceneDescription'  :: Text
-  , _roomAnchored'      :: [(Text,[SceneAnchored])] -- text is Room area preamble
-  , _floor'             :: [Text]
-  , _visibleExits'      :: [Text]
-  } deriving stock Show
-
--}
 class ScenePart a where
   type RenderAs a
   makeScenePart :: a -> GameStateExceptT (RenderAs a)
@@ -54,20 +19,20 @@ class ScenePart a where
 instance ScenePart RoomAnchors where
   type RenderAs RoomAnchors = [(Text,[SceneAnchored])]
   makeScenePart :: RoomAnchors -> GameStateExceptT [(Text,[SceneAnchored])]
-  makeScenePart (RoomAnchors roomAnchorMap) = 
+  makeScenePart (RoomAnchors roomAnchorMap) =
     mapM makeScenePart (Data.Map.Strict.toList roomAnchorMap)
    -- mapM makeScene (Data.Map.Strict.toList roomAnchorMap)
 
 instance ScenePart (RoomAnchor, ObjectAnchors) where
 
   type RenderAs (RoomAnchor, ObjectAnchors) = (Text,RenderAs ObjectAnchors)
-  
+
   makeScenePart (roomAnchor,objectAnchors) = do
     sceneAnchored <- makeScenePart objectAnchors
     pure (preamble,sceneAnchored)
     where
       preamble = "In the " <> directionFromRoomAnchor  roomAnchor <> "you see"
-      
+
 {-
 
 newtype ObjectAnchors = ObjectAnchors { 
@@ -75,64 +40,57 @@ newtype ObjectAnchors = ObjectAnchors {
   } deriving stock Show
 
 -}
-instance ScenePart ObjectAnchors where 
-  type RenderAs ObjectAnchors = [SceneAnchored] 
+instance ScenePart ObjectAnchors where
+  type RenderAs ObjectAnchors = [SceneAnchored]
 
-  makeScenePart (ObjectAnchors objectAnchors) = 
-    mapM makeScenePart $ Data.Map.Strict.toList objectAnchors
+  makeScenePart (ObjectAnchors objectAnchors) =
+    catMaybes <$> mapM makeScenePart (Data.Map.Strict.toList objectAnchors)
 
-instance ScenePart (GID Object, Neighbors) where 
+instance ScenePart (GID Object, Neighbors) where
 
-  type RenderAs (GID Object, Neighbors) = SceneAnchored 
+  type RenderAs (GID Object, Neighbors) = Maybe SceneAnchored
   makeScenePart (gid, neighbors) = do
     object <- getObjectM gid
-    pure $ SceneAnchored mempty mempty  
-{-
-newtype ObjectAnchors = ObjectAnchors { 
-  _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors 
-  } deriving stock Show
+    if any isPerceived (_metaConditions' object)
+      then do
+              neighborPart <- makeScenePart neighbors
+              pure $ Just $ SceneAnchored mempty neighborPart
+      else pure Nothing
 
--}
-{-
-instance Scene ObjectAnchors where 
-  makeScene :: ObjectAnchors -> GameStateExceptT Text
-  makeScene (ObjectAnchors objectAnchors) = 
-    unlines <$> mapM makeScene (Data.Map.Strict.toList objectAnchors)
--}
-{-
+instance ScenePart Neighbors where
 
-  displayScene :: (GID Object, Neighbors) -> GameStateExceptT ()
-  displayScene (objectGID, Neighbors (NeighborMap relations)) = do
-    (Object shortName _ mContainment description _) <- getObjectM objectGID
-    print shortName
-    print description
-    whenJust mContainment (either display display)
-    mapM_ display
-      $ toDisplayRelation shortName
-      <$> Data.Map.Strict.toList relations
-    where
-      toDisplayRelation shortName (proximity, proximitObjects) = DisplayRelation
-        {_proximity' = proximity
-        , _proximitObjects' = proximitObjects
-        , _proximitShortName' = shortName}
+  type RenderAs Neighbors = [Text]
+  makeScenePart (Neighbors (NeighborMap nmap)) =
+    catMaybes <$> mapM makeScenePart (Data.Map.Strict.toList nmap)
 
 
-data Object = Object {
-    _shortName'       :: Text
-  , _odescription'    :: [Text]
-  , _descriptives'    :: [Label Adjective]
-  , _containment'     :: Containment
-  , _metaConditions'  :: [MetaCondition]
-}
--}{-
-instance Scene (GID Object, Neighbors) where 
-  makeScene :: (GID Object, Neighbors) -> GameStateExceptT Text 
-  makeScene (objectGID,Neighbors (NeighborMap relations)) = do 
-    
-    objectScene <- makeScene objectGID
-    if (null objectScene) 
-      then pure mempty 
-      else do 
--}
-    
+instance ScenePart (Proximity, GIDList Object) where
 
+  type RenderAs (Proximity, GIDList Object) = Maybe Text
+
+  makeScenePart (proximity, gidList) = do
+    let x :: [GID Object]
+        x = Data.List.NonEmpty.toList gidList
+
+    res <- catMaybes <$> mapM makeScenePart x
+    pure $ if null res 
+      then Nothing
+      else Just (displayProximity proximity <> unlines res)
+
+instance ScenePart (GID Object) where
+
+  type RenderAs (GID Object) = Maybe Text
+  makeScenePart gid = do
+    object <- getObjectM gid
+    pure $ if any isPerceived (_metaConditions' object)
+      then Just $ (_shortName' object <> "\n")
+      else Nothing
+
+displayProximity :: Proximity -> Text
+displayProximity PlacedOn = "On it"
+displayProximity PlacedUnder = "Under it"
+displayProximity PlacedAbove = "Above it"
+displayProximity PlacedLeft = "To the left of it"
+displayProximity PlacedRight = "To the right of it"
+displayProximity PlacedFront = "In front of it"
+displayProximity PlacedBack = "Behind it"
