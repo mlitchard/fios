@@ -1,16 +1,16 @@
 module HauntedHouse.TopLevel where
 
-import HauntedHouse.Game.Model
-        (GameStateExceptT, Verbosity (..), GameState (..))
+import HauntedHouse.Game.Model.World
+       
 import HauntedHouse.Tokenizer (tokens, Lexeme, runParser)
 import System.Console.Haskeline
         (InputT, getInputLine, runInputT, defaultSettings)
 import qualified Data.Char (toUpper)
 import HauntedHouse.Recognizer (Imperative, imperative, parser, fullParses)
-import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
-import HauntedHouse.Game.Narration (displaySceneM)
+
+
 import HauntedHouse.Game.Engine (engine)
-import HauntedHouse.Internal ( setVerbosityM )
+
 import Control.Monad.Except (throwError, MonadError (catchError))
 import HauntedHouse.Build.GameState (buildGameState)
 import qualified Data.Text
@@ -28,8 +28,8 @@ topLevel :: GameStateExceptT ()
 topLevel = report >> displayScene'
   where
     displayScene' :: GameStateExceptT ()
-    displayScene' =
-      getLocationIdM >>= getLocationM  >>= displaySceneM True >> go'
+    displayScene' = pass
+      -- getLocationIdM >>= getLocationM  >>= makeSceneM >>= displaySceneM True >> go'
 
     go' :: GameStateExceptT ()
     go' = do

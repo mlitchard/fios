@@ -2,12 +2,10 @@ module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
   where
 
 import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Model
-    ( GameState(_world'), GameStateExceptT )
+
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
-    ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..)
-    , Moveability (NotMoveable)) 
+    ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..), GameStateExceptT) 
 import qualified Data.Map.Strict (insert, fromList, empty)
 import HauntedHouse.Build.ObjectTemplate
     ( kitchenSinkGID,
@@ -19,7 +17,7 @@ import Data.These (These(..))
 import HauntedHouse.Build.DescriptiveTemplate ( kitchenLabel ) 
 
 buildKitchenShelf :: GameStateExceptT ()
-buildKitchenShelf =  do
+buildKitchenShelf = pass {- do
   world <- _world' <$> get
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = 
@@ -41,5 +39,5 @@ shelfContainer = (Containment . That) (Left containedOn)
   where 
     containedOn :: ContainedOn 
     containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty 
-
+-}
 

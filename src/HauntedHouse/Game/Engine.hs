@@ -1,6 +1,6 @@
 module HauntedHouse.Game.Engine where
 
-import HauntedHouse.Game.Model (GameStateExceptT)
+import HauntedHouse.Game.Model.World (GameStateExceptT)
 import HauntedHouse.Game.Engine.OnlyVerb ( evalOnlyVerb )
 import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
     ( evalVerbPhrase1 )

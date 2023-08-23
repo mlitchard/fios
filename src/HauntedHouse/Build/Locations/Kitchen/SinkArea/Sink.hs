@@ -8,12 +8,11 @@ import Data.These qualified (These(..))
 import HauntedHouse.Build.DescriptiveTemplate
 import HauntedHouse.Build.LocationTemplate (kitchenGID)
 import HauntedHouse.Build.ObjectTemplate 
-import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
 
 buildKitchenSink :: GameStateExceptT ()
-buildKitchenSink = do
+buildKitchenSink = pass {- do
   world <- _world' <$> get
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = 
@@ -35,3 +34,4 @@ sinkContainer = (Containment . Data.These.That) (Left containedOn)
 
 containedOn :: ContainedOn 
 containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty
+-}

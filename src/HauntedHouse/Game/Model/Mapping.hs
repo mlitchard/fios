@@ -5,8 +5,6 @@ import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Tokenizer (Lexeme)
 import qualified Data.List.NonEmpty
 
-
-
 newtype ContainerMap a = ContainerMap 
   { _unContainerMap' :: Map (Label a) (GIDList a)} 
     deriving stock (Eq,Ord,Show)

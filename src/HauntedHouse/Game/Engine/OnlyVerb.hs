@@ -1,6 +1,6 @@
 module HauntedHouse.Game.Engine.OnlyVerb where
 import HauntedHouse.Recognizer (Verb)
-import HauntedHouse.Game.Model (GameStateExceptT)
+import HauntedHouse.Game.Model.World (GameStateExceptT)
 import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Game.Engine.OnlyVerb.DoLook (doLookM)
 import Control.Monad.Except (throwError)

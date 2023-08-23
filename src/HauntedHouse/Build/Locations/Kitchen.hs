@@ -9,11 +9,9 @@ import HauntedHouse.Build.LocationTemplate
 import HauntedHouse.Build.Locations.BuildFrame
 import HauntedHouse.Recognizer (Adjective)
 -- import HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink
-import HauntedHouse.Game.Model (GameStateExceptT)
+
 import HauntedHouse.Game.Model.World
-        (Location (..), Object, Exit (..), ExitGIDMap (..), Proximity (..)
-        , RoomAnchor (..), RoomAnchors (..), ObjectAnchors (..)
-        , Neighbors (..), SecondaryObjects (..))
+       
 
 import qualified Data.List.NonEmpty (singleton, NonEmpty, fromList)
 import qualified Data.Map.Strict
@@ -40,7 +38,7 @@ import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink
 
 buildKitchen :: GameStateExceptT ()
-buildKitchen = do
+buildKitchen = pass {- do
   buildLocationMap kitchenGID kitchenLocation
   buildDescriptorMap descriptiveMap
   buildExits 
@@ -182,3 +180,4 @@ descriptiveMap = LabelToGIDListMapping
       , kitchenCabinetBelowShelfGID
       , kitchenCabinetAboveSinkGID
       , kitchenCabinetBelowSinkGID]
+      -}

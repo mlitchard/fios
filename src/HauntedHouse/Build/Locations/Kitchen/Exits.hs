@@ -1,10 +1,7 @@
 module HauntedHouse.Build.Locations.Kitchen.Exits where
 
-import HauntedHouse.Game.Model (GameStateExceptT)
 import HauntedHouse.Game.Model.Mapping ( NeighborMap(NeighborMap), Label (..))
-import HauntedHouse.Game.Model.World ( Exit (..), Object (..)
-      , Moveability (NotMoveable), LockState (Unlocked), Portal (..)
-      , Containment (..), Interface (..), LeftOrRight (..), Proximity (..))
+import HauntedHouse.Game.Model.World 
 import HauntedHouse.Build.LocationTemplate (hallGID)
 import HauntedHouse.Build.ExitTemplate (kitchenEastExitGID)
 import HauntedHouse.Game.World (setWorldExitMapM)
@@ -14,8 +11,10 @@ import HauntedHouse.Game.Object (setObjectMapM)
 import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Build.DescriptiveTemplate (lockedLabel, visibleLabel)
 
+
 buildExits :: GameStateExceptT ()
-buildExits =   
+buildExits =  pass
+{-
   buildEastExit
 
 buildEastExit :: GameStateExceptT ()
@@ -51,3 +50,4 @@ kitchenEastDoorPortal = Portal
   { _portalExit' = kitchenEastExitGID
   , _portalInterface' = kitchenEastDoorPortalInterface
   }
+-}

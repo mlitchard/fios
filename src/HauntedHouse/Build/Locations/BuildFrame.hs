@@ -2,19 +2,18 @@ module HauntedHouse.Build.Locations.BuildFrame where
 
 import qualified Data.Map.Strict
 
-import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
 import HauntedHouse.Game.Model.Mapping
-    ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'), Label (Label), LabelToGIDListMapping (..), GIDList)
+    ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'), LabelToGIDListMapping (..), GIDList)
     
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Internal  ( throwMaybeM )
+
 import HauntedHouse.Game.Model.World 
-        (Location (..), World (_locationMap', _descriptiveMap' ), Object)
+        
 import qualified Data.List.NonEmpty
 import HauntedHouse.Recognizer (Adjective)
 
 buildLocationMap :: GID Location -> Location -> GameStateExceptT ()
-buildLocationMap locationGID location = do
+buildLocationMap locationGID location = pass {-  do
   world :: World <- _world' <$> get
   let locationMap' = unLocationMap world  
       updatedMap = GIDToDataMapping
@@ -36,4 +35,4 @@ buildDescriptorMap (LabelToGIDListMapping descriptorMap) = do
     updateMap :: GIDList Object -> GIDList Object -> GIDList Object 
     updateMap xs ys = Data.List.NonEmpty.nub $ xs <> ys  
  
-    
+   -} 

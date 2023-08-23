@@ -1,7 +1,8 @@
 module HauntedHouse.Game.Player where 
-import HauntedHouse.Game.World (GameStateExceptT, GameState (..),Player (..)) 
+  
 import HauntedHouse.Game.Model.GID
-import HauntedHouse.Game.Model.World (Location)
+import HauntedHouse.Game.Model.World 
+        (Player (..), Location, GameStateExceptT, GameState (..))
 
 setPlayerLocationM :: GID Location -> GameStateExceptT ()
 setPlayerLocationM gid = do 

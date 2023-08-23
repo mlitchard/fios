@@ -2,19 +2,17 @@
 module HauntedHouse.Game.Model.Display where
 
 import Data.Map.Strict qualified (null, elems, toList)
-import HauntedHouse.Game.Model (GameStateExceptT)
+
 import HauntedHouse.Game.Model.World
-        (ContainedIn (..), ContainedOn (..), ContainedBy (..), Interface (..)
-        , Object (..), Containment (..), Proximity, Neighbors (..), Portal (..), fromProximity, RoomAnchors (..), ObjectAnchors (..), RoomAnchor)
+        
 import HauntedHouse.Game.Model.Mapping (ContainerMap(..), NeighborMap (..))
 import HauntedHouse.Game.Object (getObjectM)
-import HauntedHouse.Internal
-        ( throwMaybeM, throwRightM, VisibleObject (..))
+
 import qualified Data.List.NonEmpty
 import Data.These
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.Narration.Anchored (directionFromRoomAnchor)
-
+import HauntedHouse.Game.Model.Condition (Proximity, Perceptibility (..))
+{-
 data DisplayRelation = DisplayRelation
   { _proximity'         :: Proximity
   , _proximitObjects'   :: Data.List.NonEmpty.NonEmpty (GID Object)
@@ -26,16 +24,41 @@ class Display a where
 
     display :: a -> GameStateExceptT ()
 
+{-
+
+data Object = Object {
+    _shortName'       :: Text
+  , _odescription'    :: Text
+  , _descriptives'    :: [Label Adjective]
+  , _metaConditions'  :: [MetaCondition]
+}
+
+data MetaCondition = MetaCondition {
+   _condition :: Condition
+  , _setCondition :: GameStateExceptT ()
+  }
+
+  data Condition
+  = Mobility' Moveability
+  | Perceptibility' Perceptibility
+  | Either Proximity (AnchoredTo Object)
+  | Nexus' Nexus 
+  | Inventory
+      deriving stock (Show,Eq,Ord)
+-}
+
+ 
+
 instance Display (GID Object) where
 
   displayScene :: GID Object -> GameStateExceptT ()
-  displayScene gid = do
-    (Object shortname _ mContainment _ _ ) <- getObjectM gid
-    print shortname
-    whenJust mContainment (`whenLeft_` display)
+  displayScene gid = pass
+    
+     
+    
 
   display = displayScene
-
+{-
 instance Display (GID Object, Neighbors) where
 
   displayScene :: (GID Object, Neighbors) -> GameStateExceptT ()
@@ -54,7 +77,7 @@ instance Display (GID Object, Neighbors) where
         , _proximitShortName' = shortName}
 
   display = displayScene
-
+-}
 instance Display Portal where
   displayScene :: Portal -> GameStateExceptT ()
   displayScene (Portal _ interface) =
@@ -185,3 +208,4 @@ instance Display (RoomAnchor, ObjectAnchors) where
     mapM_ displayScene $ Data.Map.Strict.toList objectRelationsMap
   
   display = displayScene
+  -}

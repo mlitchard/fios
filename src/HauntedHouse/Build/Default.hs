@@ -1,4 +1,4 @@
-module HauntedHouse.Build.Default where 
+module HauntedHouse.Build.Default where
 
 import Data.List.NonEmpty qualified             (singleton
                                                 )
@@ -6,29 +6,35 @@ import Data.Map.Strict qualified                (empty)
 import Data.Text qualified                      (empty)
 
 import HauntedHouse.Build.LocationTemplate
-import HauntedHouse.Game.Model
-    ( Player(..), Narration(..), GameState(..), Verbosity (Loud), Scene (..) ) 
+import HauntedHouse.Game.Model.World
+    ( Player(..),
+      Narration(..),
+      GameState(..),
+      Verbosity(Loud),
+      Scene(..),
+      Location(..),
+      World(..),
+      RoomAnchors(..),
+      Object )
 import HauntedHouse.Game.Model.Mapping
     (GIDToDataMapping (..), LabelToGIDListMapping (..), LocationObjectList (..))
-import HauntedHouse.Game.Model.World
-    (Location (..), World (..), RoomAnchors (..), Object)
 
-defaultGameState :: GameState 
-defaultGameState = GameState 
-  { _world' = defaultWorld 
-  , _report' = [] 
+defaultGameState :: GameState
+defaultGameState = GameState
+  { _world' = defaultWorld
+  , _report' = []
   , _player' = defaultPlayer
-  , _narration' = defaultNarration 
+  , _narration' = defaultNarration
   , _verbosity' = Loud
   , _clarification' = Nothing
   }
 
 defaultWorld :: World
-defaultWorld = World 
+defaultWorld = World
   { _objectMap'     = GIDToDataMapping Data.Map.Strict.empty
     , _locationMap' = GIDToDataMapping Data.Map.Strict.empty
     , _descriptiveMap' = LabelToGIDListMapping Data.Map.Strict.empty
-    , _exitMap'     = GIDToDataMapping Data.Map.Strict.empty 
+    , _exitMap'     = GIDToDataMapping Data.Map.Strict.empty
   }
 
 defaultPlayer :: Player
@@ -44,42 +50,45 @@ defaultNarration = Narration
   , _npcResponse' = Data.List.NonEmpty.singleton Data.Text.empty
   , _scene' = defaultScene
   }
+{-
 
-defaultScene :: Scene 
-defaultScene = Scene 
-  { _sceneTitle' = Data.Text.empty 
+data SceneAnchored = SceneAnchored {
+  _sceneAnchored' :: Text
+, _sceneRelated' :: [Text] 
+} deriving stock Show
+
+data Scene = Scene
+  {_sceneTitle'         :: Text
+  , _sceneDescription'  :: Text
+  , _roomAnchored'      :: [(Text,[SceneAnchored])] -- text is Room area preamble
+  , _floor'             :: [Text]
+  , _visibleExits'      :: [Text]
+  } deriving stock Show
+
+-}
+defaultScene :: Scene
+defaultScene = Scene
+  { _sceneTitle' = Data.Text.empty
   , _sceneDescription' = Data.Text.empty
-  , _sceneAnchored' = Data.List.NonEmpty.singleton Data.Text.empty
-  , _sceneRelated' = Data.List.NonEmpty.singleton Data.Text.empty
-  , _visibleExits' = Data.List.NonEmpty.singleton Data.Text.empty
+  , _roomAnchored' = mempty
+  , _floor' = mempty
+  , _visibleExits' = mempty
   }
 
 {-
 
-data Location = Location
-  { _title'           :: Text
-  , _description'     :: Text
-  , _anchoredObjects' :: RoomAnchors
-  , _floorInventory'  :: Objects
-  , _objectLabelMap'  :: LabelToGIDListMapping Object
-  , _visibilityList   :: LocationObjectList Visibility Object
-  , _directions'      :: Maybe ExitGIDMap
-  } deriving stock Show
-
--}
-
-defaultLocation :: Location 
+defaultLocation :: Location
 defaultLocation = Location
-  { _title'       = Data.Text.empty 
-  , _description' = Data.Text.empty 
+  { _title'       = Data.Text.empty
+  , _description' = Data.Text.empty
   , _anchoredObjects' = defaultRoomAnchors
   , _floorInventory' = Nothing
   , _objectLabelMap' = defaultObjectLabelMap
   , _directions'  = Nothing
   }
-
+-}
 defaultObjectLabelMap :: LabelToGIDListMapping Object Object
 defaultObjectLabelMap = LabelToGIDListMapping Data.Map.Strict.empty
 
-defaultRoomAnchors :: RoomAnchors 
-defaultRoomAnchors = RoomAnchors Data.Map.Strict.empty 
+defaultRoomAnchors :: RoomAnchors
+defaultRoomAnchors = RoomAnchors Data.Map.Strict.empty

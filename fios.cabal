@@ -136,6 +136,7 @@ library
     HauntedHouse.Game.Narration
     HauntedHouse.Game.Object
     HauntedHouse.Game.Player
+    HauntedHouse.Game.Scene
     HauntedHouse.Game.World
     HauntedHouse.Recognizer
     HauntedHouse.Tokenizer
@@ -150,7 +151,6 @@ library
     HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look
     HauntedHouse.Game.Model.Condition
     HauntedHouse.Game.Model.Display
-    HauntedHouse.Game.Model.Interface
     HauntedHouse.Game.Model.Mapping
     HauntedHouse.Game.Model.Object.Relation
     HauntedHouse.Game.Model.World

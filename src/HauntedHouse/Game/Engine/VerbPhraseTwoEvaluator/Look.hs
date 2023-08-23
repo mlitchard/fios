@@ -1,21 +1,18 @@
 module HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look where
 import HauntedHouse.Recognizer.WordClasses
         (PrepPhrase (..), NounPhrase (..))
-import HauntedHouse.Game.Model (GameStateExceptT)
+import HauntedHouse.Game.Model.World
+    ( GameStateExceptT, Location(..), Object(..), Objects )
 import HauntedHouse.Tokenizer (Lexeme (..))
-import HauntedHouse.Game.Model.World (Location(..), Object (..), Objects)
 import Control.Monad.Except (throwError)
-import HauntedHouse.Game.Location (getLocationM, getLocationIdM)
 import HauntedHouse.Game.Model.Mapping
     ( LabelToGIDListMapping(_unLabelToGIDListMapping'), Label (..) )
 import qualified Data.Map.Strict (lookup)
-import HauntedHouse.Internal ( throwMaybeM, isVisible )
 import Relude.Extra (fmapToFst)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Build.DescriptiveTemplate (visibleLabel)
 import HauntedHouse.Game.Object (getObjectM)
 import HauntedHouse.Clarifier (clarifyNotThere, clarifyWhich)
-import HauntedHouse.Game.Model.Display (Display(..))
 import qualified Data.List.NonEmpty
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
@@ -27,11 +24,11 @@ doLookObjectM (Preposition p) = throwError ("simple preposition "
                                   <> show p <> "not evaluated in doLookObjectM")
 
 evaluateATNounPhrase :: NounPhrase -> GameStateExceptT ()
-evaluateATNounPhrase (Noun noun) = do
+evaluateATNounPhrase (Noun noun) = pass {- do
   labelMap <- _unLabelToGIDListMapping' . _objectLabelMap'
                 <$> (getLocationM =<< getLocationIdM)
   objectList <- Data.List.NonEmpty.toList
-                <$> throwMaybeM maybeErr 
+                <$> throwMaybeM maybeErr
                     (Data.Map.Strict.lookup (Label noun) labelMap)
 
   visibleObjects <- catMaybes <$> mapM visibility objectList
@@ -42,10 +39,11 @@ evaluateATNounPhrase (Noun noun) = do
     else clarifyWhich visibleObjects'
   where
     maybeErr = "You don't see that here."
-
+-}
 evaluateATNounPhrase _ = throwError "evaluateATNounPhrase incomplete"
-
+{-
 visibility :: GID Object -> GameStateExceptT (Maybe (GID Object))
 visibility gid = do
     conditions <- _conditions' <$> getObjectM gid
     pure $ if visibleLabel `elem` conditions then Just gid else Nothing
+    -}

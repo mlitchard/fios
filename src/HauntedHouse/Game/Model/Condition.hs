@@ -11,13 +11,6 @@ newtype AnchoredTo object = AnchoredTo
   { _unAnchoredTo' :: Data.Map.Strict.Map (GID object) (GID object,Proximity)} 
     deriving stock (Show, Eq, Ord) 
 
-data Condition object
-  = Mobility' Moveability
-  | Perceptibility' Perceptibility
-  | Either Proximity (AnchoredTo object) 
-  | Inventory
-     deriving stock (Eq, Ord, Show)
-
 data Inventory deriving stock Show
 
 data Moveability
@@ -26,7 +19,7 @@ data Moveability
       deriving stock (Eq, Ord, Show)
 
 data Perceptibility 
-  = Perceptible 
+  = Perceptible
   | Imperceptible 
       deriving stock (Eq, Ord, Show)
 

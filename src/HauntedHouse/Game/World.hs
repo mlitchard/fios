@@ -2,22 +2,14 @@ module HauntedHouse.Game.World where
 
 import qualified Data.List.NonEmpty
 import qualified Data.Map.Strict (insert, lookup, insertWith, Map)
-
-import HauntedHouse.Game.Model
-        ( GameStateExceptT, GameState (_world',_player'), Player (..))
-import HauntedHouse.Game.Model.World
-        (Exit (..), World (..), Object (..), Location (..), ExitGIDMap (..)
-          , Portal (..), Conditions (..), Nexus (_unNexus'))
 import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
-          LabelToGIDListMapping(..),Label, LabelToGIDMapping (..), GIDList)
-import HauntedHouse.Internal ( throwMaybeM, throwLeftM)
-import HauntedHouse.Game.Location (getLocationIdM, getLocationM)
-
+          LabelToGIDListMapping(..),Label, LabelToGIDMapping (..), GIDList,
+          ExitGIDMap (..))
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.Object (getObjectM)
-import qualified Data.List
-import Data.Aeson (Object)
+import HauntedHouse.Game.Model.World
+       -- (GameStateExceptT, GameState (..), World (..), Location)
+import HauntedHouse.Game.Object ( getObjectM )
 
 setWorldExitMapM :: GID Exit -> Exit -> GameStateExceptT ()
 setWorldExitMapM gid exit = do
@@ -34,16 +26,27 @@ getExitM gid = do
     throwLookup exitMap = throwMaybeM lookupErr $ Data.Map.Strict.lookup gid exitMap
     lookupErr = "Not found: exit gid " <> show gid
 
-
 getExitObjectM :: Label Exit -> GameStateExceptT Exit
 getExitObjectM exitLabel = do
   (ExitGIDMap (LabelToGIDMapping objGIDMap)) <- (throwMaybeM dirErr . _directions')
                                                   =<< (getLocationM =<< getLocationIdM)
   objGID <- throwMaybeM noExit $ Data.Map.Strict.lookup exitLabel objGIDMap
   getExitFromObjectM objGID
-    where
+  where
       noExit = "Error: Exit does not exist " <> show exitLabel
       dirErr = "Error: No Exits"
+
+getExitFromObjectM :: GID Object -> GameStateExceptT Exit
+getExitFromObjectM gid = do
+  (MetaCondition (Nexus' (Nexus (Right (Portal exitGID)))) _) <- throwMaybeM notExitMsg 
+                                                                  . find isNexus 
+                                                                  . _metaConditions' 
+                                                                  =<< getObjectM gid
+  getExitM exitGID
+  where
+    notExitMsg = "Not an exit"
+    isNexus (MetaCondition (Nexus' (Nexus (Right _))) _) = True
+    isNexus _ = False
 
 {-
 gefObjectM :: GID Object -> GameStateExceptT () -- Exit
@@ -55,7 +58,7 @@ gefObjectM objectGID = do
     maybeNexus :: Condition -> Maybe Nexus
     maybeNexus (Nexus nexus) = Just nexus
     maybeNexus _ = Nothing
--}    
+-}
   {-
   getContainment
     >>= throwMaybeM notContainer

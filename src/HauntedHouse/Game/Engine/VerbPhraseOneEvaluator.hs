@@ -2,7 +2,7 @@ module HauntedHouse.Game.Engine.VerbPhraseOneEvaluator where
 
 import Control.Monad.Except (throwError)
 import HauntedHouse.Recognizer (Verb, NounPhrase)
-import HauntedHouse.Game.Model (GameStateExceptT)
+import HauntedHouse.Game.Model.World (GameStateExceptT)
 import HauntedHouse.Tokenizer 
 import HauntedHouse.Game.Engine.OnlyVerb.DoGo (doGo)
 

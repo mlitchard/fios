@@ -1,10 +1,9 @@
 module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf 
   where
   
-import HauntedHouse.Game.Model (GameStateExceptT, GameState (..))
+
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
-        (Object (..) , World (..), Containment (..), LockState (Unlocked), Moveability (..), ContainedIn (..), Interface (..))
 import qualified Data.Map.Strict (insert, fromList, empty)
 
 import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID, kitchenCabinetBelowShelfGID)
@@ -13,7 +12,7 @@ import HauntedHouse.Build.DescriptiveTemplate
 import Data.These (These(..))
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
-buildKitchenCabinetBelowShelf = do
+buildKitchenCabinetBelowShelf = pass {- do
   world <- _world' <$> get 
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = 
@@ -39,3 +38,4 @@ containedIn = ContainedIn
   {_interface' = Open
   , _containedIn' = ContainerMap Data.Map.Strict.empty  
   }
+  -}

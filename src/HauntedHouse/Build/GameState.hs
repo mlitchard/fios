@@ -1,7 +1,7 @@
 module HauntedHouse.Build.GameState where
 
 import HauntedHouse.Build.Locations.Kitchen ( buildKitchen )
-import HauntedHouse.Game.Model (GameStateExceptT)
+import HauntedHouse.Game.Model.World (GameStateExceptT)
 -- import HauntedHouse.Build.Locations.Hall (buildHall)
 
 buildGameState :: GameStateExceptT ()
