@@ -1,5 +1,8 @@
 module HauntedHouse.Game.Scene where
-import HauntedHouse.Game.Model.World (GameStateExceptT, RoomAnchors (..), RoomAnchor, ObjectAnchors (..), directionFromRoomAnchor, Neighbors (..), Object (..), SceneAnchored)
+import HauntedHouse.Game.Model.World 
+        (GameStateExceptT, RoomAnchors (..), RoomAnchor, ObjectAnchors (..)
+        , directionFromRoomAnchor, Neighbors (..), Object (..)
+        , SceneAnchored (..))
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping (NeighborMap(..))
@@ -44,24 +47,47 @@ data Scene = Scene
   } deriving stock Show
 
 -}
-class Scene a where
+class ScenePart a where
   type RenderAs a
-  makeScene :: a -> GameStateExceptT (RenderAs a)
+  makeScenePart :: a -> GameStateExceptT (RenderAs a)
 
-instance Scene RoomAnchors where
+instance ScenePart RoomAnchors where
   type RenderAs RoomAnchors = [(Text,[SceneAnchored])]
-  makeScene :: RoomAnchors -> GameStateExceptT [(Text,[SceneAnchored])]
-  makeScene (RoomAnchors roomAnchorMap) = pure mempty 
+  makeScenePart :: RoomAnchors -> GameStateExceptT [(Text,[SceneAnchored])]
+  makeScenePart (RoomAnchors roomAnchorMap) = 
+    mapM makeScenePart (Data.Map.Strict.toList roomAnchorMap)
    -- mapM makeScene (Data.Map.Strict.toList roomAnchorMap)
-{-
-instance Scene (RoomAnchor, ObjectAnchors) where
-  makeScene :: (RoomAnchor, ObjectAnchors) -> GameStateExceptT Text
-  makeScene (roomAnchor,objectAnchors) = pure scene
+
+instance ScenePart (RoomAnchor, ObjectAnchors) where
+
+  type RenderAs (RoomAnchor, ObjectAnchors) = (Text,RenderAs ObjectAnchors)
+  
+  makeScenePart (roomAnchor,objectAnchors) = do
+    sceneAnchored <- makeScenePart objectAnchors
+    pure (preamble,sceneAnchored)
     where
       preamble = "In the " <> directionFromRoomAnchor  roomAnchor <> "you see"
-      scene = preamble
+      
+{-
 
+newtype ObjectAnchors = ObjectAnchors { 
+  _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors 
+  } deriving stock Show
 
+-}
+instance ScenePart ObjectAnchors where 
+  type RenderAs ObjectAnchors = [SceneAnchored] 
+
+  makeScenePart (ObjectAnchors objectAnchors) = 
+    mapM makeScenePart $ Data.Map.Strict.toList objectAnchors
+
+instance ScenePart (GID Object, Neighbors) where 
+
+  type RenderAs (GID Object, Neighbors) = SceneAnchored 
+  makeScenePart (gid, neighbors) = do
+    object <- getObjectM gid
+    pure $ SceneAnchored mempty mempty  
+{-
 newtype ObjectAnchors = ObjectAnchors { 
   _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors 
   } deriving stock Show
