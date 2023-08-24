@@ -2,7 +2,7 @@ module HauntedHouse.Game.Model.World where
 
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Recognizer (Adjective)
-import HauntedHouse.Game.Model.Condition (Inventory, Proximity, AnchoredTo, Moveability, Perceptibility (..))
+import HauntedHouse.Game.Model.Condition (Inventory, Proximity, Moveability, Perceptibility (..))
 import System.Console.Haskeline (InputT)
 import Text.Show (Show(..))
 import Prelude hiding (show)
@@ -16,6 +16,10 @@ import Control.Monad.Except (MonadError(throwError))
 type GameStateExceptT = ExceptT Text (StateT GameState IO)
 
 type InputGameStateExceptT = InputT GameStateExceptT
+
+newtype AnchoredTo = AnchoredTo 
+  { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)} 
+    deriving stock (Show, Eq, Ord) 
 
 data Condition
   = Mobility' Moveability
@@ -51,6 +55,16 @@ data ClosedContainer = ClosedContainer {
 , _lockability' :: Maybe LockState
 }
 
+newtype Exit = Exit { _toDestination' :: GID Location} deriving stock Show
+
+newtype ExitGIDDataMap = ExitGIDDataMap {
+  _unExitGIDDataMap' :: GIDToDataMapping Exit
+  } deriving stock Show
+
+newtype ExitGIDMap 
+  = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Object}
+      deriving stock Show
+
 data GameState = GameState
   { _world'         :: World
   , _report'        :: [Text]
@@ -64,10 +78,10 @@ data Location = Location {
   _title'             :: Text
   , _description'     :: Text
   , _anchoredObjects' :: RoomAnchors
-  , _anchoredTo'      :: AnchoredTo Object
+  , _anchoredTo'      :: AnchoredTo
   , _floorInventory'  :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
-  , _directions'      :: Maybe (ExitGIDMap Exit Object)
+  , _directions'      :: Maybe ExitGIDMap
 }
 
 data MetaCondition = MetaCondition {
@@ -123,18 +137,18 @@ newtype RoomAnchors
               _unRoomAnchors :: Data.Map.Strict.Map RoomAnchor ObjectAnchors
             } deriving stock Show
 
+data Scene = Scene
+  {_sceneTitle'         :: Text
+  , _sceneDescription'  :: Text
+  , _roomAnchored'      :: Maybe (NonEmpty (Text,[SceneAnchored])) -- text is Room area preamble
+  , _floor'             :: Maybe (NonEmpty Text)
+  , _visibleExits'      :: Maybe (NonEmpty Text)
+  } deriving stock Show
+
 data SceneAnchored = SceneAnchored {
   _sceneAnchored' :: Text
 , _sceneRelated' :: [Text] 
 } deriving stock Show
-
-data Scene = Scene
-  {_sceneTitle'         :: Text
-  , _sceneDescription'  :: Text
-  , _roomAnchored'      :: [(Text,[SceneAnchored])] -- text is Room area preamble
-  , _floor'             :: [Text]
-  , _visibleExits'      :: [Text]
-  } deriving stock Show
 
 data World = World
   { _objectMap'         :: GIDToDataMapping Object
@@ -182,8 +196,6 @@ instance ToText (Label Location) where
 instance ToText RoomAnchor where
   toText :: RoomAnchor -> Text
   toText = toText . show
-
-newtype Exit = Exit { _toDestination' :: GID Location} deriving stock Show
 
 newtype Interface
   = ContainerInterface' ContainerInterface

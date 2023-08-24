@@ -12,12 +12,11 @@ import HauntedHouse.Game.Model.World
       GameState(..),
       Verbosity(Loud),
       Scene(..),
-      Location(..),
       World(..),
       RoomAnchors(..),
       Object )
 import HauntedHouse.Game.Model.Mapping
-    (GIDToDataMapping (..), LabelToGIDListMapping (..), LocationObjectList (..))
+    (GIDToDataMapping (..), LabelToGIDListMapping (..),)
 
 defaultGameState :: GameState
 defaultGameState = GameState
@@ -50,22 +49,7 @@ defaultNarration = Narration
   , _npcResponse' = Data.List.NonEmpty.singleton Data.Text.empty
   , _scene' = defaultScene
   }
-{-
 
-data SceneAnchored = SceneAnchored {
-  _sceneAnchored' :: Text
-, _sceneRelated' :: [Text] 
-} deriving stock Show
-
-data Scene = Scene
-  {_sceneTitle'         :: Text
-  , _sceneDescription'  :: Text
-  , _roomAnchored'      :: [(Text,[SceneAnchored])] -- text is Room area preamble
-  , _floor'             :: [Text]
-  , _visibleExits'      :: [Text]
-  } deriving stock Show
-
--}
 defaultScene :: Scene
 defaultScene = Scene
   { _sceneTitle' = Data.Text.empty
@@ -75,18 +59,6 @@ defaultScene = Scene
   , _visibleExits' = mempty
   }
 
-{-
-
-defaultLocation :: Location
-defaultLocation = Location
-  { _title'       = Data.Text.empty
-  , _description' = Data.Text.empty
-  , _anchoredObjects' = defaultRoomAnchors
-  , _floorInventory' = Nothing
-  , _objectLabelMap' = defaultObjectLabelMap
-  , _directions'  = Nothing
-  }
--}
 defaultObjectLabelMap :: LabelToGIDListMapping Object Object
 defaultObjectLabelMap = LabelToGIDListMapping Data.Map.Strict.empty
 

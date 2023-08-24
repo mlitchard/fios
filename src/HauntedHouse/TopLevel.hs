@@ -8,13 +8,13 @@ import System.Console.Haskeline
 import qualified Data.Char (toUpper)
 import HauntedHouse.Recognizer (Imperative, imperative, parser, fullParses)
 
-
 import HauntedHouse.Game.Engine (engine)
 
 import Control.Monad.Except (throwError, MonadError (catchError))
 import HauntedHouse.Build.GameState (buildGameState)
 import qualified Data.Text
 import HauntedHouse.Clarifier (clarifier)
+import HauntedHouse.Game.Narration (makeSceneM, displaySceneM)
 
 data GameInput
     = MkGameInput Text
@@ -25,12 +25,14 @@ start :: GameStateExceptT ()
 start = buildGameState >> topLevel
 
 topLevel :: GameStateExceptT ()
-topLevel = report >> displayScene'
+topLevel = report 
+            >> getLocationIdM 
+            >>= getLocationM 
+            >>= makeSceneM 
+            >> displaySceneM True 
+            >> go'
   where
-    displayScene' :: GameStateExceptT ()
-    displayScene' = pass
-      -- getLocationIdM >>= getLocationM  >>= makeSceneM >>= displaySceneM True >> go'
-
+    displayScene' = displaySceneM True >> go'
     go' :: GameStateExceptT ()
     go' = do
       input <- liftIO getInput

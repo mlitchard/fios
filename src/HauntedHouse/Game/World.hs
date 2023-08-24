@@ -4,11 +4,10 @@ import qualified Data.List.NonEmpty
 import qualified Data.Map.Strict (insert, lookup, insertWith, Map)
 import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
-          LabelToGIDListMapping(..),Label, LabelToGIDMapping (..), GIDList,
-          ExitGIDMap (..))
+          LabelToGIDListMapping(..),Label, LabelToGIDMapping (..), GIDList)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.World
-       -- (GameStateExceptT, GameState (..), World (..), Location)
+
 import HauntedHouse.Game.Object ( getObjectM )
 
 setWorldExitMapM :: GID Exit -> Exit -> GameStateExceptT ()

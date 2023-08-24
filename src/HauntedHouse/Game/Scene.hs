@@ -17,10 +17,14 @@ class ScenePart a where
   makeScenePart :: a -> GameStateExceptT (RenderAs a)
 
 instance ScenePart RoomAnchors where
-  type RenderAs RoomAnchors = [(Text,[SceneAnchored])]
-  makeScenePart :: RoomAnchors -> GameStateExceptT [(Text,[SceneAnchored])]
+  type RenderAs RoomAnchors = Maybe (NonEmpty (Text, [SceneAnchored]))
+  makeScenePart :: RoomAnchors
+                    -> GameStateExceptT (Maybe (NonEmpty (Text, [SceneAnchored])))
   makeScenePart (RoomAnchors roomAnchorMap) =
-    mapM makeScenePart (Data.Map.Strict.toList roomAnchorMap)
+    if Data.Map.Strict.null roomAnchorMap
+      then pure Nothing
+      else Just . Data.List.NonEmpty.fromList 
+            <$> mapM makeScenePart (Data.Map.Strict.toList roomAnchorMap)
    -- mapM makeScene (Data.Map.Strict.toList roomAnchorMap)
 
 instance ScenePart (RoomAnchor, ObjectAnchors) where
@@ -33,13 +37,6 @@ instance ScenePart (RoomAnchor, ObjectAnchors) where
     where
       preamble = "In the " <> directionFromRoomAnchor  roomAnchor <> "you see"
 
-{-
-
-newtype ObjectAnchors = ObjectAnchors { 
-  _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors 
-  } deriving stock Show
-
--}
 instance ScenePart ObjectAnchors where
   type RenderAs ObjectAnchors = [SceneAnchored]
 
@@ -63,7 +60,6 @@ instance ScenePart Neighbors where
   makeScenePart (Neighbors (NeighborMap nmap)) =
     catMaybes <$> mapM makeScenePart (Data.Map.Strict.toList nmap)
 
-
 instance ScenePart (Proximity, GIDList Object) where
 
   type RenderAs (Proximity, GIDList Object) = Maybe Text
@@ -73,7 +69,7 @@ instance ScenePart (Proximity, GIDList Object) where
         x = Data.List.NonEmpty.toList gidList
 
     res <- catMaybes <$> mapM makeScenePart x
-    pure $ if null res 
+    pure $ if null res
       then Nothing
       else Just (displayProximity proximity <> unlines res)
 
@@ -83,7 +79,7 @@ instance ScenePart (GID Object) where
   makeScenePart gid = do
     object <- getObjectM gid
     pure $ if any isPerceived (_metaConditions' object)
-      then Just $ (_shortName' object <> "\n")
+      then Just (_shortName' object <> "\n")
       else Nothing
 
 displayProximity :: Proximity -> Text

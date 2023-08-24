@@ -9,13 +9,6 @@ newtype ContainerMap a = ContainerMap
   { _unContainerMap' :: Map (Label a) (GIDList a)} 
     deriving stock (Eq,Ord,Show)
 
-newtype ExitGIDMap exit object
-  = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping exit object}
-      deriving stock Show
-
-newtype ExitGIDDataMap exit = ExitGIDDataMap {_unExitGIDDataMap' :: GIDToDataMapping exit}
-type GIDList a = (Data.List.NonEmpty.NonEmpty (GID a))
-
 newtype GIDToDataMapping a 
   = GIDToDataMapping {_unGIDToDataMapping' :: Data.Map.Strict.Map (GID a) a} 
       deriving stock Show
@@ -24,6 +17,8 @@ newtype GIDToGIDMapping a b
   = GIDToGIDMapping 
     {_unGIDtoGIDMapping' :: Data.Map.Strict.Map (GID a ) (GID b)}
         deriving stock Show 
+
+type GIDList a = (Data.List.NonEmpty.NonEmpty (GID a))
 
 newtype Label a = Label {_unLabel' :: Lexeme} deriving stock (Show,Eq,Ord)
 

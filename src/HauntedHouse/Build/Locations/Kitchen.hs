@@ -12,7 +12,6 @@ import HauntedHouse.Recognizer (Adjective)
 
 import HauntedHouse.Game.Model.World
        
-
 import qualified Data.List.NonEmpty (singleton, NonEmpty, fromList)
 import qualified Data.Map.Strict
  
@@ -36,11 +35,12 @@ import HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink
     ( buildKitchenCabinetAboveSink )
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink
+import HauntedHouse.Game.Model.Condition (Proximity (..))
 
 buildKitchen :: GameStateExceptT ()
-buildKitchen = pass {- do
+buildKitchen = do
   buildLocationMap kitchenGID kitchenLocation
-  buildDescriptorMap descriptiveMap
+  -- buildDescriptorMap descriptiveMap
   buildExits 
   buildKitchenSink
   buildKitchenShelf
@@ -63,12 +63,6 @@ kitchenLocation = Location
   , _directions' = Just directions
   }
 
-{-
-newtype SecondaryObjects 
-          = SecondaryObjects {
-            _unSecondaryObjects :: Data.Map.Strict.Map (GID Object) Neighbors
-          } deriving stock Show 
--}
 kitchenAnchoredTo :: AnchoredTo
 kitchenAnchoredTo = 
   AnchoredTo $ Data.Map.Strict.fromList anchoredToList
@@ -76,9 +70,9 @@ kitchenAnchoredTo =
 anchoredToList :: [(GID Object,(GID Object,Proximity))]
 anchoredToList = 
   [(kitchenCabinetAboveShelfGID,(kitchenShelfGID,PlacedAbove))
-  , (kitchenCabinetBelowShelfGID, (kitchenShelfGID,PlacedBelow))
+  , (kitchenCabinetBelowShelfGID, (kitchenShelfGID,PlacedUnder))
   , (kitchenCabinetAboveSinkGID,(kitchenSinkGID,PlacedAbove))
-  , (kitchenCabinetBelowSinkGID, (kitchenSinkGID,PlacedBelow))] 
+  , (kitchenCabinetBelowSinkGID, (kitchenSinkGID,PlacedUnder))] 
 
 kitchenCabinetAboveShelfNeighbors :: Neighbors 
 kitchenCabinetAboveShelfNeighbors = 
@@ -180,4 +174,3 @@ descriptiveMap = LabelToGIDListMapping
       , kitchenCabinetBelowShelfGID
       , kitchenCabinetAboveSinkGID
       , kitchenCabinetBelowSinkGID]
-      -}
