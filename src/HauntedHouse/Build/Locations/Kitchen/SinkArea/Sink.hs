@@ -10,9 +10,10 @@ import HauntedHouse.Build.LocationTemplate (kitchenGID)
 import HauntedHouse.Build.ObjectTemplate 
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
+import HauntedHouse.Game.Model.Condition (Perceptibility(Perceptible), Moveability (..))
 
 buildKitchenSink :: GameStateExceptT ()
-buildKitchenSink = pass {- do
+buildKitchenSink = do
   world <- _world' <$> get
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = 
@@ -21,17 +22,27 @@ buildKitchenSink = pass {- do
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}}) 
 
 buildSink :: Object 
-buildSink = Object 
-  { _shortName'     = "A kitchen sink."
+buildSink = Object { 
+    _shortName'     = "A kitchen sink."
+  , _odescription'  = [desc]
+  , _descriptives' = []
   , _moveability'   = NotMoveable
-  , _containment'   = (Just . Left) sinkContainer
-  , _odescription'  = "This sink is broken. You can put things in it."
-  , _conditions'   = [kitchenLabel, visibleLabel]
+  , _perceptability' = Perceptible
+  , _mNexus'         = (Just . Nexus . Left) sinkContainer 
   }
+  where 
+    desc = "This sink is broken. You can put things in it."
 
+{-
+
+newtype Containment = Containment
+  { _unContainment' :: These ContainedIn
+                        (Either ContainedOn ContainedBy)
+  } deriving stock (Show)
+
+-}
 sinkContainer :: Containment 
 sinkContainer = (Containment . Data.These.That) (Left containedOn) 
 
 containedOn :: ContainedOn 
 containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty
--}

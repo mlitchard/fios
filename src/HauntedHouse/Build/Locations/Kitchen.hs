@@ -39,8 +39,9 @@ import HauntedHouse.Game.Model.Condition (Proximity (..))
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
+  print ("build kitchen" :: Text)
   buildLocationMap kitchenGID kitchenLocation
-  -- buildDescriptorMap descriptiveMap
+  buildDescriptorMap descriptiveMap
   buildExits 
   buildKitchenSink
   buildKitchenShelf

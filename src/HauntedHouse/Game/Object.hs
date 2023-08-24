@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module HauntedHouse.Game.Object where
 
-import qualified Data.Map.Strict (lookup, insert)
+import qualified Data.Map.Strict (lookup, insert, null)
 import HauntedHouse.Game.Model.Mapping
     ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping') )
 import HauntedHouse.Game.Model.GID (GID (GID))
@@ -33,7 +33,7 @@ data Object = Object
   , _descriptives'  :: [Label Adjective]
   } deriving stock Show
 
--}
+
 instance VisibleObject (GID Object) where
   isVisible :: GID Object -> GameStateExceptT Bool
   isVisible gid = do
@@ -42,3 +42,4 @@ instance VisibleObject (GID Object) where
     where
       isPercieved (MetaCondition (Perceptibility' x) _) = x == Perceptible
       isPercieved _ = False
+-}

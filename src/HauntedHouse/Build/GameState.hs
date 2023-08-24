@@ -6,11 +6,9 @@ import HauntedHouse.Game.Model.World (GameStateExceptT)
 
 buildGameState :: GameStateExceptT ()
 buildGameState = do 
-  liftIO $ print ("buildGameState" :: String)
   buildWorld 
   finalizeBuild
   
-
 finalizeBuild :: GameStateExceptT ()
 finalizeBuild = pass
     

@@ -8,9 +8,10 @@ import HauntedHouse.Game.Model.World
 import qualified Data.Map.Strict
 import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID)
 import Data.These (These(..))
+import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 
 buildKitchenCabinetAboveSink :: GameStateExceptT ()
-buildKitchenCabinetAboveSink = pass {- do
+buildKitchenCabinetAboveSink = do
   world <- _world' <$> get 
   let objectMap' :: GIDToDataMapping Object 
       objectMap' = 
@@ -21,19 +22,52 @@ buildKitchenCabinetAboveSink = pass {- do
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
 buildCabinet :: Object 
-buildCabinet = Object 
-  { _shortName' = "A cabinet, above the sink."
-  , _moveability' = NotMoveable
-  , _containment' = (Just . Left) cabinetContainer
-  , _odescription' = "You can put things in it."
-  , _conditions'  = [kitchenLabel,unlockedLabel,visibleLabel]}
+buildCabinet = Object { 
+      _shortName' = "A cabinet, above the sink."
+    , _odescription' = [desc]
+    , _descriptives' = []
+    , _moveability' = NotMoveable
+    , _perceptability' = Perceptible
+    , _mNexus' =  (Just . Nexus . Left) cabinetContainer
+  }
+  where 
+    desc = "You can put things in it."
 
 cabinetContainer :: Containment
 cabinetContainer = (Containment . This) containedIn
 
+{-
+
+data ContainedIn = ContainedIn
+  { _containerInterface'  :: Interface
+  , _containedIn'         :: ContainerMap Object
+  } 
+
+-}
+
 containedIn :: ContainedIn
 containedIn = ContainedIn 
-  {_interface' = Open
+  {_containerInterface' = ContainerInterface' containerInterface
   , _containedIn' = ContainerMap Data.Map.Strict.empty  
   }
-  -}
+
+{-
+
+data ContainerInterface = ContainerInterface {
+      _openState'    :: OpenState
+    , _openAction'   :: GameStateExceptT ()
+    , _closeAction'  :: GameStateExceptT ()
+    , _lockAction'   :: GameStateExceptT ()
+    , _unlockAction' :: GameStateExceptT ()
+  }
+
+-}
+
+containerInterface :: ContainerInterface 
+containerInterface = ContainerInterface {
+      _openState'     = Open 
+    , _openAction'    = pass 
+    , _closeAction'   = pass 
+    , _lockAction'    = pass
+    , _unlockAction'  = pass
+  }

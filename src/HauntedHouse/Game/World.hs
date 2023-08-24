@@ -9,6 +9,7 @@ import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.World
 
 import HauntedHouse.Game.Object ( getObjectM )
+import Control.Monad.Except (MonadError(..))
 
 setWorldExitMapM :: GID Exit -> Exit -> GameStateExceptT ()
 setWorldExitMapM gid exit = do
@@ -37,40 +38,14 @@ getExitObjectM exitLabel = do
 
 getExitFromObjectM :: GID Object -> GameStateExceptT Exit
 getExitFromObjectM gid = do
-  (MetaCondition (Nexus' (Nexus (Right (Portal exitGID)))) _) <- throwMaybeM notExitMsg 
-                                                                  . find isNexus 
-                                                                  . _metaConditions' 
-                                                                  =<< getObjectM gid
-  getExitM exitGID
+  (Nexus nexus) <- throwMaybeM nexusErr . _mNexus' =<< getObjectM gid
+  case nexus of
+    Left _ -> throwError notExitMsg
+    Right (Portal _ exitGID) -> getExitM exitGID
   where
+    nexusErr = "Not a nexus"
     notExitMsg = "Not an exit"
-    isNexus (MetaCondition (Nexus' (Nexus (Right _))) _) = True
-    isNexus _ = False
 
-{-
-gefObjectM :: GID Object -> GameStateExceptT () -- Exit
-gefObjectM objectGID = do
-  c <-  _conditions' <$> getObjectM objectGID
-  -- let nexus = catMaybes maybeNexus c
---  pass
-  where 
-    maybeNexus :: Condition -> Maybe Nexus
-    maybeNexus (Nexus nexus) = Just nexus
-    maybeNexus _ = Nothing
--}
-  {-
-  getContainment
-    >>= throwMaybeM notContainer
-    >>= throwLeftM notExit
-    <&> _portalExit'
-    >>= getExitM
-    -}
-    {-
-  where
-    getContainment = throwMaybeM notContainer =<< Data.List.find (== Nexus') <$> (_conditions' <$> getObjectM objectGID)
-    notContainer = "Error: Not Container - " <> show objectGID
-    notExit = "Error: Not Exit - " <> show objectGID
--}
 getGIDListM :: GID Location
                 -> Label Object
                 -> GameStateExceptT (NonEmpty (GID Object))

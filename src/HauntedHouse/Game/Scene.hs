@@ -2,12 +2,12 @@ module HauntedHouse.Game.Scene where
 import HauntedHouse.Game.Model.World
         (GameStateExceptT, RoomAnchors (..), RoomAnchor, ObjectAnchors (..)
         , directionFromRoomAnchor, Neighbors (..), Object (..)
-        , SceneAnchored (..), isPerceived)
+        , SceneAnchored (..))
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping (NeighborMap(..), GIDList)
 import HauntedHouse.Game.Object (getObjectM)
-import HauntedHouse.Game.Model.Condition (Proximity (..))
+import HauntedHouse.Game.Model.Condition (Proximity (..), Perceptibility (..))
 import qualified Data.List.NonEmpty
 
 -- text builder for Scene
@@ -23,7 +23,7 @@ instance ScenePart RoomAnchors where
   makeScenePart (RoomAnchors roomAnchorMap) =
     if Data.Map.Strict.null roomAnchorMap
       then pure Nothing
-      else Just . Data.List.NonEmpty.fromList 
+      else Just . Data.List.NonEmpty.fromList
             <$> mapM makeScenePart (Data.Map.Strict.toList roomAnchorMap)
    -- mapM makeScene (Data.Map.Strict.toList roomAnchorMap)
 
@@ -48,11 +48,12 @@ instance ScenePart (GID Object, Neighbors) where
   type RenderAs (GID Object, Neighbors) = Maybe SceneAnchored
   makeScenePart (gid, neighbors) = do
     object <- getObjectM gid
-    if any isPerceived (_metaConditions' object)
-      then do
-              neighborPart <- makeScenePart neighbors
-              pure $ Just $ SceneAnchored mempty neighborPart
-      else pure Nothing
+    case _perceptability' object of
+      Perceptible -> do
+                        neighborPart <- makeScenePart neighbors
+                        pure . Just 
+                          $ SceneAnchored (_shortName' object) neighborPart
+      Imperceptible -> pure Nothing
 
 instance ScenePart Neighbors where
 
@@ -78,9 +79,10 @@ instance ScenePart (GID Object) where
   type RenderAs (GID Object) = Maybe Text
   makeScenePart gid = do
     object <- getObjectM gid
-    pure $ if any isPerceived (_metaConditions' object)
-      then Just (_shortName' object <> "\n")
-      else Nothing
+    pure $ case _perceptability' object of
+              Perceptible   -> Just (_shortName' object <> "\n")
+              Imperceptible -> Nothing
+   
 
 displayProximity :: Proximity -> Text
 displayProximity PlacedOn = "On it"

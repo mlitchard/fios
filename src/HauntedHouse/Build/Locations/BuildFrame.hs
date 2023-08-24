@@ -13,7 +13,7 @@ import qualified Data.List.NonEmpty
 import HauntedHouse.Recognizer (Adjective)
 
 buildLocationMap :: GID Location -> Location -> GameStateExceptT ()
-buildLocationMap locationGID location = pass {-  do
+buildLocationMap locationGID location = do
   world :: World <- _world' <$> get
   let locationMap' = unLocationMap world  
       updatedMap = GIDToDataMapping
@@ -35,4 +35,4 @@ buildDescriptorMap (LabelToGIDListMapping descriptorMap) = do
     updateMap :: GIDList Object -> GIDList Object -> GIDList Object 
     updateMap xs ys = Data.List.NonEmpty.nub $ xs <> ys  
  
-   -} 
+  

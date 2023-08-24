@@ -41,7 +41,6 @@ topLevel = report
         Just Verbose -> setVerbosityM >> topLevel
         Just Quit -> pass
         Just (MkGameInput input') -> do
-          liftIO $ print (("input debug go' " :: String) <> show input')
           case runParser tokens input' of
               Left _ -> putStrLn "parse failed" >> displayScene'
               Right tokens' -> either throwError catchEngine (parseTokens tokens')
@@ -56,6 +55,7 @@ report = do
 
 getInput :: IO (Maybe GameInput)
 getInput = do
+    print ("input" :: Text)
     str <- runInputT defaultSettings go
     case str of
         ""     -> pure Nothing

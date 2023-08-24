@@ -20,18 +20,14 @@ type InputGameStateExceptT = InputT GameStateExceptT
 newtype AnchoredTo = AnchoredTo 
   { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)} 
     deriving stock (Show, Eq, Ord) 
-
+{-
 data Condition
   = Mobility' Moveability
   | Perceptibility' Perceptibility
   | Nexus' Nexus 
   | Inventory
       deriving stock Show
-
-data ContainedIn = ContainedIn
-  { _containerInterface'  :: Interface
-  , _containedIn'         :: ContainerMap Object
-  } 
+-}
 
 newtype Containment = Containment
   { _unContainment' :: These ContainedIn
@@ -43,17 +39,24 @@ data ContainedBy = ContainedBy
   , _objectContained' :: GID Object
   } deriving stock (Show)
 
+data ContainedIn = ContainedIn
+  { _containerInterface'  :: Interface
+  , _containedIn'         :: ContainerMap Object
+  } 
+
 newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
   deriving stock (Eq,Ord,Show)
 
-data ContainerInterface
-  = Open (GameStateExceptT ())
-  | Closed ClosedContainer
+data ContainerInterface = ContainerInterface {
+      _openState'    :: OpenState
+    , _openAction'   :: GameStateExceptT ()
+    , _closeAction'  :: GameStateExceptT ()
+    , _lockAction'   :: GameStateExceptT ()
+    , _unlockAction' :: GameStateExceptT ()
+  }
 
-data ClosedContainer = ClosedContainer {
-  _toOpen' :: GameStateExceptT ()
-, _lockability' :: Maybe LockState
-}
+instance Show ContainerInterface where
+  show containerInterface = show (_openState' containerInterface)
 
 newtype Exit = Exit { _toDestination' :: GID Location} deriving stock Show
 
@@ -74,6 +77,9 @@ data GameState = GameState
   , _clarification' :: Maybe (NonEmpty Text)
   }
 
+newtype Interface 
+  = ContainerInterface' ContainerInterface deriving stock Show
+
 data Location = Location {
   _title'             :: Text
   , _description'     :: Text
@@ -84,25 +90,12 @@ data Location = Location {
   , _directions'      :: Maybe ExitGIDMap
 }
 
-data MetaCondition = MetaCondition {
-   _condition :: Condition
-  , _setCondition :: GameStateExceptT ()
-  }
- 
-data Object = Object {
-    _shortName'       :: Text
-  , _odescription'    :: [Text]
-  , _descriptives'    :: [Label Adjective]
-  , _containment'     :: Containment
-  , _metaConditions'  :: [MetaCondition]
-}
-
-isPerceived :: MetaCondition -> Bool 
-isPerceived (MetaCondition (Perceptibility' Perceptible) _) = True
-isPerceived _ = False 
-
 newtype Neighbors = Neighbors
   {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show
+
+newtype Nexus = Nexus {
+    _unNexus' :: Either Containment Portal
+  } deriving stock (Show)
 
 data Narration = Narration
   {_playerAction' :: Data.List.NonEmpty.NonEmpty Text
@@ -111,13 +104,31 @@ data Narration = Narration
   , _scene'       :: Scene
   } deriving stock Show
 
+data Object = Object {
+    _shortName'       :: Text
+  , _odescription'    :: [Text]
+  , _descriptives'    :: [Label Adjective]
+  , _moveability'     :: Moveability
+  , _perceptability'  :: Perceptibility
+  , _mNexus'          :: Maybe Nexus
+}
+
 newtype ObjectAnchors = ObjectAnchors { 
   _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors 
   } deriving stock Show
 
+data OpenState = Open | Closed Lockability deriving stock Show
+
+data Lockability = Locked | UnLocked | NotLockable deriving stock Show 
+
 data Player = Player
   { _playerLocation'  :: GID Location
   , _p_inv'           :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
+  } deriving stock Show
+
+data Portal = Portal {
+      _portalInterface' :: Interface
+    , _portalExit' :: GID Exit
   } deriving stock Show
 
 data RoomAnchor
@@ -164,10 +175,6 @@ newtype Objects action
   = Objects {_unObjects' :: Data.List.NonEmpty.NonEmpty (GID Object)}
       deriving stock Show
 
-newtype Nexus = Nexus {
-    _unNexus' :: Either Containment Portal
-  } deriving stock (Show)
-
 data Verbosity
   = Quiet
   | Loud
@@ -197,35 +204,17 @@ instance ToText RoomAnchor where
   toText :: RoomAnchor -> Text
   toText = toText . show
 
-newtype Interface
-  = ContainerInterface' ContainerInterface
-
-data LockState 
-  = Locked (GameStateExceptT ()) 
-  | UnLocked (GameStateExceptT ())
-
-data Lockability unlock lock
-  = Lockable LockState
-  | UnLockable
-
-instance Show LockState where
-  show (Locked _) = "Locked"
-  show (UnLocked _) = "Unlocked"
-
-newtype Portal = Portal { _portalExit' :: GID Exit} deriving stock (Eq,Ord,Show)
-
 getLocationIdM :: GameStateExceptT (GID Location)
-getLocationIdM = do
+getLocationIdM =
   _playerLocation' . _player' <$> get
 
---  _locationMap'       :: GIDToDataMapping Location
 getLocationM :: GID Location -> GameStateExceptT Location
 getLocationM gid = do
   world <- _world' <$> get
   throwMaybeM errmsg $ Data.Map.Strict.lookup gid (unLocationMap world)
   where
     unLocationMap = _unGIDToDataMapping' . _locationMap'
-    errmsg = "that location wasn;t found"
+    errmsg = "that location wasn't found"
 
 throwMaybeM :: Text -> Maybe a -> GameStateExceptT a
 throwMaybeM _ (Just a) = pure a
