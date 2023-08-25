@@ -1,7 +1,9 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use one" #-}
 module HauntedHouse.Game.World where
 
 import qualified Data.List.NonEmpty
-import qualified Data.Map.Strict (insert, lookup, insertWith, Map)
+import qualified Data.Map.Strict (insert, lookup, insertWith, Map, singleton)
 import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
           LabelToGIDListMapping(..),Label, LabelToGIDMapping (..), GIDList)
@@ -60,7 +62,7 @@ getGIDListM locationGID label =
     lookupGID = Data.Map.Strict.lookup locationGID <$> unwrappedLocationMap
     unwrappedLocationMap = _unGIDToDataMapping' . _locationMap' . _world'
     unwrappedObjectMap = _unLabelToGIDListMapping' . _objectLabelMap'
-
+{-
 setObjectLabelMapM :: Label Object -> GID Object -> GameStateExceptT ()
 setObjectLabelMapM objectLabel objectGid = do
   location :: Location <-  getLocationM . _playerLocation' . _player' =<< get
@@ -72,7 +74,7 @@ setObjectLabelMapM objectLabel objectGid = do
   setLocationM location'
   where
     objectGid' = Data.List.NonEmpty.singleton objectGid
-
+-}
 setLocationM :: Location -> GameStateExceptT ()
 setLocationM location = do
   lgid <- _playerLocation' . _player' <$> get
@@ -83,3 +85,24 @@ setLocationM location = do
   modify' (\gs -> gs{_world' = world{_locationMap' = locationMap} })
     where
       unwrappedMap = _unGIDToDataMapping' . _locationMap' . _world'
+
+setLocationDirectionM :: GID Location 
+                          -> Label Exit 
+                          -> GID Object 
+                          -> GameStateExceptT ()
+setLocationDirectionM locationGID exitLabel objectGID = do 
+  location@(Location _ _ _ _ _ _ mDirections) <- getLocationM locationGID 
+  let directionMap = case mDirections of 
+        (Just (ExitGIDMap (LabelToGIDMapping directions))) -> updateDirections 
+                                                               directions 
+        Nothing -> Data.Map.Strict.singleton exitLabel objectGID    
+      directionMap' = toExitMap directionMap 
+      updatedLocation = location{_directions' = Just directionMap'}
+  setLocationM updatedLocation 
+  where 
+    updateDirections :: Map (Label Exit) (GID Object) 
+                          -> Map (Label Exit) (GID Object)
+    updateDirections = Data.Map.Strict.insert exitLabel objectGID
+
+    toExitMap :: Map (Label Exit) (GID Object) -> ExitGIDMap
+    toExitMap = ExitGIDMap . LabelToGIDMapping 

@@ -17,17 +17,9 @@ type GameStateExceptT = ExceptT Text (StateT GameState IO)
 
 type InputGameStateExceptT = InputT GameStateExceptT
 
-newtype AnchoredTo = AnchoredTo 
-  { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)} 
-    deriving stock (Show, Eq, Ord) 
-{-
-data Condition
-  = Mobility' Moveability
-  | Perceptibility' Perceptibility
-  | Nexus' Nexus 
-  | Inventory
-      deriving stock Show
--}
+newtype AnchoredTo = AnchoredTo
+  { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)}
+    deriving stock (Show, Eq, Ord)
 
 newtype Containment = Containment
   { _unContainment' :: These ContainedIn
@@ -42,7 +34,7 @@ data ContainedBy = ContainedBy
 data ContainedIn = ContainedIn
   { _containerInterface'  :: Interface
   , _containedIn'         :: ContainerMap Object
-  } 
+  }
 
 newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
   deriving stock (Eq,Ord,Show)
@@ -64,7 +56,7 @@ newtype ExitGIDDataMap = ExitGIDDataMap {
   _unExitGIDDataMap' :: GIDToDataMapping Exit
   } deriving stock Show
 
-newtype ExitGIDMap 
+newtype ExitGIDMap
   = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Object}
       deriving stock Show
 
@@ -77,8 +69,10 @@ data GameState = GameState
   , _clarification' :: Maybe (NonEmpty Text)
   }
 
-newtype Interface 
-  = ContainerInterface' ContainerInterface deriving stock Show
+data Interface
+  = ContainerInterface' ContainerInterface
+  | PortalInterface
+      deriving stock Show
 
 data Location = Location {
   _title'             :: Text
@@ -113,13 +107,13 @@ data Object = Object {
   , _mNexus'          :: Maybe Nexus
 }
 
-newtype ObjectAnchors = ObjectAnchors { 
-  _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors 
+newtype ObjectAnchors = ObjectAnchors {
+  _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors
   } deriving stock Show
 
 data OpenState = Open | Closed Lockability deriving stock Show
 
-data Lockability = Locked | UnLocked | NotLockable deriving stock Show 
+data Lockability = Locked | UnLocked | NotLockable deriving stock Show
 
 data Player = Player
   { _playerLocation'  :: GID Location
@@ -158,7 +152,7 @@ data Scene = Scene
 
 data SceneAnchored = SceneAnchored {
   _sceneAnchored' :: Text
-, _sceneRelated' :: [Text] 
+, _sceneRelated' :: [Text]
 } deriving stock Show
 
 data World = World
@@ -181,12 +175,12 @@ data Verbosity
   | Normal
     deriving stock Show
 
-instance Eq Nexus where 
+instance Eq Nexus where
   (Nexus _) == (Nexus _) = True
 
-instance Ord Nexus where 
-  compare (Nexus _) (Nexus _) = EQ 
-  (<=) (Nexus _) (Nexus _) = True  
+instance Ord Nexus where
+  compare (Nexus _) (Nexus _) = EQ
+  (<=) (Nexus _) (Nexus _) = True
 
 directionFromRoomAnchor :: RoomAnchor -> Text
 directionFromRoomAnchor roomAnchor =
@@ -215,6 +209,14 @@ getLocationM gid = do
   where
     unLocationMap = _unGIDToDataMapping' . _locationMap'
     errmsg = "that location wasn't found"
+
+updateLocationM :: GID Location -> Location -> GameStateExceptT ()
+updateLocationM gidLocation location = do
+  world <- _world' <$> get
+  let (GIDToDataMapping locationMap) = _locationMap' world
+      updatedMap = GIDToDataMapping
+                    $ Data.Map.Strict.insert gidLocation location locationMap
+  modify' (\gs -> gs{_world' = world{_locationMap' = updatedMap}})
 
 throwMaybeM :: Text -> Maybe a -> GameStateExceptT a
 throwMaybeM _ (Just a) = pure a

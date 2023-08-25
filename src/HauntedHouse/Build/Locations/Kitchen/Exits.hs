@@ -4,13 +4,17 @@ import HauntedHouse.Game.Model.Mapping ( NeighborMap(NeighborMap), Label (..))
 import HauntedHouse.Game.Model.World 
 import HauntedHouse.Build.LocationTemplate (hallGID)
 import HauntedHouse.Build.ExitTemplate (kitchenEastExitGID)
-import HauntedHouse.Game.World (setWorldExitMapM)
+import HauntedHouse.Game.World (setWorldExitMapM, setLocationDirectionM)
 import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID)
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Object (setObjectMapM)
 import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Build.DescriptiveTemplate (lockedLabel, visibleLabel)
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
+import HauntedHouse.Build.ObjectLabels 
+import HauntedHouse.Build.LocationTemplate
+import HauntedHouse.Game.Object (setObjectLabelMapM)
+import HauntedHouse.Build.DirectionTemplate (eastLabel)
 
 buildExits :: GameStateExceptT ()
 buildExits =
@@ -27,6 +31,8 @@ kitchenEastExit = Exit {_toDestination' = hallGID }
 kitchenEastDoor :: GameStateExceptT ()
 kitchenEastDoor = do
   setObjectMapM kitchenEastDoorGID kitchenEastDoorObject
+  setObjectLabelMapM kitchenGID door kitchenEastDoorGID
+  setLocationDirectionM  kitchenGID eastLabel kitchenEastDoorGID
 
 kitchenEastDoorObject :: Object
 kitchenEastDoorObject = Object {
@@ -51,7 +57,15 @@ data Portal = Portal {
     , _portalExit' :: GID Exit
   } deriving stock Show
 
+newtype Containment = Containment
+  { _unContainment' :: These ContainedIn
+                        (Either ContainedOn ContainedBy)
+  } deriving stock (Show)
 
+data ContainedIn = ContainedIn
+  { _containerInterface'  :: Interface
+  , _containedIn'         :: ContainerMap Object
+  } 
 -}
 eastDoorNexus :: Nexus 
 eastDoorNexus = (Nexus . Right) portal

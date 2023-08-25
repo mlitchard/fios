@@ -2,7 +2,7 @@ module HauntedHouse.Build.ObjectLabels where
 
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World  (Object)
-import HauntedHouse.Tokenizer         (Lexeme(SINK,SHELF, CABINET))
+import HauntedHouse.Tokenizer         (Lexeme(SINK,SHELF, CABINET, DOOR))
 
 {-
 The following are the keys for "Map (Label Object) 
@@ -17,6 +17,8 @@ shelf = Label SHELF
 cabinet :: Label Object 
 cabinet = Label CABINET
 
+door :: Label Object 
+door = Label DOOR 
 {-
 These generate the Labels for the specific objects
 -}
