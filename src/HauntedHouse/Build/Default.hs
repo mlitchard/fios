@@ -7,16 +7,10 @@ import Data.Text qualified                      (empty)
 
 import HauntedHouse.Build.LocationTemplate
 import HauntedHouse.Game.Model.World
-    ( Player(..),
-      Narration(..),
-      GameState(..),
-      Verbosity(Loud),
-      Scene(..),
-      World(..),
-      RoomAnchors(..),
-      Object )
+
 import HauntedHouse.Game.Model.Mapping
     (GIDToDataMapping (..), LabelToGIDListMapping (..),)
+import HauntedHouse.Game.Narration (displaySceneM, makeSceneM)
 
 defaultGameState :: GameState
 defaultGameState = GameState
@@ -25,8 +19,17 @@ defaultGameState = GameState
   , _player' = defaultPlayer
   , _narration' = defaultNarration
   , _verbosity' = Loud
+  , _displayAction' = defaultDisplayAction
   , _clarification' = Nothing
   }
+
+defaultDisplayAction :: ExceptT Text (StateT GameState IO) ()
+defaultDisplayAction = 
+  report 
+    >> getLocationIdM 
+    >>= getLocationM 
+    >>= makeSceneM 
+    >> displaySceneM True
 
 defaultWorld :: World
 defaultWorld = World

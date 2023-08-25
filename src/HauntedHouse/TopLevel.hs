@@ -25,51 +25,39 @@ start :: GameStateExceptT ()
 start = buildGameState >> topLevel
 
 topLevel :: GameStateExceptT ()
-topLevel = report 
-            >> getLocationIdM 
-            >>= getLocationM 
-            >>= makeSceneM 
-            >> displaySceneM True 
-            >> go'
-  where
-    displayScene' = displaySceneM True >> go'
-    go' :: GameStateExceptT ()
-    go' = do
-      input <- liftIO getInput
-      case input of
-        Nothing -> displayScene'
-        Just Verbose -> setVerbosityM >> topLevel
-        Just Quit -> pass
-        Just (MkGameInput input') -> do
-          case runParser tokens input' of
-              Left _ -> putStrLn "parse failed" >> displayScene'
-              Right tokens' -> either throwError catchEngine (parseTokens tokens')
-                                >> topLevel
-          where
-            catchEngine parsed = engine parsed `catchError` clarifier
+topLevel = get >>= _displayAction' >> inputAction
 
-report :: GameStateExceptT ()
-report = do
-  report' <- _report' <$> get  
-  mapM_ print report'
+inputAction :: GameStateExceptT ()
+inputAction = do
+  input <- liftIO getInput
+  case input of
+    Nothing -> displaySceneM True >> inputAction
+    Just Verbose -> setVerbosityM >> topLevel
+    Just Quit -> pass
+    Just (MkGameInput input') -> do
+      case runParser tokens input' of
+          Left _ -> putStrLn "parse failed" >> displaySceneM True >> inputAction
+          Right tokens' -> either throwError catchEngine (parseTokens tokens')
+                            >> topLevel
+  where
+    catchEngine parsed = engine parsed `catchError` clarifier
 
 getInput :: IO (Maybe GameInput)
 getInput = do
-    print ("input" :: Text)
-    str <- runInputT defaultSettings go
-    case str of
-        ""     -> pure Nothing
-        "quit" -> pure $ Just Quit
-        "verbose" -> pure $ Just Verbose
-        input  -> pure $ Just (mkGameInput input)
-    where
-        go :: InputT IO String
-        go = do
-            minput <- getInputLine "% "
-            case minput of
-                Nothing -> go
-                Just "" -> go
-                Just input -> pure input
+  str <- runInputT defaultSettings go
+  case str of
+    ""     -> pure Nothing
+    "quit" -> pure $ Just Quit
+    "verbose" -> pure $ Just Verbose
+    input  -> pure $ Just (mkGameInput input)
+  where
+    go :: InputT IO String
+    go = do
+          minput <- getInputLine "% "
+          case minput of
+            Nothing -> go
+            Just "" -> go
+            Just input -> pure input
 
 mkGameInput :: String -> GameInput
 mkGameInput str = MkGameInput (toText $ map Data.Char.toUpper str)

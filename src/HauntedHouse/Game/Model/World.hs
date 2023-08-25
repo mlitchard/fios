@@ -66,8 +66,14 @@ data GameState = GameState
   , _player'        :: Player
   , _narration'     :: Narration
   , _verbosity'     :: Verbosity
+  , _displayAction' :: GameStateExceptT ()
   , _clarification' :: Maybe (NonEmpty Text)
   }
+
+report :: GameStateExceptT ()
+report = do
+  report' <- _report' <$> get  
+  mapM_ print report'
 
 data Interface
   = ContainerInterface' ContainerInterface
@@ -84,19 +90,19 @@ data Location = Location {
   , _directions'      :: Maybe ExitGIDMap
 }
 
+data Narration = Narration {
+      _playerAction' :: Data.List.NonEmpty.NonEmpty Text
+    , _enviroment'   :: Data.List.NonEmpty.NonEmpty Text
+    , _npcResponse' :: Data.List.NonEmpty.NonEmpty Text
+    , _scene'       :: Scene
+  } deriving stock Show
+
 newtype Neighbors = Neighbors
   {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show
 
 newtype Nexus = Nexus {
     _unNexus' :: Either Containment Portal
   } deriving stock (Show)
-
-data Narration = Narration
-  {_playerAction' :: Data.List.NonEmpty.NonEmpty Text
-  ,_enviroment'   :: Data.List.NonEmpty.NonEmpty Text
-  , _npcResponse' :: Data.List.NonEmpty.NonEmpty Text
-  , _scene'       :: Scene
-  } deriving stock Show
 
 data Object = Object {
     _shortName'       :: Text
