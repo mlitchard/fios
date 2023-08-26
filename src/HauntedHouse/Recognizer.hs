@@ -94,3 +94,4 @@ imperative = mdo
         <?> toText ("adjective" :: String)
 
   return $ ImperativeClause <$> verbPhrase
+            <|> ClarifyingClause <$> nounPhrase 

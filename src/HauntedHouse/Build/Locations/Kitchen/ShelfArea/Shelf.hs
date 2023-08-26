@@ -44,7 +44,7 @@ buildShelf= Object {
     desc = "It's a shelf. You can put things on it"
 
 shelfContainer :: Containment
-shelfContainer = (Containment . That) (Left containedOn)
+shelfContainer = (Containment . That) containedOn
   where
     containedOn :: ContainedOn
     containedOn = (ContainedOn . ContainerMap) 

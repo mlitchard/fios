@@ -4,7 +4,6 @@ import HauntedHouse.Build.ObjectTemplate
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..))
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
-import Data.These (These(..))
 
 buildPlantPot :: GameStateExceptT ()
 buildPlantPot = do
@@ -17,16 +16,24 @@ buildPlantPot = do
 
 plantPot :: Object 
 plantPot = Object {
-    _shortName'     = "A plant pot"
-  , _odescription'  = [desc]
-  , _descriptives' = []
-  , _moveability'   = NotMoveable
-  , _perceptability' = Perceptible
-  , _mNexus'         = Nothing
+      _shortName'      = "A plant pot"
+    , _odescription'   = [desc]
+    , _descriptives'   = []
+    , _moveability'    = NotMoveable
+    , _perceptability' = Perceptible
+    , _orientation'    = orientation 
+    , _mNexus'         = Nothing
   }
   where 
     desc = "You can plant plants in the plant pot."
 
+
+orientation :: Orientation 
+orientation = ContainedBy' $ ContainedBy {
+    _containedBy' = On kitchenShelfGID
+  , _self = plantPotGID
+}
+{-
 potNexus :: Nexus 
 potNexus = (Nexus . Left) potContainment
 
@@ -38,3 +45,4 @@ potContainedBy = ContainedBy {
     _containedBy'     = Right kitchenShelfGID
   , _objectContained' = plantPotGID
 } 
+-}

@@ -99,6 +99,7 @@ objectList =
   , kitchenCabinetBelowShelfGID
   , kitchenSinkGID
   , plantPotGID
+  , kitchenEastDoorGID
   , kitchenCabinetAboveSinkGID
   , kitchenCabinetBelowSinkGID] 
 
@@ -136,11 +137,19 @@ shelfNeighbors = Neighbors shelfNeighborMap
 shelfNeighborMap :: NeighborMap Proximity Object 
 shelfNeighborMap = NeighborMap $ Data.Map.Strict.fromList shelfNeighborsList
 
+eastDoorNeighborMap :: NeighborMap Proximity Object 
+eastDoorNeighborMap = NeighborMap $ Data.Map.Strict.fromList eastDoorNeighborsList
+
+eastDoorNeighborsList :: [(Proximity, GIDList Object)]
+eastDoorNeighborsList = 
+  [(PlacedLeft, Data.List.NonEmpty.singleton kitchenShelfGID)]
+
 shelfNeighborsList :: [(Proximity, GIDList Object)]
 shelfNeighborsList =
   [(PlacedAbove, Data.List.NonEmpty.singleton kitchenCabinetAboveShelfGID)
   , (PlacedUnder, Data.List.NonEmpty.singleton kitchenCabinetBelowShelfGID)
   , (PlacedLeft, Data.List.NonEmpty.singleton kitchenSinkGID)
+  , (PlacedRight, Data.List.NonEmpty.singleton kitchenEastDoorGID)
   , (PlacedOn, Data.List.NonEmpty.singleton plantPotGID)]
 
 sinkNeighbors :: Neighbors 

@@ -41,7 +41,7 @@ newtype Containment = Containment
 
 -}
 sinkContainer :: Containment 
-sinkContainer = (Containment . Data.These.That) (Left containedOn) 
+sinkContainer = (Containment . Data.These.That) containedOn 
 
 containedOn :: ContainedOn 
 containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty

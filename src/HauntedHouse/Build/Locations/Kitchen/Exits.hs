@@ -41,32 +41,28 @@ kitchenEastDoorObject = Object {
     , _descriptives'  = []
     , _moveability'   = NotMoveable
     , _perceptability' = Perceptible
+    , _orientation' = orientation
     , _mNexus'         = Just eastDoorNexus
   } 
   where
     kitchenShortName    = "The door to the east hall."
     kitchenEastDoorDesc = "It's a door made from some mysterious substance."
 
+orientation :: Orientation 
+orientation = 
 {-
-newtype Nexus = Nexus {
-    _unNexus' :: Either Containment Portal
-  } deriving stock (Show)
-
-data Portal = Portal {
-      _portalInterface' :: Interface
-    , _portalExit' :: GID Exit
+data ContainedBy = ContainedBy
+  { _containedBy' :: OnOrIn
+  , _self :: GID Object
   } deriving stock Show
 
-newtype Containment = Containment
-  { _unContainment' :: These ContainedIn
-                        (Either ContainedOn ContainedBy)
-  } deriving stock (Show)
-
-data ContainedIn = ContainedIn
-  { _containerInterface'  :: Interface
-  , _containedIn'         :: ContainerMap Object
-  } 
+data OnOrIn 
+  = On (GID Object) 
+  | In (GID Object)
+    deriving stock Show 
 -}
+
+
 eastDoorNexus :: Nexus 
 eastDoorNexus = (Nexus . Right) portal
   where 

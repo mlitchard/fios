@@ -31,6 +31,7 @@ data PrepPhrase
   | Preposition Preposition
   deriving stock (Show, Eq, Ord)
 
-newtype Imperative
+data Imperative
   = ImperativeClause VerbPhrase
-  deriving stock (Show, Eq, Ord)
+  | ClarifyingClause NounPhrase 
+    deriving stock (Show, Eq, Ord)

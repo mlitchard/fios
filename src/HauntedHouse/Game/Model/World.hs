@@ -22,14 +22,17 @@ newtype AnchoredTo = AnchoredTo
     deriving stock (Show, Eq, Ord)
 
 newtype Containment = Containment
-  { _unContainment' :: These ContainedIn
-                        (Either ContainedOn ContainedBy)
-  } deriving stock (Show)
+  { _unContainment' :: These ContainedIn ContainedOn } deriving stock Show
 
 data ContainedBy = ContainedBy
-  { _containedBy' :: Either Inventory (GID Object)
-  , _objectContained' :: GID Object
-  } deriving stock (Show)
+  { _containedBy' :: OnOrIn
+  , _self :: GID Object
+  } deriving stock Show
+
+data OnOrIn 
+  = On (GID Object) 
+  | In (GID Object)
+    deriving stock Show 
 
 data ContainedIn = ContainedIn
   { _containerInterface'  :: Interface
@@ -90,6 +93,8 @@ data Location = Location {
   , _directions'      :: Maybe ExitGIDMap
 }
 
+data Lockability = Locked | UnLocked | NotLockable deriving stock Show
+
 data Narration = Narration {
       _playerAction' :: Data.List.NonEmpty.NonEmpty Text
     , _enviroment'   :: Data.List.NonEmpty.NonEmpty Text
@@ -110,6 +115,7 @@ data Object = Object {
   , _descriptives'    :: [Label Adjective]
   , _moveability'     :: Moveability
   , _perceptability'  :: Perceptibility
+  , _orientation'     :: GameStateExceptT ()
   , _mNexus'          :: Maybe Nexus
 }
 
@@ -118,9 +124,15 @@ newtype ObjectAnchors = ObjectAnchors {
   } deriving stock Show
 
 data OpenState = Open | Closed deriving stock Show
-
-data Lockability = Locked | UnLocked | NotLockable deriving stock Show
-
+{-
+data Orientation 
+  = ContainedBy' ContainedBy 
+  | Inventory 
+  | Floor 
+  | AnchoredTo' AnchoredTo 
+  | Anchoring 
+    deriving stock Show 
+-}
 data Player = Player
   { _playerLocation'  :: GID Location
   , _p_inv'           :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))

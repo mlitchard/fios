@@ -74,20 +74,24 @@ showPlayerActionM = do
   playerAction <- _playerAction' . _narration' <$> get
   mapM_ print playerAction 
   clearPlayerActionM
-  
+
 updateDisplayActionM :: GameStateExceptT () -> GameStateExceptT () 
 updateDisplayActionM displayAction = do 
   modify' (\gs -> gs{_displayAction'  = displayAction})
 
 describeObjectM :: GID Object -> GameStateExceptT ()
 describeObjectM gid = do
-  (Object shortName desc _ _ percept mNexus) <- getObjectM gid
+  (Object shortName desc _ _ percept orientation mNexus) <- getObjectM gid
   let success = "You look at the " <> shortName
   case percept of
     Imperceptible -> throwError "You don't see that."
     Perceptible -> updatePlayerActionM success
+                    >> describeOrientation orientation 
                     >> mapM_ updateEnvironmentM desc
                     >> maybeNexusM mNexus
+
+describeOrientation :: Orientation -> GameStateExceptT () 
+describeOrientation _ = pass 
       
 maybeNexusM :: Maybe Nexus -> GameStateExceptT ()
 maybeNexusM Nothing = pass
@@ -102,9 +106,8 @@ describeContainmentM (Containment (This (ContainedIn interface cmap))) = do
                                           cmap
     PortalInterface -> do
       updateEnvironmentM "This container has an unusual opening"
-describeContainmentM (Containment (That (Left (ContainedOn cmap)))) =
+describeContainmentM (Containment (That (ContainedOn cmap))) =
   describeContainedOn cmap
-describeContainmentM (Containment (That (Right (ContainedBy _ _)))) = pass
 describeContainmentM (Containment (These _ _)) = pass
 
 describeContainedOn :: ContainerMap Object -> GameStateExceptT ()
