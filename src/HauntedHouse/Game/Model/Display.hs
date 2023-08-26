@@ -8,7 +8,7 @@ import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Mapping (ContainerMap(..), NeighborMap (..))
 import HauntedHouse.Game.Object (getObjectM, getShortNameM)
 
-import Data.List.NonEmpty ( (<|), reverse, toList )
+import Data.List.NonEmpty ( (<|), reverse, toList, singleton )
 
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Condition (Proximity, Perceptibility (..))
@@ -44,13 +44,37 @@ showEnvironmentM = do
   finalizeEnvironmentM
   environment <- _enviroment' . _narration' <$> get
   mapM_ print environment 
+  clearEnvironmentM
+
+{-
+data Narration = Narration {
+      _playerAction' :: Data.List.NonEmpty.NonEmpty Text
+    , _enviroment'   :: Data.List.NonEmpty.NonEmpty Text
+    , _npcResponse' :: Data.List.NonEmpty.NonEmpty Text
+    , _scene'       :: Scene
+  } deriving stock Show
+-}
+clearPlayerActionM :: GameStateExceptT () 
+clearPlayerActionM = do 
+  narration <- _narration' <$> get
+  modify' (\gs -> gs{_narration' = narration{_playerAction' = clear}})
+  where
+    clear = Data.List.NonEmpty.singleton mempty 
+
+clearEnvironmentM :: GameStateExceptT () 
+clearEnvironmentM = do 
+  narration <- _narration' <$> get
+  modify' (\gs -> gs{_narration' = narration{_enviroment' = clear}})
+  where
+    clear = Data.List.NonEmpty.singleton mempty
 
 showPlayerActionM :: GameStateExceptT ()
 showPlayerActionM = do 
   finalizePlayerActionM
   playerAction <- _playerAction' . _narration' <$> get
   mapM_ print playerAction 
-
+  clearPlayerActionM
+  
 updateDisplayActionM :: GameStateExceptT () -> GameStateExceptT () 
 updateDisplayActionM displayAction = do 
   modify' (\gs -> gs{_displayAction'  = displayAction})

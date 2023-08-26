@@ -17,11 +17,11 @@ import qualified Data.Map.Strict
  
 import HauntedHouse.Build.Locations.Kitchen.Exits ( buildExits )
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink 
-import HauntedHouse.Build.ObjectLabels (cabinet, sink, shelf)
-import HauntedHouse.Build.ObjectTemplate 
+import HauntedHouse.Build.ObjectLabels (cabinet, sink, shelf, plantPot)
+import HauntedHouse.Build.ObjectTemplate
         (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID
         , kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID
-        , kitchenEastDoorGID, kitchenShelfGID, kitchenSinkGID)
+        , kitchenEastDoorGID, kitchenShelfGID, kitchenSinkGID, plantPotGID)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping
         (LabelToGIDMapping (LabelToGIDMapping), Label (..)
@@ -36,6 +36,7 @@ import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink
     ( buildKitchenCabinetAboveSink )
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink
 import HauntedHouse.Game.Model.Condition (Proximity (..))
+import HauntedHouse.Build.Locations.Kitchen.PlantPot (buildPlantPot)
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
@@ -97,12 +98,16 @@ objectList =
   , kitchenCabinetAboveShelfGID
   , kitchenCabinetBelowShelfGID
   , kitchenSinkGID
+  , plantPotGID
   , kitchenCabinetAboveSinkGID
   , kitchenCabinetBelowSinkGID] 
 
 kitchenObjectLabelMap :: LabelToGIDListMapping Object Object
 kitchenObjectLabelMap = LabelToGIDListMapping $ Data.Map.Strict.fromList 
-  [(cabinet,kitchenCabinets),(sink, kitchenSink),(shelf, kitchenShelf)]
+  [(cabinet,kitchenCabinets),(sink, kitchenSink),(shelf, kitchenShelf), (plantPot, kitchenPlantPot)]
+
+kitchenPlantPot :: Data.List.NonEmpty.NonEmpty (GID Object)
+kitchenPlantPot = Data.List.NonEmpty.singleton plantPotGID
 
 kitchenSink :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenSink = Data.List.NonEmpty.singleton kitchenSinkGID
@@ -135,7 +140,8 @@ shelfNeighborsList :: [(Proximity, GIDList Object)]
 shelfNeighborsList =
   [(PlacedAbove, Data.List.NonEmpty.singleton kitchenCabinetAboveShelfGID)
   , (PlacedUnder, Data.List.NonEmpty.singleton kitchenCabinetBelowShelfGID)
-  , (PlacedLeft, Data.List.NonEmpty.singleton kitchenSinkGID)]
+  , (PlacedLeft, Data.List.NonEmpty.singleton kitchenSinkGID)
+  , (PlacedOn, Data.List.NonEmpty.singleton plantPotGID)]
 
 sinkNeighbors :: Neighbors 
 sinkNeighbors = Neighbors sinkNeighborMap 

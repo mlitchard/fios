@@ -1,6 +1,10 @@
 module HauntedHouse.Build.Locations.Kitchen.PlantPot where 
-import HauntedHouse.Game.Model.World (GameStateExceptT)
+import HauntedHouse.Game.Model.World 
 import HauntedHouse.Build.ObjectTemplate 
+import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..))
+import qualified Data.Map.Strict
+import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
+import Data.These (These(..))
 
 buildPlantPot :: GameStateExceptT ()
 buildPlantPot = do
@@ -10,11 +14,10 @@ buildPlantPot = do
         GIDToDataMapping $ Data.Map.Strict.insert plantPotGID plantPot 
           $ (_unGIDToDataMapping' . _objectMap') world
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})  
-  pass
 
 plantPot :: Object 
 plantPot = Object {
-    _shortName'     = "A kitchen sink."
+    _shortName'     = "A plant pot"
   , _odescription'  = [desc]
   , _descriptives' = []
   , _moveability'   = NotMoveable
@@ -22,4 +25,16 @@ plantPot = Object {
   , _mNexus'         = Nothing
   }
   where 
-    desc = "This sink is broken. You can put things in it."
+    desc = "You can plant plants in the plant pot."
+
+potNexus :: Nexus 
+potNexus = (Nexus . Left) potContainment
+
+potContainment :: Containment 
+potContainment = (Containment . That . Right) potContainedBy 
+
+potContainedBy :: ContainedBy 
+potContainedBy = ContainedBy {
+    _containedBy'     = Right kitchenShelfGID
+  , _objectContained' = plantPotGID
+} 

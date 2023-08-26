@@ -39,7 +39,7 @@ buildShelf= Object {
 
 buildCabinet :: Object 
 buildCabinet = Object { 
-      _shortName' = "A cabinet, under the sink."
+      _shortName' = "A cabinet, under the shelf."
     , _odescription' = [desc]
     , _descriptives' = [] 
     , _moveability' = NotMoveable

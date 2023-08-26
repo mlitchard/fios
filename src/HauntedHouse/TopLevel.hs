@@ -31,7 +31,7 @@ inputAction :: GameStateExceptT ()
 inputAction = do
   input <- liftIO getInput
   case input of
-    Nothing -> displaySceneM True >> inputAction
+    Nothing -> inputAction
     Just Verbose -> setVerbosityM >> topLevel
     Just Quit -> pass
     Just (MkGameInput input') -> do

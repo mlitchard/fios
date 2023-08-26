@@ -14,7 +14,7 @@ import HauntedHouse.Build.DescriptiveTemplate (visibleLabel)
 import HauntedHouse.Game.Object (getObjectM)
 import HauntedHouse.Clarifier (clarifyNotThere, clarifyWhich)
 import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Model.Display (describeObjectM, showPlayerActionM, showEnvironmentM)
+import HauntedHouse.Game.Model.Display (describeObjectM, showPlayerActionM, showEnvironmentM, updateDisplayActionM)
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
 doLookObjectM (PrepPhrase AT np ) = evaluateATNounPhrase np
@@ -32,7 +32,7 @@ evaluateATNounPhrase (Noun noun) = do
                                 <$> (getLocationM =<< getLocationIdM)
   objects <- throwMaybeM nopeErr $ Data.Map.Strict.lookup (Label noun) m
   if Data.List.NonEmpty.length objects == 1
-    then describeObjectM (head objects) >> displayActionM
+    then describeObjectM (head objects) >> updateDisplayActionM displayActionM
     else throwError "Multiple look object unimplemented"
   where
     displayActionM = showPlayerActionM >> showEnvironmentM

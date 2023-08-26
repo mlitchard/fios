@@ -22,7 +22,7 @@ buildKitchenCabinetAboveShelf = do
 
 buildCabinet :: Object 
 buildCabinet = Object {
-      _shortName' = "A cabinet, above the sink."
+      _shortName' = "A cabinet, above the shelf."
     , _odescription' = [desc]
     , _descriptives' = []
     , _moveability' = NotMoveable
