@@ -117,7 +117,7 @@ newtype ObjectAnchors = ObjectAnchors {
   _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors
   } deriving stock Show
 
-data OpenState = Open | Closed Lockability deriving stock Show
+data OpenState = Open | Closed deriving stock Show
 
 data Lockability = Locked | UnLocked | NotLockable deriving stock Show
 

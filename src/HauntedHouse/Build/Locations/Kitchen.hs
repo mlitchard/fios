@@ -44,6 +44,7 @@ buildKitchen = do
   buildExits 
   buildKitchenSink
   buildKitchenShelf
+  buildPlantPot
   buildKitchenCabinetAboveShelf
   buildKitchenCabinetBelowShelf
   buildKitchenCabinetAboveSink

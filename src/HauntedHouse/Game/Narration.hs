@@ -4,7 +4,7 @@ import HauntedHouse.Game.Model.World
 import qualified Data.Map.Strict (toList)
 import HauntedHouse.Game.Scene (ScenePart(makeScenePart))
 import HauntedHouse.Game.Model.Mapping
-import HauntedHouse.Game.Object (namedDirection)
+import HauntedHouse.Game.Object (namedDirectionM)
 import HauntedHouse.Game.Model.GID
 import qualified Data.List.NonEmpty
 
@@ -33,7 +33,7 @@ makeExits Nothing = pure Nothing
 makeExits (Just (ExitGIDMap ( LabelToGIDMapping exitGIDMap))) = do
   let exitGIDMap' :: [(Label Exit, GID Object)]
       exitGIDMap' = Data.Map.Strict.toList exitGIDMap
-  raw <- mapM namedDirection exitGIDMap' 
+  raw <- mapM namedDirectionM exitGIDMap' 
   pure $ Just $ Data.List.NonEmpty.fromList $ map exitText raw
 
 exitText :: (Text, Label Exit) -> Text

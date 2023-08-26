@@ -25,27 +25,6 @@ setObjectMapM gid object = do
                           $ _unGIDToDataMapping' objectMap
   modify' (\gs -> gs {_world' = world {_objectMap' = gidToDataMap }})
 
-
-{-
-data Location = Location {
-  _title'             :: Text
-  , _description'     :: Text
-  , _anchoredObjects' :: RoomAnchors
-  , _anchoredTo'      :: AnchoredTo
-  , _floorInventory'  :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
-  , _objectLabelMap'  :: LabelToGIDListMapping Object Object
-  , _directions'      :: Maybe ExitGIDMap
-}
-type GIDList a = (Data.List.NonEmpty.NonEmpty (GID a))
-insertWith :: Ord k => (a -> a -> a) -> k -> a -> Map k a -> Map k a
-
-data World = World
-  { _objectMap'         :: GIDToDataMapping Object
-  , _locationMap'       :: GIDToDataMapping Location
-  , _descriptiveMap'    :: LabelToGIDListMapping Adjective Object
-  , _exitMap'           :: GIDToDataMapping Exit
-  }
--}
 setObjectLabelMapM :: GID Location 
                         -> Label Object 
                         -> GID Object 
@@ -60,7 +39,10 @@ setObjectLabelMapM locationGID objectLabel objectGID = do
     singleList = Data.List.NonEmpty.singleton objectGID
     insertGID = Data.Map.Strict.insertWith (<>) objectLabel singleList
 
-namedDirection :: (Label Exit, GID Object) -> GameStateExceptT (Text,Label Exit)
-namedDirection (label, gid) = do
+namedDirectionM :: (Label Exit, GID Object) -> GameStateExceptT (Text,Label Exit)
+namedDirectionM (label, gid) = do
   shortName <- _shortName' <$> getObjectM gid
   pure (shortName, label)
+
+getShortNameM :: GID Object -> GameStateExceptT Text 
+getShortNameM gid = _shortName' <$> getObjectM gid

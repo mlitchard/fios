@@ -6,7 +6,6 @@ import Data.Map.Strict qualified
 import Data.These qualified (These(..))
 
 import HauntedHouse.Build.DescriptiveTemplate
-import HauntedHouse.Build.LocationTemplate (kitchenGID)
 import HauntedHouse.Build.ObjectTemplate 
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World

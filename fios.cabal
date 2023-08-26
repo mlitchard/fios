@@ -143,6 +143,7 @@ library
     HauntedHouse.TopLevel
     
   other-modules:
+    HauntedHouse.Build.Locations.Kitchen.PlantPot
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.OnlyVerb.DoGo
