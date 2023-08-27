@@ -8,8 +8,8 @@ import HauntedHouse.Tokenizer (Lexeme)
 import HauntedHouse.Game.Model.Display (describeOrientationM, updateEnvironmentM, showEnvironmentM, showPlayerActionM, updateDisplayActionM)
 import Data.Text (toLower)
 
-clarifier :: Text -> GameStateExceptT ()
-clarifier report = do
+updateReport :: Text -> GameStateExceptT ()
+updateReport  report = do
   currentReport <- _report' <$> get
   modify' (\gs -> gs{_report' = currentReport <> [report]})
 

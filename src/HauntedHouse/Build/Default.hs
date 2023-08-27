@@ -11,6 +11,7 @@ import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Mapping
     (GIDToDataMapping (..), LabelToGIDListMapping (..),)
 import HauntedHouse.Game.Narration (displaySceneM, makeSceneM)
+import HauntedHouse.Game.Engine (primaryEngine)
 
 defaultGameState :: GameState
 defaultGameState = GameState
@@ -21,6 +22,7 @@ defaultGameState = GameState
   , _verbosity' = Loud
   , _displayAction' = defaultDisplayAction
   , _clarification' = Nothing
+  , _engine' = primaryEngine 
   }
 
 defaultDisplayAction :: ExceptT Text (StateT GameState IO) ()

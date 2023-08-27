@@ -7,14 +7,11 @@ import System.Console.Haskeline
         (InputT, getInputLine, runInputT, defaultSettings)
 import qualified Data.Char (toUpper)
 import HauntedHouse.Recognizer (Imperative, imperative, parser, fullParses)
-
-import HauntedHouse.Game.Engine (engine)
-
-import Control.Monad.Except (throwError, MonadError (catchError))
+import Control.Monad.Except (throwError)
 import HauntedHouse.Build.GameState (buildGameState)
 import qualified Data.Text
-import HauntedHouse.Clarifier (clarifier)
-import HauntedHouse.Game.Narration (makeSceneM, displaySceneM)
+import HauntedHouse.Game.Narration (displaySceneM)
+import HauntedHouse.Game.Engine (catchEngine)
 
 data GameInput
     = MkGameInput Text
@@ -39,9 +36,7 @@ inputAction = do
           Left _ -> putStrLn "parse failed" >> displaySceneM True >> inputAction
           Right tokens' -> either throwError catchEngine (parseTokens tokens')
                             >> topLevel
-  where
-    catchEngine parsed = engine parsed `catchError` clarifier
-
+  
 getInput :: IO (Maybe GameInput)
 getInput = do
   str <- runInputT defaultSettings go

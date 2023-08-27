@@ -1,7 +1,7 @@
 module HauntedHouse.Game.Model.World where
 
 import HauntedHouse.Game.Model.Mapping
-import HauntedHouse.Recognizer (Adjective)
+import HauntedHouse.Recognizer (Adjective, Imperative)
 import HauntedHouse.Game.Model.Condition (Inventory, Proximity, Moveability, Perceptibility (..))
 import System.Console.Haskeline (InputT)
 import Text.Show (Show(..))
@@ -69,6 +69,7 @@ data GameState = GameState
   , _player'        :: Player
   , _narration'     :: Narration
   , _verbosity'     :: Verbosity
+  , _engine'        :: Imperative -> GameStateExceptT () 
   , _displayAction' :: GameStateExceptT ()
   , _clarification' :: Maybe (NonEmpty Text)
   }
