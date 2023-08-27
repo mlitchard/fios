@@ -4,10 +4,10 @@ module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Mapping
 import qualified Data.Map.Strict
-import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenCabinetAboveShelfGID)
+import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenCabinetAboveShelfGID, kitchenShelfGID)
 import HauntedHouse.Build.DescriptiveTemplate 
 import Data.These (These(This))
-import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
+import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedAbove))
 
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do
@@ -27,11 +27,14 @@ buildCabinet = Object {
     , _descriptives' = []
     , _moveability' = NotMoveable
     , _perceptability' = Perceptible
+    , _orientation' = orientation
     , _mNexus' = (Just . Nexus . Left) cabinetContainer
   }
   where 
     desc = "You can put things in it."
 
+orientation :: Orientation 
+orientation = AnchoredTo' (kitchenShelfGID, PlacedAbove)
 cabinetContainer :: Containment
 cabinetContainer = (Containment . This) containedIn
 

@@ -3,7 +3,7 @@ module HauntedHouse.Game.Object where
 
 import qualified Data.Map.Strict (lookup, insert, null, insertWith, singleton, Map)
 import HauntedHouse.Game.Model.Mapping
-    ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'), Label, LabelToGIDListMapping (..), LabelToGIDMapping (..) )
+    ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'), Label, LabelToGIDListMapping (..), LabelToGIDMapping (..), GIDList )
 import HauntedHouse.Game.Model.GID (GID (GID))
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Condition
@@ -25,17 +25,17 @@ setObjectMapM gid object = do
                           $ _unGIDToDataMapping' objectMap
   modify' (\gs -> gs {_world' = world {_objectMap' = gidToDataMap }})
 
-setObjectLabelMapM :: GID Location 
-                        -> Label Object 
-                        -> GID Object 
+setObjectLabelMapM :: GID Location
+                        -> Label Object
+                        -> GID Object
                         -> GameStateExceptT ()
-setObjectLabelMapM locationGID objectLabel objectGID = do 
-  location@(Location _ _ _ _ _ (LabelToGIDListMapping objectLabelMap) _) 
+setObjectLabelMapM locationGID objectLabel objectGID = do
+  location@(Location _ _ _ _ _ (LabelToGIDListMapping objectLabelMap) _)
     <- getLocationM locationGID
   let updatedMap = LabelToGIDListMapping $ insertGID objectLabelMap
       updatedLocation = location{_objectLabelMap' = updatedMap}
   updateLocationM locationGID updatedLocation
-  where 
+  where
     singleList = Data.List.NonEmpty.singleton objectGID
     insertGID = Data.Map.Strict.insertWith (<>) objectLabel singleList
 
@@ -44,5 +44,15 @@ namedDirectionM (label, gid) = do
   shortName <- _shortName' <$> getObjectM gid
   pure (shortName, label)
 
-getShortNameM :: GID Object -> GameStateExceptT Text 
+getShortNameM :: GID Object -> GameStateExceptT Text
 getShortNameM gid = _shortName' <$> getObjectM gid
+
+capturePerceptibleM :: GIDList Object
+                        -> GameStateExceptT (Maybe (NonEmpty Object))
+capturePerceptibleM objectList = do
+  nonEmpty . mfilter isPercieved 
+    <$> mapM getObjectM (Data.List.NonEmpty.toList objectList)
+ 
+isPercieved :: Object -> Bool
+isPercieved (Object _ _ _ _ Perceptible _ _) = True
+isPercieved _ = False

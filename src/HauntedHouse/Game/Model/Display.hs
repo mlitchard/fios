@@ -11,9 +11,12 @@ import HauntedHouse.Game.Object (getObjectM, getShortNameM)
 import Data.List.NonEmpty ( (<|), reverse, toList, singleton )
 
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.Model.Condition (Proximity, Perceptibility (..))
+import HauntedHouse.Game.Model.Condition (Proximity (..), Perceptibility (..))
 import Control.Monad.Except (MonadError(..))
 import Data.These (These(..))
+import qualified Data.Text
+import qualified Data.List
+import HauntedHouse.Game.World (getExitM)
 
 updatePlayerActionM :: Text -> GameStateExceptT ()
 updatePlayerActionM action = do
@@ -22,9 +25,9 @@ updatePlayerActionM action = do
   modify' (\gs -> gs{_narration' = narration{_playerAction' = updatedAction}})
 
 finalizePlayerActionM :: GameStateExceptT ()
-finalizePlayerActionM = do 
+finalizePlayerActionM = do
   narration@(Narration playerAction _ _ _) <- _narration' <$> get
-  let flippedAction = Data.List.NonEmpty.reverse playerAction 
+  let flippedAction = Data.List.NonEmpty.reverse playerAction
   modify' (\gs -> gs{_narration' = narration{_playerAction' = flippedAction}})
 
 updateEnvironmentM :: Text -> GameStateExceptT ()
@@ -43,75 +46,117 @@ showEnvironmentM :: GameStateExceptT ()
 showEnvironmentM = do
   finalizeEnvironmentM
   environment <- _enviroment' . _narration' <$> get
-  mapM_ print environment 
+  mapM_ print environment
   clearEnvironmentM
 
-{-
-data Narration = Narration {
-      _playerAction' :: Data.List.NonEmpty.NonEmpty Text
-    , _enviroment'   :: Data.List.NonEmpty.NonEmpty Text
-    , _npcResponse' :: Data.List.NonEmpty.NonEmpty Text
-    , _scene'       :: Scene
-  } deriving stock Show
--}
-clearPlayerActionM :: GameStateExceptT () 
-clearPlayerActionM = do 
+clearPlayerActionM :: GameStateExceptT ()
+clearPlayerActionM = do
   narration <- _narration' <$> get
   modify' (\gs -> gs{_narration' = narration{_playerAction' = clear}})
   where
-    clear = Data.List.NonEmpty.singleton mempty 
+    clear = Data.List.NonEmpty.singleton mempty
 
-clearEnvironmentM :: GameStateExceptT () 
-clearEnvironmentM = do 
+clearEnvironmentM :: GameStateExceptT ()
+clearEnvironmentM = do
   narration <- _narration' <$> get
   modify' (\gs -> gs{_narration' = narration{_enviroment' = clear}})
   where
     clear = Data.List.NonEmpty.singleton mempty
 
 showPlayerActionM :: GameStateExceptT ()
-showPlayerActionM = do 
+showPlayerActionM = do
   finalizePlayerActionM
   playerAction <- _playerAction' . _narration' <$> get
-  mapM_ print playerAction 
+  mapM_ print playerAction
   clearPlayerActionM
 
-updateDisplayActionM :: GameStateExceptT () -> GameStateExceptT () 
-updateDisplayActionM displayAction = do 
+updateDisplayActionM :: GameStateExceptT () -> GameStateExceptT ()
+updateDisplayActionM displayAction = do
   modify' (\gs -> gs{_displayAction'  = displayAction})
 
-describeObjectM :: GID Object -> GameStateExceptT ()
-describeObjectM gid = do
-  (Object shortName desc _ _ percept orientation mNexus) <- getObjectM gid
-  let success = "You look at the " <> shortName
+describeObjectM :: Object -> GameStateExceptT ()
+describeObjectM (Object shortName desc _ _ percept orientation mNexus) = do
   case percept of
     Imperceptible -> throwError "You don't see that."
     Perceptible -> updatePlayerActionM success
-                    >> describeOrientation orientation 
+                    >> describeOrientationM shortName orientation
                     >> mapM_ updateEnvironmentM desc
                     >> maybeNexusM mNexus
+  where
+    success = "You look at the " <> shortName
 
-describeOrientation :: Orientation -> GameStateExceptT () 
-describeOrientation _ = pass 
-      
+describeOrientationM :: Text -> Orientation -> GameStateExceptT ()
+describeOrientationM shortName orientation = do
+  desc <- case orientation of
+            ContainedBy' containedBy -> describeContainedByM containedBy
+            Inventory -> pure "in your inventory."
+            Floor     -> pure "on the floor."
+            (AnchoredTo' anchoredTo) -> describeAnchoredToM anchoredTo
+            Anchoring roomAnchor -> pure $ describeAnchoring roomAnchor
+  updateEnvironmentM (preamble <> desc)
+  where
+    preamble = "The " <> shortName <> " is "
+
+describeContainedByM :: ContainedBy -> GameStateExceptT Text
+describeContainedByM (ContainedBy onOrIn _) = do
+  (prep,shortName) <- case onOrIn of
+                        (On gid) -> do
+                                       shortName <- getShortNameM gid
+                                       pure ("on", shortName)
+                        (In gid) -> do
+                                       shortName <- getShortNameM gid
+                                       pure ("in", shortName)
+  pure (prep <> " the " <> shortName)
+
+describeAnchoredToM :: (GID Object, Proximity) -> GameStateExceptT Text
+describeAnchoredToM (gid, proximity) = do
+  shortName <- getShortNameM gid
+  pure (proximity' <> shortName)
+  where
+    proximity' = describeProximity proximity
+
+describeProximity :: Proximity -> Text
+describeProximity PlacedOn = " on "
+describeProximity PlacedUnder = " under "
+describeProximity PlacedAbove = " above "
+describeProximity PlacedLeft = " to the left of "
+describeProximity PlacedRight = " to the right of "
+describeProximity PlacedFront = " in front of "
+describeProximity PlacedBack = " behind "
+
+-- FIXME: unsafe
+describeAnchoring :: RoomAnchor -> Text
+describeAnchoring roomAnchor = "In the " <> anchor
+  where
+    anchor = Data.Text.toLower
+              $ Data.List.head
+              $ Data.Text.splitOn "Anchor"
+              $ toText roomAnchor
+
 maybeNexusM :: Maybe Nexus -> GameStateExceptT ()
 maybeNexusM Nothing = pass
 maybeNexusM (Just (Nexus nexus)) =
-  either describeContainmentM describePortal nexus
+  either describeContainmentM describePortalM nexus
 
 describeContainmentM :: Containment -> GameStateExceptT ()
-describeContainmentM (Containment (This (ContainedIn interface cmap))) = do
+describeContainmentM (Containment (This containedIn)) =
+  describeContainedInM containedIn
+describeContainmentM (Containment (That containedOn)) =
+  describeContainedOnM containedOn
+describeContainmentM (Containment (These containedIn containedOn)) =
+  describeContainedInM containedIn >> describeContainedOnM containedOn
+
+describeContainedInM :: ContainedIn -> GameStateExceptT ()
+describeContainedInM (ContainedIn interface cmap) = do
   case interface of
-    (ContainerInterface' cInterface) -> describeOpenState
+    (ContainerInterface' cInterface) -> describeOpenStateM
                                           (_openState' cInterface)
                                           cmap
     PortalInterface -> do
       updateEnvironmentM "This container has an unusual opening"
-describeContainmentM (Containment (That (ContainedOn cmap))) =
-  describeContainedOn cmap
-describeContainmentM (Containment (These _ _)) = pass
 
-describeContainedOn :: ContainerMap Object -> GameStateExceptT ()
-describeContainedOn (ContainerMap cmap) = do
+describeContainedOnM :: ContainedOn -> GameStateExceptT ()
+describeContainedOnM (ContainedOn (ContainerMap cmap)) = do
   shortNames <- mapM getShortNameM
                   $ concatMap Data.List.NonEmpty.toList
                   $ Data.Map.Strict.elems cmap
@@ -126,8 +171,8 @@ describeContainedOn (ContainerMap cmap) = do
     plural = "There's some things on it"
     singular = "There's something on it"
 
-describeOpenState :: OpenState -> ContainerMap Object -> GameStateExceptT ()
-describeOpenState openState (ContainerMap cmap ) = do
+describeOpenStateM :: OpenState -> ContainerMap Object -> GameStateExceptT ()
+describeOpenStateM openState (ContainerMap cmap ) = do
   case openState of
     Open   -> updateEnvironmentM isOpenMsg >> updateEnvironmentM openSee
     Closed -> updateEnvironmentM isClosed
@@ -138,5 +183,7 @@ describeOpenState openState (ContainerMap cmap ) = do
       | Data.Map.Strict.null cmap = "You don't see anything inside"
       | otherwise  = "You see something inside"
 
-describePortal :: Portal -> GameStateExceptT ()
-describePortal (Portal _ _) = pass
+describePortalM :: Portal -> GameStateExceptT ()
+describePortalM (Portal _ gid) = do
+  exit <- _title' <$> (getLocationM . _toDestination' =<< getExitM gid)
+  updateEnvironmentM ("an exit leading to " <> exit)

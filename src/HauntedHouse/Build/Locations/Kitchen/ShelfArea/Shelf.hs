@@ -9,7 +9,7 @@ import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping (..), ContainerMap (..), GIDList, Label (..))
 import HauntedHouse.Game.Model.World
     ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..)
-    , GameStateExceptT, GameState (..), Nexus (..))
+    , GameStateExceptT, GameState (..), Nexus (..), RoomAnchor (EastAnchor), Orientation (Anchoring))
 import qualified Data.Map.Strict (insert, fromList, empty, singleton)
 import HauntedHouse.Build.ObjectTemplate
     ( kitchenSinkGID,
@@ -38,10 +38,14 @@ buildShelf= Object {
     , _descriptives' = []
     , _moveability' = NotMoveable
     , _perceptability' = Perceptible
+    , _orientation' = orientation
     , _mNexus' =  (Just . Nexus . Left) shelfContainer
   }
   where
     desc = "It's a shelf. You can put things on it"
+
+orientation :: Orientation 
+orientation = Anchoring EastAnchor
 
 shelfContainer :: Containment
 shelfContainer = (Containment . That) containedOn

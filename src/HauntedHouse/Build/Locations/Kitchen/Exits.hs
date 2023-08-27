@@ -36,12 +36,12 @@ kitchenEastDoor = do
 
 kitchenEastDoorObject :: Object
 kitchenEastDoorObject = Object {
-      _shortName'     = kitchenShortName
-    , _odescription'  = [kitchenEastDoorDesc]
-    , _descriptives'  = []
-    , _moveability'   = NotMoveable
+      _shortName'      = kitchenShortName
+    , _odescription'   = [kitchenEastDoorDesc]
+    , _descriptives'   = []
+    , _moveability'    = NotMoveable
     , _perceptability' = Perceptible
-    , _orientation' = orientation
+    , _orientation'    = orientation
     , _mNexus'         = Just eastDoorNexus
   } 
   where
@@ -49,7 +49,8 @@ kitchenEastDoorObject = Object {
     kitchenEastDoorDesc = "It's a door made from some mysterious substance."
 
 orientation :: Orientation 
-orientation = 
+orientation = Anchoring EastAnchor
+
 {-
 data ContainedBy = ContainedBy
   { _containedBy' :: OnOrIn

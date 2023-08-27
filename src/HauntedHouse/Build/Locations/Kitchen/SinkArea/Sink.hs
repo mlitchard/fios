@@ -27,10 +27,14 @@ buildSink = Object {
   , _descriptives' = []
   , _moveability'   = NotMoveable
   , _perceptability' = Perceptible
+  , _orientation' = orientation
   , _mNexus'         = (Just . Nexus . Left) sinkContainer 
   }
   where 
     desc = "This sink is broken. You can put things in it."
+
+orientation :: Orientation 
+orientation = Anchoring EastAnchor
 
 {-
 

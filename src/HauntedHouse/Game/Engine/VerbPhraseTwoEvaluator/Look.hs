@@ -11,10 +11,11 @@ import qualified Data.Map.Strict (lookup)
 import Relude.Extra (fmapToFst)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Build.DescriptiveTemplate (visibleLabel)
-import HauntedHouse.Game.Object (getObjectM)
+import HauntedHouse.Game.Object (getObjectM, capturePerceptibleM)
 import HauntedHouse.Clarifier (clarifyNotThere, clarifyWhich)
 import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Model.Display (describeObjectM, showPlayerActionM, showEnvironmentM, updateDisplayActionM)
+import qualified Relude.List.NonEmpty as NonEmpty
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
 doLookObjectM (PrepPhrase AT np ) = evaluateATNounPhrase np
@@ -30,9 +31,12 @@ evaluateATNounPhrase :: NounPhrase -> GameStateExceptT ()
 evaluateATNounPhrase (Noun noun) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
-  objects <- throwMaybeM nopeErr $ Data.Map.Strict.lookup (Label noun) m
+  objects <- throwMaybeM nopeErr 
+              =<< capturePerceptibleM 
+              =<< throwMaybeM nopeErr (Data.Map.Strict.lookup (Label noun) m)
   if Data.List.NonEmpty.length objects == 1
-    then describeObjectM (head objects) >> updateDisplayActionM displayActionM
+    then describeObjectM (NonEmpty.head objects) 
+          >> updateDisplayActionM displayActionM
     else throwError "Multiple look object unimplemented"
   where
     displayActionM = showPlayerActionM >> showEnvironmentM

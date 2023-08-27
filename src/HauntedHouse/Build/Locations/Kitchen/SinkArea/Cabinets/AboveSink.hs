@@ -6,9 +6,9 @@ import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
 import qualified Data.Map.Strict
-import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID)
+import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenSinkGID)
 import Data.These (These(..))
-import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
+import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedAbove))
 
 buildKitchenCabinetAboveSink :: GameStateExceptT ()
 buildKitchenCabinetAboveSink = do
@@ -28,40 +28,22 @@ buildCabinet = Object {
     , _descriptives' = []
     , _moveability' = NotMoveable
     , _perceptability' = Perceptible
+    , _orientation' = orientation
     , _mNexus' =  (Just . Nexus . Left) cabinetContainer
   }
   where 
     desc = "You can put things in it."
 
+orientation :: Orientation 
+orientation = AnchoredTo' (kitchenSinkGID, PlacedAbove)
 cabinetContainer :: Containment
 cabinetContainer = (Containment . This) containedIn
-
-{-
-
-data ContainedIn = ContainedIn
-  { _containerInterface'  :: Interface
-  , _containedIn'         :: ContainerMap Object
-  } 
-
--}
 
 containedIn :: ContainedIn
 containedIn = ContainedIn 
   {_containerInterface' = ContainerInterface' containerInterface
   , _containedIn' = ContainerMap Data.Map.Strict.empty  
   }
-
-{-
-
-data ContainerInterface = ContainerInterface {
-      _openState'    :: OpenState
-    , _openAction'   :: GameStateExceptT ()
-    , _closeAction'  :: GameStateExceptT ()
-    , _lockAction'   :: GameStateExceptT ()
-    , _unlockAction' :: GameStateExceptT ()
-  }
-
--}
 
 containerInterface :: ContainerInterface 
 containerInterface = ContainerInterface {

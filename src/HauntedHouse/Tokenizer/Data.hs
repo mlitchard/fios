@@ -13,7 +13,7 @@ nouns = locations <> objects <> directions
 locations :: HashSet Lexeme
 locations = HS.fromList [PALACE, BASEMENT, ATTIC, MAZE, DEN, PARLOUR, VOIDLESSVOID]
 objects :: HashSet Lexeme
-objects = HS.fromList [PLANT, POT, BOOK, BELL, CANDLE, TEA, DOOR, CABINET, SINK]
+objects = HS.fromList [PLANT, POT, BOOK, BELL, CANDLE, TEA, DOOR, CABINET, SINK, SHELF]
 
 -- https://stackoverflow.com/questions/44130436/how-to-have-a-sum-type-adt-with-a-known-set-of-string-literals
 

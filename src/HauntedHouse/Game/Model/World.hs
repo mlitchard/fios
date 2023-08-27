@@ -115,7 +115,7 @@ data Object = Object {
   , _descriptives'    :: [Label Adjective]
   , _moveability'     :: Moveability
   , _perceptability'  :: Perceptibility
-  , _orientation'     :: GameStateExceptT ()
+  , _orientation'     :: Orientation
   , _mNexus'          :: Maybe Nexus
 }
 
@@ -124,15 +124,15 @@ newtype ObjectAnchors = ObjectAnchors {
   } deriving stock Show
 
 data OpenState = Open | Closed deriving stock Show
-{-
+
 data Orientation 
   = ContainedBy' ContainedBy 
   | Inventory 
   | Floor 
-  | AnchoredTo' AnchoredTo 
-  | Anchoring 
+  | AnchoredTo' (GID Object, Proximity) 
+  | Anchoring RoomAnchor
     deriving stock Show 
--}
+
 data Player = Player
   { _playerLocation'  :: GID Location
   , _p_inv'           :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
