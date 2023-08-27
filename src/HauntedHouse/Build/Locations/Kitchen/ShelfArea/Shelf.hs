@@ -10,15 +10,10 @@ import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
     ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..)
     , GameStateExceptT, GameState (..), Nexus (..), RoomAnchor (EastAnchor), Orientation (Anchoring))
-import qualified Data.Map.Strict (insert, fromList, empty, singleton)
+import qualified Data.Map.Strict (insert, singleton)
 import HauntedHouse.Build.ObjectTemplate
-    ( kitchenSinkGID,
-      kitchenShelfGID,
-      kitchenCabinetAboveShelfGID,
-      kitchenCabinetBelowShelfGID, plantPotGID )
-import HauntedHouse.Build.LocationTemplate (kitchenGID)
+    ( kitchenShelfGID, plantPotGID )
 import Data.These (These(..))
-import HauntedHouse.Build.DescriptiveTemplate ( kitchenLabel )
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import HauntedHouse.Tokenizer (Lexeme(..))
 
@@ -33,7 +28,7 @@ buildKitchenShelf = do
 
 buildShelf :: Object
 buildShelf= Object {
-      _shortName' = "A shelf next to a sink"
+      _shortName' = "shelf"
     , _odescription' = [desc]
     , _descriptives' = []
     , _moveability' = NotMoveable

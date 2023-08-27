@@ -1,11 +1,9 @@
 module HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink 
   where
 
-import Data.List.NonEmpty qualified (fromList)
 import Data.Map.Strict qualified
 import Data.These qualified (These(..))
 
-import HauntedHouse.Build.DescriptiveTemplate
 import HauntedHouse.Build.ObjectTemplate 
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
@@ -22,7 +20,7 @@ buildKitchenSink = do
 
 buildSink :: Object 
 buildSink = Object { 
-    _shortName'     = "A kitchen sink."
+    _shortName'     = "kitchen sink."
   , _odescription'  = [desc]
   , _descriptives' = []
   , _moveability'   = NotMoveable
@@ -36,14 +34,6 @@ buildSink = Object {
 orientation :: Orientation 
 orientation = Anchoring EastAnchor
 
-{-
-
-newtype Containment = Containment
-  { _unContainment' :: These ContainedIn
-                        (Either ContainedOn ContainedBy)
-  } deriving stock (Show)
-
--}
 sinkContainer :: Containment 
 sinkContainer = (Containment . Data.These.That) containedOn 
 

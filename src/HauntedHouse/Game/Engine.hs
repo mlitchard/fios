@@ -7,6 +7,7 @@ import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
 import HauntedHouse.Recognizer.WordClasses
     ( Imperative(..), VerbPhrase(..) )
 import HauntedHouse.Game.Engine.VerbPhraseTwo 
+import Control.Monad.Except (MonadError(..))
 
 engine :: Imperative -> GameStateExceptT ()
 engine (ImperativeClause (OnlyVerb verb)) = evalOnlyVerb verb
@@ -14,3 +15,4 @@ engine (ImperativeClause (VerbPhrase1 verb nounPhrase)) =
   evalVerbPhrase1 (verb,nounPhrase)
 engine (ImperativeClause (VerbPhrase2 verb prepPhrase)) = 
   evalVerbPhrase2 (verb,prepPhrase)
+engine (ClarifyingClause _) = throwError "You need to be more clear"

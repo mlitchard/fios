@@ -1,14 +1,10 @@
 module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf 
   where
   
-
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
-import qualified Data.Map.Strict (insert, fromList, empty)
-
-import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID, kitchenCabinetBelowShelfGID, kitchenShelfGID)
-import HauntedHouse.Build.LocationTemplate (kitchenGID)
-import HauntedHouse.Build.DescriptiveTemplate
+import qualified Data.Map.Strict (insert, empty)
+import HauntedHouse.Build.ObjectTemplate (kitchenCabinetBelowShelfGID, kitchenShelfGID)
 import Data.These (These(..))
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
 
@@ -23,23 +19,9 @@ buildKitchenCabinetBelowShelf = do
                 $ (_unGIDToDataMapping' . _objectMap') world
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
-{-
-
-buildShelf :: Object 
-buildShelf= Object { 
-      _shortName' = "A shelf next to a sink"
-    , _odescription' = [desc]
-    , _descriptives' = []
-    , _moveability' = NotMoveable
-    , _perceptability' = Perceptible 
-    , _mNexus' =  (Just . Nexus . Left) shelfContainer
-  }
-
--}
-
 buildCabinet :: Object 
 buildCabinet = Object { 
-      _shortName' = "A cabinet, under the shelf."
+      _shortName' = "cabinet"
     , _odescription' = [desc]
     , _descriptives' = [] 
     , _moveability' = NotMoveable
@@ -52,25 +34,9 @@ buildCabinet = Object {
 
 orientation :: Orientation 
 orientation = AnchoredTo' (kitchenShelfGID,PlacedUnder)
-{-
-data Orientation 
-  = ContainedBy' ContainedBy 
-  | Inventory 
-  | Floor 
-  | AnchoredTo' (GID Object, Proximity) 
-  | Anchoring RoomAnchor
-    deriving stock Show 
--}
+
 cabinetContainer :: Containment
 cabinetContainer = (Containment . This) containedIn
-
-{-
-containedIn :: ContainedIn
-containedIn = ContainedIn 
-  {_containerInterface' = ContainerInterface' containerInterface
-  , _containedIn' = ContainerMap Data.Map.Strict.empty  
-  }
--}
 
 containedIn :: ContainedIn
 containedIn = ContainedIn 

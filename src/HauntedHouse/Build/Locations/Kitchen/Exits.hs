@@ -1,19 +1,14 @@
 module HauntedHouse.Build.Locations.Kitchen.Exits where
 
-import HauntedHouse.Game.Model.Mapping ( NeighborMap(NeighborMap), Label (..))
-import HauntedHouse.Game.Model.World 
-import HauntedHouse.Build.LocationTemplate (hallGID)
+import HauntedHouse.Game.Model.World
 import HauntedHouse.Build.ExitTemplate (kitchenEastExitGID)
 import HauntedHouse.Game.World (setWorldExitMapM, setLocationDirectionM)
 import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID)
-import qualified Data.Map.Strict
-import HauntedHouse.Game.Object (setObjectMapM)
-import HauntedHouse.Tokenizer (Lexeme(..))
-import HauntedHouse.Build.DescriptiveTemplate (lockedLabel, visibleLabel)
+import HauntedHouse.Game.Object
+    ( setObjectMapM, setObjectLabelMapM )
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
-import HauntedHouse.Build.ObjectLabels 
+import HauntedHouse.Build.ObjectLabels
 import HauntedHouse.Build.LocationTemplate
-import HauntedHouse.Game.Object (setObjectLabelMapM)
 import HauntedHouse.Build.DirectionTemplate (eastLabel)
 
 buildExits :: GameStateExceptT ()
@@ -43,57 +38,27 @@ kitchenEastDoorObject = Object {
     , _perceptability' = Perceptible
     , _orientation'    = orientation
     , _mNexus'         = Just eastDoorNexus
-  } 
+  }
   where
-    kitchenShortName    = "The door to the east hall."
+    kitchenShortName    = "door to the east hall."
     kitchenEastDoorDesc = "It's a door made from some mysterious substance."
 
-orientation :: Orientation 
+orientation :: Orientation
 orientation = Anchoring EastAnchor
 
-{-
-data ContainedBy = ContainedBy
-  { _containedBy' :: OnOrIn
-  , _self :: GID Object
-  } deriving stock Show
-
-data OnOrIn 
-  = On (GID Object) 
-  | In (GID Object)
-    deriving stock Show 
--}
-
-
-eastDoorNexus :: Nexus 
+eastDoorNexus :: Nexus
 eastDoorNexus = (Nexus . Right) portal
-  where 
+  where
     portal = Portal {
-        _portalInterface' = ContainerInterface' kitchenEastDoorPortalInterface      
-      , _portalExit' = kitchenEastExitGID -- kitchenEastDoorGID
+        _portalInterface' = ContainerInterface' kitchenEastDoorPortalInterface
+      , _portalExit' = kitchenEastExitGID
     }
-
-{-
-data ContainerInterface = ContainerInterface {
-      _openState'    :: OpenState
-    , _openAction'   :: GameStateExceptT ()
-    , _closeAction'  :: GameStateExceptT ()
-    , _lockAction'   :: GameStateExceptT ()
-    , _unlockAction' :: GameStateExceptT ()
-  }
--}
 
 kitchenEastDoorPortalInterface :: ContainerInterface
 kitchenEastDoorPortalInterface = ContainerInterface {
-      _openState'     = Open 
-    , _openAction'    = pass 
-    , _closeAction'   = pass 
-    , _lockAction'    = pass 
+      _openState'     = Open
+    , _openAction'    = pass
+    , _closeAction'   = pass
+    , _lockAction'    = pass
     , _unlockAction'  = pass
   }
-{-
-kitchenEastDoorPortal :: Portal
-kitchenEastDoorPortal = Portal 
-  { _portalExit' = kitchenEastExitGID
-  , _portalInterface' = kitchenEastDoorPortalInterface
-  }
--}

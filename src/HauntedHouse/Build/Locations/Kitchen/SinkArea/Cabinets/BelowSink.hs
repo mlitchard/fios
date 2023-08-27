@@ -36,7 +36,7 @@ data Object = Object {
 
 buildCabinet :: Object 
 buildCabinet = Object { 
-      _shortName' = "A cabinet, under the sink."
+      _shortName' = "cabinet"
     , _odescription' = [desc]
     , _descriptives' = []
     , _moveability' = NotMoveable

@@ -79,14 +79,15 @@ describeObjectM (Object shortName desc _ _ percept orientation mNexus) = do
   case percept of
     Imperceptible -> throwError "You don't see that."
     Perceptible -> updatePlayerActionM success
-                    >> describeOrientationM shortName orientation
+                    >> describeOrientationM preamble orientation
                     >> mapM_ updateEnvironmentM desc
                     >> maybeNexusM mNexus
   where
     success = "You look at the " <> shortName
+    preamble = "The " <> shortName <> " is "
 
 describeOrientationM :: Text -> Orientation -> GameStateExceptT ()
-describeOrientationM shortName orientation = do
+describeOrientationM preamble orientation = do
   desc <- case orientation of
             ContainedBy' containedBy -> describeContainedByM containedBy
             Inventory -> pure "in your inventory."
@@ -94,8 +95,6 @@ describeOrientationM shortName orientation = do
             (AnchoredTo' anchoredTo) -> describeAnchoredToM anchoredTo
             Anchoring roomAnchor -> pure $ describeAnchoring roomAnchor
   updateEnvironmentM (preamble <> desc)
-  where
-    preamble = "The " <> shortName <> " is "
 
 describeContainedByM :: ContainedBy -> GameStateExceptT Text
 describeContainedByM (ContainedBy onOrIn _) = do

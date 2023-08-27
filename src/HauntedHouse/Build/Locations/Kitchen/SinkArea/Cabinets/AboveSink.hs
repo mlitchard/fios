@@ -1,7 +1,5 @@
 module HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink where
 
-import HauntedHouse.Build.DescriptiveTemplate
-    ( unlockedLabel, kitchenLabel, visibleLabel ) 
 import HauntedHouse.Game.Model.Mapping 
         (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
@@ -23,7 +21,7 @@ buildKitchenCabinetAboveSink = do
 
 buildCabinet :: Object 
 buildCabinet = Object { 
-      _shortName' = "A cabinet, above the sink."
+      _shortName' = "cabinet"
     , _odescription' = [desc]
     , _descriptives' = []
     , _moveability' = NotMoveable

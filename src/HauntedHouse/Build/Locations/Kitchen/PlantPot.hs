@@ -17,7 +17,7 @@ buildPlantPot = do
 
 plantPot :: Object 
 plantPot = Object {
-      _shortName'      = "A plant pot"
+      _shortName'      = "plant pot"
     , _odescription'   = [desc]
     , _descriptives'   = []
     , _moveability'    = NotMoveable
