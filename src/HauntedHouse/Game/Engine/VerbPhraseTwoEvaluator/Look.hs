@@ -18,13 +18,15 @@ import HauntedHouse.Game.Model.Display (describeObjectM, showPlayerActionM, show
 import qualified Relude.List.NonEmpty as NonEmpty
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
-doLookObjectM (PrepPhrase AT np ) = evaluateATNounPhrase np `catchError` errorSee
-doLookObjectM (PrepPhrase IN _)  = pass
-doLookObjectM (PrepPhrase p _)   =
+doLookObjectM _ = pass
+{-
+doLookObjectM (PrepPhrase1 AT np ) = evaluateATNounPhrase np `catchError` errorSee
+doLookObjectM (PrepPhrase1 IN _)  = pass
+doLookObjectM (PrepPhrase1 p _)   =
   throwError (show p <> " not evaulated in doLookObjectM" :: Text)
 doLookObjectM (Preposition p) = throwError ("simple preposition "
                                   <> show p <> "not evaluated in doLookObjectM")
-
+-}
 errorSee :: Text -> GameStateExceptT ()
 errorSee = print 
 
@@ -32,14 +34,11 @@ errorSee = print
 
 evaluateATNounPhrase :: NounPhrase -> GameStateExceptT ()
 evaluateATNounPhrase (Noun noun) = do
-  print "evaluatedAtNounPhrase"
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
-  print "got gid list"
   objects <- throwMaybeM nopeErr 
               =<< capturePerceptibleM 
               =<< throwMaybeM nopeErr (Data.Map.Strict.lookup (Label noun) m)
-  print "got object list"
   if Data.List.NonEmpty.length objects == 1
     then describeObjectM (NonEmpty.head objects) 
           >> updateDisplayActionM displayActionM

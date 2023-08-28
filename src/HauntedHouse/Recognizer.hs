@@ -44,54 +44,63 @@ imperative = mdo
       satisfy (`HS.member` numbers)
         <?> toText ("number" :: String)
 
+-- NounPhrase2 Determiner AdjPhrase
   nounPhrase <-
     rule $
-      Noun
-        <$> noun
-        <|> NounPhrase2
-        <$> determiner
-        <*> adjPhrase
-        <*> nounPhrase
-        <|> NounPhrase1
-        <$> determiner
-        <*> nounPhrase
-        <|> NounPhrase3
-        <$> number
-        <*> nounPhrase
-        <|> NounPhrase4
-        <$> nounPhrase
-        <*> prepPhrase
-        <|> NounPhrase5
-        <$> adjPhrase
-        <*> nounPhrase
+      Noun <$> noun
+        <|> NounPhrase3 <$> number <*> nounPhrase
+  --      <|> NounPhrase4 <$> nounPhrase <*> prepPhrase
+  --      <|> NounPhrase5 <$> adjPhrase <*> nounPhrase 
+  --      <|> NounPhrase2 <$> determiner <*> adjPhrase
+        <|> NounPhrase1 <$> determiner <*> nounPhrase
+  --      <|> NounPhrase6 <$> nounPhrase <*> adjPhrase
         <?> toText ("noun phrase" :: String)
+{-
+VerbPhrase7 Verb NounPhrase PrepPhrase
+-}
 
   verbPhrase <-
     rule $
-      OnlyVerb
-        <$> verb
-        <|> VerbPhrase1
-        <$> verb
-        <*> nounPhrase
-        <|> VerbPhrase2
-        <$> verb
-        <*> prepPhrase
+      OnlyVerb <$> verb 
+        <|> VerbPhrase4 <$> verb <*> prepPhrase <*> prepPhrase <*> prepPhrase
+        <|> VerbPhrase1 <$> verb <*> nounPhrase
+        <|> VerbPhrase2 <$> verb <*> prepPhrase
+        <|> VerbPhrase3 <$> verb <*> prepPhrase <*> prepPhrase 
+        <|> VerbPhrase5 <$> verb <*> adjPhrase 
+        <|> VerbPhrase6 <$> verb <*> adjPhrase <*> prepPhrase 
+        <|> VerbPhrase7 <$> verb <*> nounPhrase <*> prepPhrase 
         <?> toText ("verb phrase" :: String)
 
+-- | PrepPhrase2 Preposition Determiner Adjective NounPhrase
   prepPhrase <-
     rule $
-      PrepPhrase
-        <$> preposition
-        <*> nounPhrase
-        <|> Preposition
-        <$> preposition
+      PrepPhrase1 <$> preposition <*> nounPhrase
+        <|> PrepPhrase2 <$> preposition <*> determiner <*> adjPhrase <*> nounPhrase
+       -- <|> Preposition <$> preposition
         <?> toText ("prep phrase" :: String)
-
+-- AdjNoun Adjective NounPhrase
   adjPhrase <-
     rule $
-      Adjective
-        <$> adjective
+      Adjective <$> adjective
+        <|> AdjNoun <$> determiner <*> adjPhrase <*> nounPhrase 
+        <|> AdjPrep <$> determiner <*> adjPhrase <*> prepPhrase
         <?> toText ("adjective" :: String)
-
+        
+{-
+data Imperative
+  = ImperativeClause VerbPhrase
+  | ClarifyingClause1 PrepPhrase 
+  | ClarifyingClause2 PrepPhrase PrepPhrase
+  | ClarifyingClause3 PrepPhrase PrepPhrase
+  | ClarifyingClause4 AdjPhrase
+  | ClarifyingClause5 AdjPhrase PrepPhrase
+  | ClarifyingClause6 AdjPhrase PrepPhrase 
+-}
   return $ ImperativeClause <$> verbPhrase
-            <|> ClarifyingClause <$> nounPhrase 
+            <|> ClarifyingClause1 <$> nounPhrase <*> prepPhrase 
+            <|> ClarifyingClause2 <$> nounPhrase <*> prepPhrase <*> prepPhrase 
+            <|> ClarifyingClause3 
+                  <$> nounPhrase <*> prepPhrase <*> prepPhrase <*> prepPhrase
+            <|> ClarifyingClause4 <$> adjPhrase 
+            <|> ClarifyingClause5 <$> adjPhrase <*> prepPhrase 
+            <|> ClarifyingClause6 <$> adjPhrase <*> prepPhrase <*> prepPhrase 

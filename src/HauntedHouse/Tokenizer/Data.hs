@@ -11,9 +11,12 @@ type Parser = Parsec Void String
 nouns :: HashSet Lexeme
 nouns = locations <> objects <> directions
 locations :: HashSet Lexeme
-locations = HS.fromList [PALACE, BASEMENT, ATTIC, MAZE, DEN, PARLOUR, VOIDLESSVOID]
+locations = 
+  HS.fromList [PALACE, BASEMENT, ATTIC, MAZE, DEN, PARLOUR, VOIDLESSVOID]
 objects :: HashSet Lexeme
-objects = HS.fromList [PLANT, POT, BOOK, BELL, CANDLE, TEA, DOOR, CABINET, SINK, SHELF]
+objects = 
+  HS.fromList [PLANT, POT, BOOK, BELL, CANDLE, TEA, DOOR, CABINET, SINK, SHELF
+                , LEFT, RIGHT, FRONT, BACK]
 
 -- https://stackoverflow.com/questions/44130436/how-to-have-a-sum-type-adt-with-a-known-set-of-string-literals
 
@@ -26,12 +29,13 @@ determiners = HS.fromList ([THAT, THIS, THE, A, MY] :: [Lexeme])
 
 prepositions :: HashSet Lexeme
 prepositions =
-  HS.fromList [TO, WITH, IN, WHEN, UNDER, OVER, ABOVE, AT, ON]
+  HS.fromList [TO, WITH, IN, WHEN, UNDER, OVER, ABOVE, AT, ON, OF, BEHIND]
 
 adjectives :: HashSet Lexeme
 adjectives = 
   HS.fromList [MIND, BLUE, RED, GREAT, LONG, OLD, DRUNK, PLANT, POT, TEA
-              , CABINET, LOCKED, UNLOCKED, KITCHEN, VISIBLE]
+              , CABINET, LOCKED, UNLOCKED, KITCHEN, VISIBLE, LEFT, RIGHT
+              , FRONT, BEHIND]
 
 directions :: HashSet Lexeme
 directions = HS.fromList [NORTH, EAST, SOUTH, WEST, DOWN, UP]
@@ -125,9 +129,25 @@ data Lexeme
   | UNLOCKED
   | VERBOSE
   | VISIBLE
+  | LEFT
+  | RIGHT
+  | FRONT
+  | BEHIND
+  | OF
+  | BACK
   | SEPERATOR
   deriving stock (Show, Eq, Enum, Ord)
-
+{-
+data Proximity
+  = PlacedOn
+  | PlacedUnder
+  | PlacedAbove
+  | PlacedLeft
+  | PlacedRight
+  | PlacedFront 
+  | PlacedBack
+      deriving stock (Eq,Ord,Show)
+-}
 instance ToText Lexeme where
   toText :: Lexeme -> Text
   toText txt = toText (show txt :: String)
@@ -161,6 +181,7 @@ term =
     <|> PLACE <$ symbol "PLACE"
     <|> THAT <$ symbol "THAT"
     <|> THIS <$ symbol "THIS"
+    <|> OF <$ symbol "OF"
     <|> THE <$ symbol "THE"
     <|> AT <$ symbol "AT"
     <|> A <$ symbol "A"
@@ -213,5 +234,11 @@ term =
     <|> LOCKED <$ symbol "LOCKED"
     <|> UNLOCKED <$ symbol "UNLOCKED"
     <|> VERBOSE <$ symbol "VERBOSE"
-    <|> VISIBLE <$ symbol "VISBILE"
+    <|> VISIBLE <$ symbol "VISIBLE"
+    <|> LEFT <$ symbol "LEFT"
+    <|> RIGHT <$ symbol "RIGHT"
+    <|> FRONT <$ symbol "FRONT"
+    <|> BEHIND <$ symbol "BEHIND"
+    <|> SINK <$ symbol "SINK"
+    <|> BACK <$ symbol "BACK"
     <|> SEPERATOR <$ symbol ","

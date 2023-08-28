@@ -3,7 +3,7 @@ module HauntedHouse.Game.Object where
 
 import qualified Data.Map.Strict (lookup, insert, null, insertWith, singleton, Map)
 import HauntedHouse.Game.Model.Mapping
-    ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'), Label, LabelToGIDListMapping (..), LabelToGIDMapping (..), GIDList )
+
 import HauntedHouse.Game.Model.GID (GID (GID))
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Condition
@@ -39,6 +39,23 @@ setObjectLabelMapM locationGID objectLabel objectGID = do
     singleList = Data.List.NonEmpty.singleton objectGID
     insertGID = Data.Map.Strict.insertWith (<>) objectLabel singleList
 
+getObjectsFromLabel :: Label Object 
+                        -> GameStateExceptT (NonEmpty (GID Object,Object))
+getObjectsFromLabel objectLabel = do
+  objectGIDList <- getObjectGIDsFromLabel objectLabel 
+  mapM paired' objectGIDList 
+  where 
+    paired' gid = do 
+      object <- getObjectM gid
+      pure (gid, object)
+getObjectGIDsFromLabel :: Label Object -> GameStateExceptT (NonEmpty (GID Object))
+getObjectGIDsFromLabel objectLabel@(Label obj) = do 
+  objectLabelMap <- unwrapMap <$> (getLocationM =<< getLocationIdM)
+  throwMaybeM notFound $ Data.Map.Strict.lookup objectLabel objectLabelMap
+  where 
+    unwrapMap = _unLabelToGIDListMapping' . _objectLabelMap'
+    notFound = toText obj <> " not found"
+
 namedDirectionM :: (Label Exit, GID Object) -> GameStateExceptT (Text,Label Exit)
 namedDirectionM (label, gid) = do
   shortName <- _shortName' <$> getObjectM gid
@@ -50,9 +67,9 @@ getShortNameM gid = _shortName' <$> getObjectM gid
 capturePerceptibleM :: GIDList Object
                         -> GameStateExceptT (Maybe (NonEmpty Object))
 capturePerceptibleM objectList = do
-  nonEmpty . mfilter isPercieved 
+  nonEmpty . mfilter isPercieved
     <$> mapM getObjectM (Data.List.NonEmpty.toList objectList)
- 
+
 isPercieved :: Object -> Bool
 isPercieved (Object _ _ _ _ Perceptible _ _) = True
 isPercieved _ = False

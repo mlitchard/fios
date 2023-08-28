@@ -24,7 +24,7 @@ data Proximity
   | PlacedLeft
   | PlacedRight
   | PlacedFront 
-  | PlacedBack
+  | PlacedBehind
       deriving stock (Eq,Ord,Show)
 
 fromProximity :: Proximity -> Text 

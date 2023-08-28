@@ -121,7 +121,7 @@ describeProximity PlacedAbove = " above "
 describeProximity PlacedLeft = " to the left of "
 describeProximity PlacedRight = " to the right of "
 describeProximity PlacedFront = " in front of "
-describeProximity PlacedBack = " behind "
+describeProximity PlacedBehind = " behind "
 
 -- FIXME: unsafe
 describeAnchoring :: RoomAnchor -> Text
