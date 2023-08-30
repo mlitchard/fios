@@ -40,7 +40,7 @@ evaluateATNounPhrase (Noun noun) = do
               =<< capturePerceptibleM 
               =<< throwMaybeM nopeErr (Data.Map.Strict.lookup (Label noun) m)
   if Data.List.NonEmpty.length objects == 1
-    then describeObjectM (NonEmpty.head objects) 
+    then describeObjectM (snd . NonEmpty.head $ objects) 
           >> updateDisplayActionM displayActionM
     else clarifyWhich (Label noun, objects)
   where

@@ -12,6 +12,7 @@ import Data.These (These)
 import qualified Data.Map.Strict
 import qualified Data.Text
 import Control.Monad.Except (MonadError(throwError))
+import HauntedHouse.Tokenizer (Lexeme)
 
 type GameStateExceptT = ExceptT Text (StateT GameState IO)
 
@@ -70,10 +71,14 @@ data GameState = GameState
   , _narration'     :: Narration
   , _verbosity'     :: Verbosity
   , _engine'        :: Imperative -> GameStateExceptT () 
+  , _clarification' :: Maybe Clarification
   , _displayAction' :: GameStateExceptT ()
-  , _clarification' :: Maybe (NonEmpty Text)
   }
 
+data Clarification = Clarification {
+    _clarifyingLabel' :: Label Lexeme
+  , _gidObjectPairs' :: NonEmpty (GID Object,Object)
+}
 report :: GameStateExceptT ()
 report = do
   report' <- _report' <$> get  

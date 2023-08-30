@@ -39,20 +39,22 @@ setObjectLabelMapM locationGID objectLabel objectGID = do
     singleList = Data.List.NonEmpty.singleton objectGID
     insertGID = Data.Map.Strict.insertWith (<>) objectLabel singleList
 
-getObjectsFromLabel :: Label Object 
+getObjectsFromLabel :: Label Object
                         -> GameStateExceptT (NonEmpty (GID Object,Object))
 getObjectsFromLabel objectLabel = do
-  objectGIDList <- getObjectGIDsFromLabel objectLabel 
-  mapM paired' objectGIDList 
-  where 
-    paired' gid = do 
-      object <- getObjectM gid
-      pure (gid, object)
+  objectGIDList <- getObjectGIDsFromLabel objectLabel
+  mapM getObjectGIDPairM objectGIDList
+
+getObjectGIDPairM :: GID Object -> GameStateExceptT (GID Object, Object)
+getObjectGIDPairM gid = do
+  object <- getObjectM gid
+  pure (gid, object)
+
 getObjectGIDsFromLabel :: Label Object -> GameStateExceptT (NonEmpty (GID Object))
-getObjectGIDsFromLabel objectLabel@(Label obj) = do 
+getObjectGIDsFromLabel objectLabel@(Label obj) = do
   objectLabelMap <- unwrapMap <$> (getLocationM =<< getLocationIdM)
   throwMaybeM notFound $ Data.Map.Strict.lookup objectLabel objectLabelMap
-  where 
+  where
     unwrapMap = _unLabelToGIDListMapping' . _objectLabelMap'
     notFound = toText obj <> " not found"
 
@@ -65,10 +67,10 @@ getShortNameM :: GID Object -> GameStateExceptT Text
 getShortNameM gid = _shortName' <$> getObjectM gid
 
 capturePerceptibleM :: GIDList Object
-                        -> GameStateExceptT (Maybe (NonEmpty Object))
+                        -> GameStateExceptT (Maybe (NonEmpty (GID Object,Object)))
 capturePerceptibleM objectList = do
-  nonEmpty . mfilter isPercieved
-    <$> mapM getObjectM (Data.List.NonEmpty.toList objectList)
+  nonEmpty . mfilter (\(_, obj) -> isPercieved obj) 
+    <$> mapM getObjectGIDPairM (Data.List.NonEmpty.toList objectList)
 
 isPercieved :: Object -> Bool
 isPercieved (Object _ _ _ _ Perceptible _ _) = True

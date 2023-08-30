@@ -16,6 +16,7 @@ import HauntedHouse.Game.Model.Condition (Proximity (..))
 import HauntedHouse.Tokenizer.Data (Lexeme(..))
 import Data.Profunctor.Rep (prepAdj)
 import qualified Data.List.NonEmpty
+import HauntedHouse.Game.Model.GID (GID)
 
 catchEngine :: Imperative -> GameStateExceptT ()
 catchEngine parsed = do
@@ -48,19 +49,19 @@ clarifyingLookSubject (ClarifyingClause1
   -- proximity <- throwMaybeM "not a prep" $ prepToProximity prep
   objectListSub <- getObjectsFromLabel (Label sub)
   objectListIobj <- getObjectsFromLabel (Label iobj)
-  let x = catMaybes 
-            $ Data.List.NonEmpty.toList 
+  let x = catMaybes
+            $ Data.List.NonEmpty.toList
             $ Data.List.NonEmpty.map findAnchoredTo objectListSub
-  
+
   obj <- if length objectListIobj == 1
           then pure $ head objectListIobj
           else throwError "You'll have to be more specific"
   pass
 clarifyingLookSubject _ = throwError "clarifyingLook implementation unfinished"
 
-findAnchoredTo :: Object -> Maybe Object 
-findAnchoredTo object@(Object _ _ _ _ _  (AnchoredTo' _) _) = Just object
-findAnchoredTo _                                            = Nothing
+findAnchoredTo :: (GID Object, Object) -> Maybe (GID Object,Object)
+findAnchoredTo object@(_,Object _ _ _ _ _  (AnchoredTo' _) _) = Just object
+findAnchoredTo _                                              = Nothing
 
 isAnchoredTo :: Orientation -> Bool
 isAnchoredTo (AnchoredTo' _) = True
