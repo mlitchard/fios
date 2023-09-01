@@ -6,7 +6,7 @@ import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look (doLookObjectM)
 import Control.Monad.Error.Class (throwError)
 
-evalVerbPhrase2 :: (Verb, PrepPhrase) -> GameStateExceptT ()
-evalVerbPhrase2 (LOOK, prepPhrase) = doLookObjectM prepPhrase
-evalVerbPhrase2 (verb,_) = 
+evalVerbPrepPhrase :: (Verb, PrepPhrase) -> GameStateExceptT ()
+evalVerbPrepPhrase (LOOK, prepPhrase) = doLookObjectM prepPhrase
+evalVerbPrepPhrase (verb,_) = 
   throwError (show verb <> " not evaulated in evalVerbPhrase2")

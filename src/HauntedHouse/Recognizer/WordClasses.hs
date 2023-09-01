@@ -17,11 +17,7 @@ data AdjPhrase
 
 data NounPhrase
   = NounPhrase1 Determiner NounPhrase
-  -- | NounPhrase2 PrepPhrase PrepPhrase PrepPhrase 
   | NounPhrase3 Number NounPhrase
- -- | NounPhrase4 NounPhrase PrepPhrase
- --  | NounPhrase5 AdjPhrase NounPhrase
- -- | NounPhrase6 NounPhrase AdjPhrase 
   | Noun Noun
   deriving stock (Show, Eq, Ord)
 

@@ -39,10 +39,10 @@ setObjectLabelMapM locationGID objectLabel objectGID = do
     singleList = Data.List.NonEmpty.singleton objectGID
     insertGID = Data.Map.Strict.insertWith (<>) objectLabel singleList
 
-getObjectsFromLabel :: Label Object
+getObjectsFromLabelM :: Label Object
                         -> GameStateExceptT (NonEmpty (GID Object,Object))
-getObjectsFromLabel objectLabel = do
-  objectGIDList <- getObjectGIDsFromLabel objectLabel
+getObjectsFromLabelM objectLabel = do
+  objectGIDList <- getObjectGIDsFromLabelM objectLabel
   mapM getObjectGIDPairM objectGIDList
 
 getObjectGIDPairM :: GID Object -> GameStateExceptT (GID Object, Object)
@@ -50,8 +50,8 @@ getObjectGIDPairM gid = do
   object <- getObjectM gid
   pure (gid, object)
 
-getObjectGIDsFromLabel :: Label Object -> GameStateExceptT (NonEmpty (GID Object))
-getObjectGIDsFromLabel objectLabel@(Label obj) = do
+getObjectGIDsFromLabelM :: Label Object -> GameStateExceptT (NonEmpty (GID Object))
+getObjectGIDsFromLabelM objectLabel@(Label obj) = do
   objectLabelMap <- unwrapMap <$> (getLocationM =<< getLocationIdM)
   throwMaybeM notFound $ Data.Map.Strict.lookup objectLabel objectLabelMap
   where

@@ -1,24 +1,22 @@
 module HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look where
 import HauntedHouse.Recognizer.WordClasses
         (PrepPhrase (..), NounPhrase (..))
-import HauntedHouse.Game.Model.World
-    ( GameStateExceptT, Location(..), Object(..), Objects, getLocationM, getLocationIdM, throwMaybeM )
 import HauntedHouse.Tokenizer (Lexeme (..))
 import Control.Monad.Except (throwError, MonadError (..))
 import HauntedHouse.Game.Model.Mapping
     ( LabelToGIDListMapping(..), Label (..) )
 import qualified Data.Map.Strict (lookup)
-import Relude.Extra (fmapToFst)
-import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Build.DescriptiveTemplate (visibleLabel)
-import HauntedHouse.Game.Object (getObjectM, capturePerceptibleM)
-import HauntedHouse.Clarifier (clarifyNotThere, clarifyWhich)
+import HauntedHouse.Game.Object (capturePerceptibleM)
+import HauntedHouse.Game.Model.World 
 import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Model.Display (describeObjectM, showPlayerActionM, showEnvironmentM, updateDisplayActionM)
+import HauntedHouse.Game.Model.Display 
+        (describeObjectM, showPlayerActionM, showEnvironmentM
+        , updateDisplayActionM)
 import qualified Relude.List.NonEmpty as NonEmpty
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
-doLookObjectM _ = pass
+doLookObjectM (PrepPhrase1 AT np) = evaluateATNounPhrase np 
+doLookObjectM _                   = throwError "doLookObject implementation incomplete"
 {-
 doLookObjectM (PrepPhrase1 AT np ) = evaluateATNounPhrase np `catchError` errorSee
 doLookObjectM (PrepPhrase1 IN _)  = pass
@@ -42,7 +40,9 @@ evaluateATNounPhrase (Noun noun) = do
   if Data.List.NonEmpty.length objects == 1
     then describeObjectM (snd . NonEmpty.head $ objects) 
           >> updateDisplayActionM displayActionM
-    else clarifyWhich (Label noun, objects)
+    else do
+          clarifyWhich <- _clarifyWhich' <$> ask 
+          clarifyWhich (Label noun, objects)
   where
     displayActionM = showPlayerActionM >> showEnvironmentM
     nopeErr = "You don't see a " <> toText noun <> " here."

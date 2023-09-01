@@ -11,7 +11,10 @@ import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Mapping
     (GIDToDataMapping (..), LabelToGIDListMapping (..),)
 import HauntedHouse.Game.Narration (displaySceneM, makeSceneM)
-import HauntedHouse.Game.Engine (primaryEngine)
+import HauntedHouse.Game.Engine (primaryEvaluator)
+import HauntedHouse.Clarifier (clarifyWhich)
+import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator (evalVerbNounPhrase)
+import HauntedHouse.Game.Engine.VerbPhraseTwo (evalVerbPrepPhrase)
 
 defaultGameState :: GameState
 defaultGameState = GameState
@@ -22,10 +25,25 @@ defaultGameState = GameState
   , _verbosity' = Loud
   , _displayAction' = defaultDisplayAction
   , _clarification' = Nothing
-  , _engine' = primaryEngine 
+  , _evaluator' = primaryEvaluator
   }
-
-defaultDisplayAction :: ExceptT Text (StateT GameState IO) ()
+{-
+data Config = Config {
+  _primaryEngine'           :: Imperative -> GameStateExceptT () 
+  , _orientationClarifier'  :: Imperative -> GameStateExceptT () 
+  , _clarifyWhich'          :: ClarifyWhich                          
+  , _evalVerbNounPhrase'    :: (Verb, NounPhrase) -> GameStateExceptT ()
+  , _evalVerbPrepPhrase'    :: (Verb, PrepPhrase) -> GameStateExceptT ()   
+}
+-}
+config :: Config 
+config = Config {
+  _primaryEvaluator'     = primaryEvaluator
+  , _clarifyWhich'       = clarifyWhich
+  , _evalVerbNounPhrase' = evalVerbNounPhrase 
+  , _evalVerbPrepPhrase' = evalVerbPrepPhrase    
+}
+defaultDisplayAction :: GameStateExceptT ()
 defaultDisplayAction = 
   report 
     >> getLocationIdM 

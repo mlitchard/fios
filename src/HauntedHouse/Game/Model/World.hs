@@ -1,8 +1,8 @@
 module HauntedHouse.Game.Model.World where
 
 import HauntedHouse.Game.Model.Mapping
-import HauntedHouse.Recognizer (Adjective, Imperative)
-import HauntedHouse.Game.Model.Condition (Inventory, Proximity, Moveability, Perceptibility (..))
+import HauntedHouse.Recognizer (Adjective, Imperative, NounPhrase, Verb, PrepPhrase)
+import HauntedHouse.Game.Model.Condition (Proximity, Moveability, Perceptibility (..))
 import System.Console.Haskeline (InputT)
 import Text.Show (Show(..))
 import Prelude hiding (show)
@@ -13,14 +13,26 @@ import qualified Data.Map.Strict
 import qualified Data.Text
 import Control.Monad.Except (MonadError(throwError))
 import HauntedHouse.Tokenizer (Lexeme)
+-- import qualified Control.Monad.Reader (ReaderT)
+--type ConfigT a = Control.Monad.Reader.ReaderT Parsers a 
 
-type GameStateExceptT = ExceptT Text (StateT GameState IO)
+type GameStateExceptT = ReaderT Config (ExceptT Text (StateT GameState IO))
 
 type InputGameStateExceptT = InputT GameStateExceptT
 
 newtype AnchoredTo = AnchoredTo
   { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)}
     deriving stock (Show, Eq, Ord)
+
+type ClarifyWhich = (Label Lexeme, NonEmpty (GID Object, Object)) 
+                      -> GameStateExceptT ()
+
+data Config = Config {
+  _primaryEvaluator'      :: Imperative -> GameStateExceptT () 
+  , _clarifyWhich'        :: ClarifyWhich                          
+  , _evalVerbNounPhrase'  :: (Verb, NounPhrase) -> GameStateExceptT ()
+  , _evalVerbPrepPhrase'  :: (Verb, PrepPhrase) -> GameStateExceptT ()   
+}
 
 newtype Containment = Containment
   { _unContainment' :: These ContainedIn ContainedOn } deriving stock Show
@@ -70,7 +82,7 @@ data GameState = GameState
   , _player'        :: Player
   , _narration'     :: Narration
   , _verbosity'     :: Verbosity
-  , _engine'        :: Imperative -> GameStateExceptT () 
+  , _evaluator'     :: Imperative -> GameStateExceptT () 
   , _clarification' :: Maybe Clarification
   , _displayAction' :: GameStateExceptT ()
   }

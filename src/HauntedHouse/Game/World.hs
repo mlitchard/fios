@@ -62,19 +62,7 @@ getGIDListM locationGID label =
     lookupGID = Data.Map.Strict.lookup locationGID <$> unwrappedLocationMap
     unwrappedLocationMap = _unGIDToDataMapping' . _locationMap' . _world'
     unwrappedObjectMap = _unLabelToGIDListMapping' . _objectLabelMap'
-{-
-setObjectLabelMapM :: Label Object -> GID Object -> GameStateExceptT ()
-setObjectLabelMapM objectLabel objectGid = do
-  location :: Location <-  getLocationM . _playerLocation' . _player' =<< get
-  let unwrappedMap :: Data.Map.Strict.Map (Label Object) (GIDList Object)
-      unwrappedMap = (_unLabelToGIDListMapping' ._objectLabelMap') location
-      updatedMap = LabelToGIDListMapping
-        $ Data.Map.Strict.insertWith (<>) objectLabel objectGid' unwrappedMap
-      location' = location {_objectLabelMap' = updatedMap}
-  setLocationM location'
-  where
-    objectGid' = Data.List.NonEmpty.singleton objectGid
--}
+
 setLocationM :: Location -> GameStateExceptT ()
 setLocationM location = do
   lgid <- _playerLocation' . _player' <$> get

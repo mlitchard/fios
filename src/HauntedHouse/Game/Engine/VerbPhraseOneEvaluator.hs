@@ -6,9 +6,7 @@ import HauntedHouse.Game.Model.World (GameStateExceptT)
 import HauntedHouse.Tokenizer 
 import HauntedHouse.Game.Engine.OnlyVerb.DoGo (doGo)
 
-evalVerbPhrase1 :: (Verb, NounPhrase) -> GameStateExceptT ()
-evalVerbPhrase1 (OPEN, _) = throwError "OPEN incomplete"
-evalVerbPhrase1 (GO,mdir) = doGo mdir
-evalVerbPhrase1 (verb, _) = throwError (show verb <> " not evaluated")
-
-
+evalVerbNounPhrase :: (Verb, NounPhrase) -> GameStateExceptT ()
+evalVerbNounPhrase (OPEN, _) = throwError "OPEN incomplete"
+evalVerbNounPhrase (GO,mdir) = doGo mdir
+evalVerbNounPhrase (verb, _) = throwError (show verb <> " not evaluated")
