@@ -82,7 +82,7 @@ objectList =
   , kitchenCabinetAboveShelfGID
   , kitchenCabinetBelowShelfGID
   , kitchenSinkGID
-  , plantPotGID
+ -- , plantPotGID
   , kitchenEastDoorGID
   , kitchenCabinetAboveSinkGID
   , kitchenCabinetBelowSinkGID] 
@@ -128,7 +128,7 @@ shelfNeighborsList =
   , (PlacedUnder, Data.List.NonEmpty.singleton kitchenCabinetBelowShelfGID)
   , (PlacedLeft, Data.List.NonEmpty.singleton kitchenSinkGID)
   , (PlacedRight, Data.List.NonEmpty.singleton kitchenEastDoorGID)
-  , (PlacedOn, Data.List.NonEmpty.singleton plantPotGID)]
+ ]
 
 sinkNeighbors :: Neighbors 
 sinkNeighbors = Neighbors sinkNeighborMap 

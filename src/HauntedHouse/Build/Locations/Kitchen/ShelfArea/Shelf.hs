@@ -10,7 +10,7 @@ import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
     ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..)
     , GameStateExceptT, GameState (..), Nexus (..), RoomAnchor (EastAnchor), Orientation (Anchoring))
-import qualified Data.Map.Strict (insert, singleton)
+import qualified Data.Map.Strict (insert, singleton, empty)
 import HauntedHouse.Build.ObjectTemplate
     ( kitchenShelfGID, plantPotGID )
 import Data.These (These(..))
@@ -46,8 +46,5 @@ shelfContainer :: Containment
 shelfContainer = (Containment . That) containedOn
   where
     containedOn :: ContainedOn
-    containedOn = (ContainedOn . ContainerMap) 
-                    $ Data.Map.Strict.singleton (Label POT) onShelf
+    containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty
 
-onShelf :: GIDList Object
-onShelf = Data.List.NonEmpty.singleton plantPotGID

@@ -1,12 +1,16 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use one" #-}
 module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf 
   where
   
-import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
+import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..), GIDList, Label (..))
 import HauntedHouse.Game.Model.World
-import qualified Data.Map.Strict (insert, empty)
-import HauntedHouse.Build.ObjectTemplate (kitchenCabinetBelowShelfGID, kitchenShelfGID)
+import qualified Data.Map.Strict (insert, empty, singleton)
+import HauntedHouse.Build.ObjectTemplate (kitchenCabinetBelowShelfGID, kitchenShelfGID, plantPotGID)
 import Data.These (These(..))
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
+import qualified Data.List.NonEmpty
+import HauntedHouse.Tokenizer (Lexeme(PLANT, POT))
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
 buildKitchenCabinetBelowShelf = do
@@ -41,8 +45,12 @@ cabinetContainer = (Containment . This) containedIn
 containedIn :: ContainedIn
 containedIn = ContainedIn 
   {_containerInterface' = ContainerInterface' containerInterface
-  , _containedIn' = ContainerMap Data.Map.Strict.empty  
+  , _containedIn' = ContainerMap 
+                      $ Data.Map.Strict.singleton (Label POT) inCabinet 
   }
+
+inCabinet :: GIDList Object
+inCabinet = Data.List.NonEmpty.singleton plantPotGID
 
 containerInterface :: ContainerInterface 
 containerInterface = ContainerInterface {

@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-type-defaults #-}
 module HauntedHouse.Game.Model.Display where
 
 import Data.Map.Strict qualified (null, elems, toList, size)
