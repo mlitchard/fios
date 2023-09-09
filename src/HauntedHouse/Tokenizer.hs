@@ -31,3 +31,4 @@ runParser parser str = do
 
 tokens :: Parser [Lexeme]
 tokens = sc *> many term <* eof
+

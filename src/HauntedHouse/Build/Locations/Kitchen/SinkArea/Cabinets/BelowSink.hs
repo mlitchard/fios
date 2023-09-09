@@ -61,7 +61,7 @@ containedIn = ContainedIn {
   
 containerInterface :: ContainerInterface
 containerInterface = ContainerInterface {
-      _openState'     = Open 
+      _openState'     = Closed 
     , _openAction'    = pass 
     , _closeAction'   = pass 
     , _lockAction'    = pass 

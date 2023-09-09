@@ -137,17 +137,7 @@ data Lexeme
   | BACK
   | SEPERATOR
   deriving stock (Show, Eq, Enum, Ord)
-{-
-data Proximity
-  = PlacedOn
-  | PlacedUnder
-  | PlacedAbove
-  | PlacedLeft
-  | PlacedRight
-  | PlacedFront 
-  | PlacedBack
-      deriving stock (Eq,Ord,Show)
--}
+
 instance ToText Lexeme where
   toText :: Lexeme -> Text
   toText txt = toText (show txt :: String)
@@ -161,7 +151,7 @@ instance Hashable Lexeme where
   hashWithSalt = hashUsing fromEnum
 
 term :: Parser Lexeme
-term =
+term = 
   PALACE <$ symbol "PALACE"
     <|> BASEMENT <$ symbol "BASEMENT"
     <|> ATTIC <$ symbol "ATTIC"
@@ -184,16 +174,14 @@ term =
     <|> OF <$ symbol "OF"
     <|> THE <$ symbol "THE"
     <|> AT <$ symbol "AT"
-    <|> A <$ symbol "A"
     <|> MY <$ symbol "MY"
     <|> ME <$ symbol "ME"
     <|> TO <$ symbol "TO"
     <|> WITH <$ symbol "WITH"
     <|> IN <$ symbol "IN"
     <|> WHEN <$ symbol "WHEN"
-    <|> UNDER <$ symbol "UNDER"
+    <|> under 
     <|> OVER <$ symbol "OVER"
-    <|> ABOVE <$ symbol "ABOVE"
     <|> ON <$ symbol "ON"
     <|> MIND <$ symbol "MIND"
     <|> BLUE <$ symbol "BLUE"
@@ -241,4 +229,9 @@ term =
     <|> BEHIND <$ symbol "BEHIND"
     <|> SINK <$ symbol "SINK"
     <|> BACK <$ symbol "BACK"
+    <|> ABOVE <$ symbol "ABOVE"
+    <|> A <$ symbol "A"
     <|> SEPERATOR <$ symbol ","
+
+under :: Parser Lexeme
+under = UNDER <$ symbol "UNDER" <|> UNDER <$ symbol "BELOW"
