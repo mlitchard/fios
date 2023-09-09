@@ -25,7 +25,6 @@ data NounPhrase
 -- FIXME . change data Object to data Entity everywhere
 doLookAtPrepM :: (NounPhrase,PrepPhrase) -> GameStateExceptT ()
 doLookAtPrepM (np,pp) = do
-  print ("entering doLookAtPrepM" :: Text)
   possibleSubjects <- getObjectsFromLabelM subjectLabel
   anchoredEntities <- throwMaybeM (makeErrorReport np pp) 
                       $ nonEmpty
@@ -47,8 +46,6 @@ doLookAtPrepM (np,pp) = do
                     <$> allMatches
     clarifyWhich <- _clarifyWhich' <$> ask 
     clarifyWhich clarifyingLookSubjectM (subjectLabel, pairMatches)
-  print ("got to the end" :: Text)
-  print $ show matched
   describeObjectM (_anchoredObject' matched) 
     >> updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   where 
