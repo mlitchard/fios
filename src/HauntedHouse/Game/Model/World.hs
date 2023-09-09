@@ -28,7 +28,6 @@ type ClarifyWhich = (Imperative -> GameStateExceptT ())
                       -> (Label Object, NonEmpty (GID Object, Object)) 
                       -> GameStateExceptT ()
 
-type EvalVerbThree = (Verb, PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 data Config = Config {
   _primaryEvaluator'         :: Imperative -> GameStateExceptT () 
   , _clarifyWhich'           :: ClarifyWhich                          
@@ -69,6 +68,7 @@ data ContainerInterface = ContainerInterface {
 instance Show ContainerInterface where
   show containerInterface = show (_openState' containerInterface)
 
+type EvalVerbThree = (Verb, PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 newtype Exit = Exit { _toDestination' :: GID Location} deriving stock Show
 
 newtype ExitGIDDataMap = ExitGIDDataMap {
@@ -79,6 +79,15 @@ newtype ExitGIDMap
   = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Object}
       deriving stock Show
 
+data FoundAnchoredTo = FoundAnchoredTo
+  {  _anchoredGID' :: GID Object
+  ,  _anchoredObject' :: Object
+  ,  _proximityTo' :: (GID Object, Proximity)
+  }
+instance Show FoundAnchoredTo where
+  show (FoundAnchoredTo gid _ (gid',prox)) =
+    show gid <> " " <> show gid' <> " " <> show prox
+    
 data GameState = GameState
   { _world'         :: World
   , _report'        :: [Text]

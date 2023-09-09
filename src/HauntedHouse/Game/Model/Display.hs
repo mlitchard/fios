@@ -76,9 +76,10 @@ updateDisplayActionM displayAction = do
 
 describeObjectM :: Object -> GameStateExceptT ()
 describeObjectM (Object shortName desc _ _ percept orientation mNexus) = do
+  print ("entering describeObjectM" :: Text)
   case percept of
-    Imperceptible -> throwError "You don't see that."
-    Perceptible -> updatePlayerActionM success
+    Imperceptible -> print ("not percievable" :: Text) >> throwError "You don't see that."
+    Perceptible -> print ("perciebable" <> show desc :: Text) >> updatePlayerActionM success
                     >> describeOrientationM preamble orientation
                     >> mapM_ updateEnvironmentM desc
                     >> maybeNexusM mNexus

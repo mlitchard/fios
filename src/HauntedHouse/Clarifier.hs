@@ -121,15 +121,6 @@ findNoun (Noun n) = n
 findNoun (NounPhrase1 _ np) = findNoun np
 findNoun (NounPhrase3 _ np) = findNoun np
 
-data FoundAnchoredTo = FoundAnchoredTo
-  {  _anchoredGID' :: GID Object
-  ,  _anchoredObject' :: Object
-  ,  _proximityTo' :: (GID Object, Proximity)
-  }
-
-instance Show FoundAnchoredTo where
-  show (FoundAnchoredTo gid _ (gid',prox)) =
-    show gid <> " " <> show gid' <> " " <> show prox
   -- | AnchoredTo' (GID Object, Proximity) 
 findAnchoredTo :: (GID Object, Object) -> Maybe FoundAnchoredTo
 findAnchoredTo object = case object of

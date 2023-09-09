@@ -1,12 +1,14 @@
+{-# OPTIONS_GHC -Wno-type-defaults #-}
 module HauntedHouse.Game.Engine.VerbPhraseThree.Look where
 import HauntedHouse.Recognizer.WordClasses (PrepPhrase(PrepPhrase1), Noun, NounPhrase (..))
 import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Game.Model.World
 import Control.Monad.Except (MonadError(..))
-import HauntedHouse.Clarifier (findNoun, findAnchoredTo, findInDirectObject, clarifyingLookObjectM)
+import HauntedHouse.Clarifier (findNoun, findAnchoredTo, findInDirectObject, clarifyingLookObjectM, subObjectAgreement, checkProximity, clarifyingLookSubjectM)
 import HauntedHouse.Game.Model.Mapping (Label(..))
 import HauntedHouse.Game.Object (getObjectGIDPairM, getObjectsFromLabelM)
 import qualified Data.List.NonEmpty
+import HauntedHouse.Game.Model.Display (describeObjectM, updateDisplayActionM, showPlayerActionM, showEnvironmentM)
 
 doLookTwoPrepM :: (PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 doLookTwoPrepM (PrepPhrase1 AT noun,prep) = doLookAtPrepM (noun, prep)
@@ -23,9 +25,11 @@ data NounPhrase
 -- FIXME . change data Object to data Entity everywhere
 doLookAtPrepM :: (NounPhrase,PrepPhrase) -> GameStateExceptT ()
 doLookAtPrepM (np,pp) = do
+  print ("entering doLookAtPrepM" :: Text)
   possibleSubjects <- getObjectsFromLabelM subjectLabel
   anchoredEntities <- throwMaybeM (makeErrorReport np pp) 
-                      $ nonEmpty 
+                      $ nonEmpty
+                      $ filter (checkProximity pp)
                       $ mapMaybe findAnchoredTo 
                       $ toList possibleSubjects
   possibleObjects@(object:|_) <- getObjectsFromLabelM objectLabel 
@@ -34,7 +38,19 @@ doLookAtPrepM (np,pp) = do
     clarifyWhich <- _clarifyWhich' <$> ask 
     clarifyWhich clarifyingLookObjectM (objectLabel, possibleObjects) 
   -- toList anchoredEntities
-  pass
+  allMatches@(matched:|_) <- throwMaybeM (makeErrorReport np pp) 
+                  $ nonEmpty 
+                  $ mapMaybe (subObjectAgreement (fst object)) 
+                  $ Data.List.NonEmpty.toList anchoredEntities
+  when (length allMatches > 1) $ do 
+    let pairMatches = (\a -> (_anchoredGID' a, _anchoredObject' a)) 
+                    <$> allMatches
+    clarifyWhich <- _clarifyWhich' <$> ask 
+    clarifyWhich clarifyingLookSubjectM (subjectLabel, pairMatches)
+  print ("got to the end" :: Text)
+  print $ show matched
+  describeObjectM (_anchoredObject' matched) 
+    >> updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   where 
     subjectLabel = Label $ findNoun np
     objectLabel  = Label $ findInDirectObject pp
