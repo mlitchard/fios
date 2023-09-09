@@ -15,6 +15,7 @@ import HauntedHouse.Game.Engine (primaryEvaluator)
 import HauntedHouse.Clarifier (clarifyWhich)
 import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator (evalVerbNounPhrase)
 import HauntedHouse.Game.Engine.VerbPhraseTwo (evalVerbPrepPhrase)
+import HauntedHouse.Game.Engine.VerbPhraseThree (verbPhraseThree)
 
 defaultGameState :: GameState
 defaultGameState = GameState
@@ -29,11 +30,11 @@ defaultGameState = GameState
   }
 {-
 data Config = Config {
-  _primaryEngine'           :: Imperative -> GameStateExceptT () 
-  , _orientationClarifier'  :: Imperative -> GameStateExceptT () 
-  , _clarifyWhich'          :: ClarifyWhich                          
-  , _evalVerbNounPhrase'    :: (Verb, NounPhrase) -> GameStateExceptT ()
-  , _evalVerbPrepPhrase'    :: (Verb, PrepPhrase) -> GameStateExceptT ()   
+  _primaryEvaluator'         :: Imperative -> GameStateExceptT () 
+  , _clarifyWhich'           :: ClarifyWhich                          
+  , _evalVerbNounPhrase'     :: (Verb, NounPhrase) -> GameStateExceptT ()
+  , _evalVerbPrepPhrase'     :: (Verb, PrepPhrase) -> GameStateExceptT ()
+  , _evalVerbTwoPrepPhrases' :: EvalVerbThree                                      
 }
 -}
 config :: Config 
@@ -41,7 +42,8 @@ config = Config {
   _primaryEvaluator'     = primaryEvaluator
   , _clarifyWhich'       = clarifyWhich
   , _evalVerbNounPhrase' = evalVerbNounPhrase 
-  , _evalVerbPrepPhrase' = evalVerbPrepPhrase    
+  , _evalVerbPrepPhrase' = evalVerbPrepPhrase   
+  , _evalVerbTwoPrepPhrases' = verbPhraseThree 
 }
 defaultDisplayAction :: GameStateExceptT ()
 defaultDisplayAction = 

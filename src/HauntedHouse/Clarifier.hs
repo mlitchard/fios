@@ -2,8 +2,6 @@ module HauntedHouse.Clarifier where
 
 import Control.Monad.Except ( MonadError(throwError) )
 import HauntedHouse.Game.Model.World
-        (Object (..), GameStateExceptT, GameState (..), Clarification (..)
-        , Orientation (..), throwMaybeM, ClarifyWhich, Config (..))
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping (Label (..))
 import HauntedHouse.Tokenizer (Lexeme)
@@ -23,16 +21,16 @@ import HauntedHouse.Game.Object (getObjectsFromLabelM)
 -- import HauntedHouse.Game.Engine (primaryEngine)
 
 doReportM :: Text -> GameStateExceptT ()
-doReportM report = do
-  setReportM report
+doReportM report' = do
+  setReportM report'
   modify' (\gs -> gs{_displayAction' = displayReport})
 
 setReportM :: Text -> GameStateExceptT ()
-setReportM  report = do
+setReportM report' = do
   currentReport <- _report' <$> get
-  modify' (\gs -> gs{_report' = currentReport <> [report]})
+  modify' (\gs -> gs{_report' = currentReport <> [report']})
 
-samePageCheckM :: Label Lexeme -> Label Lexeme -> GameStateExceptT ()
+samePageCheckM :: Label Object -> Label Object -> GameStateExceptT ()
 samePageCheckM label label'
   | label == label' = pass
   | otherwise       = throwError errMsg
@@ -41,15 +39,14 @@ samePageCheckM label label'
 
 displayReport :: GameStateExceptT ()
 displayReport = do
-  report <- _report' <$> get
-  mapM_ print report
+  mapM_ print . _report' =<< get
 
-clarifyWhich :: ClarifyWhich 
-clarifyWhich labelObjectPair@(Label label', objects) =
+clarifyWhich :: ClarifyWhich
+clarifyWhich f labelObjectPair@(Label label', objects) =
   updateEnvironmentM preamble
     >> mapM_ (\(_,object) -> objectOrientation object) objects
     >> modify' (\gs -> gs {_clarification' = Just clarification})
-    >> setEvaluatorM clarifyingLookSubjectM
+    >> setEvaluatorM f -- clarifyingLookSubjectM
     >> updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   where
     clarification = Clarification {
@@ -76,7 +73,7 @@ clarifyingLookSubjectM (ClarifyingClause1
   clarified <- throwMaybeM noClarityMSG . _clarification' =<< get
   samePageCheckM (Label sub) (_clarifyingLabel' clarified)
   objectListIobj <- getObjectsFromLabelM (Label (findInDirectObject prep))
-  mapM_ (\(gid,obj) -> print (_shortName' obj) >> print gid) objectListIobj
+  mapM_ (\(gid,obj) -> print (_shortName' obj) >> print gid) objectListIobj -- Remove DEBUG
   subjects <- throwMaybeM tryAgain
         $ nonEmpty $ filter (checkProximity prep) $ catMaybes
         $ Data.List.NonEmpty.toList
@@ -86,9 +83,9 @@ clarifyingLookSubjectM (ClarifyingClause1
   obj <- if length objectListIobj == 1
           then pure $ head objectListIobj
           else throwError "error with length objectListIobj"
-  matchedSubjects <- throwMaybeM "nonsense" 
-                      $ nonEmpty 
-                      $ mapMaybe (subObjectAgreement (fst obj)) 
+  matchedSubjects <- throwMaybeM "nonsense"
+                      $ nonEmpty
+                      $ mapMaybe (subObjectAgreement (fst obj))
                       $ Data.List.NonEmpty.toList subjects
   unless (length matchedSubjects == 1) $ throwError "several matched subjects"
   describeObjectM $ (_anchoredObject' . head) matchedSubjects
@@ -97,7 +94,14 @@ clarifyingLookSubjectM (ClarifyingClause1
   where
     tryAgain = "Try that again"
     noClarityMSG = "Programmer Error: No clarifying object list"
+clarifyingLookSubjectM imp@(ImperativeClause _) = do
+                                                    print ("primary engine to evaluate" :: Text)
+                                                    primaryEngine <- _primaryEvaluator' <$> ask
+                                                    primaryEngine imp
 clarifyingLookSubjectM _ = throwError "clarifyingLook implementation unfinished"
+
+clarifyingLookObjectM :: Imperative -> GameStateExceptT () 
+clarifyingLookObjectM _ = throwError "clarifyingLookObjectM not implemented"
 
 subObjectAgreement :: GID Object -> FoundAnchoredTo -> Maybe FoundAnchoredTo
 subObjectAgreement gid' fat@(FoundAnchoredTo _ _ (gid,_))

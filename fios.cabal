@@ -148,6 +148,8 @@ library
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.OnlyVerb.DoGo
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
+    HauntedHouse.Game.Engine.VerbPhraseThree 
+    HauntedHouse.Game.Engine.VerbPhraseThree.Look
     HauntedHouse.Game.Engine.VerbPhraseTwo
     HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look
     HauntedHouse.Game.Engine.Utilities

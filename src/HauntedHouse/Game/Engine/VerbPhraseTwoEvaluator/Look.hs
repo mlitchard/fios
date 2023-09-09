@@ -13,6 +13,7 @@ import HauntedHouse.Game.Model.Display
         (describeObjectM, showPlayerActionM, showEnvironmentM
         , updateDisplayActionM)
 import qualified Relude.List.NonEmpty as NonEmpty
+import HauntedHouse.Clarifier (clarifyingLookSubjectM)
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
 doLookObjectM (PrepPhrase1 AT np) = evaluateATNounPhrase np 
@@ -42,7 +43,7 @@ evaluateATNounPhrase (Noun noun) = do
           >> updateDisplayActionM displayActionM
     else do
           clarifyWhich <- _clarifyWhich' <$> ask 
-          clarifyWhich (Label noun, objects)
+          clarifyWhich clarifyingLookSubjectM (Label noun, objects)
   where
     displayActionM = showPlayerActionM >> showEnvironmentM
     nopeErr = "You don't see a " <> toText noun <> " here."

@@ -24,14 +24,17 @@ newtype AnchoredTo = AnchoredTo
   { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)}
     deriving stock (Show, Eq, Ord)
 
-type ClarifyWhich = (Label Lexeme, NonEmpty (GID Object, Object)) 
+type ClarifyWhich = (Imperative -> GameStateExceptT ()) 
+                      -> (Label Object, NonEmpty (GID Object, Object)) 
                       -> GameStateExceptT ()
 
+type EvalVerbThree = (Verb, PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 data Config = Config {
-  _primaryEvaluator'      :: Imperative -> GameStateExceptT () 
-  , _clarifyWhich'        :: ClarifyWhich                          
-  , _evalVerbNounPhrase'  :: (Verb, NounPhrase) -> GameStateExceptT ()
-  , _evalVerbPrepPhrase'  :: (Verb, PrepPhrase) -> GameStateExceptT ()   
+  _primaryEvaluator'         :: Imperative -> GameStateExceptT () 
+  , _clarifyWhich'           :: ClarifyWhich                          
+  , _evalVerbNounPhrase'     :: (Verb, NounPhrase) -> GameStateExceptT ()
+  , _evalVerbPrepPhrase'     :: (Verb, PrepPhrase) -> GameStateExceptT ()
+  , _evalVerbTwoPrepPhrases' :: EvalVerbThree                                      
 }
 
 newtype Containment = Containment
@@ -88,7 +91,7 @@ data GameState = GameState
   }
 
 data Clarification = Clarification {
-    _clarifyingLabel' :: Label Lexeme
+    _clarifyingLabel' :: Label Object
   , _gidObjectPairs' :: NonEmpty (GID Object,Object)
 }
 report :: GameStateExceptT ()

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-type-defaults #-}
 module HauntedHouse.Game.Engine where
 
 import HauntedHouse.Game.Model.World
@@ -10,6 +11,7 @@ import Control.Monad.Except (MonadError(..))
 
 import Prelude hiding (show)
 import HauntedHouse.Clarifier (doReportM)
+import Relude
 
 catchEngine :: Imperative -> GameStateExceptT ()
 catchEngine parsed = do
@@ -22,9 +24,14 @@ primaryEvaluator (ImperativeClause (VerbPhrase1 verb nounPhrase)) = do
   evalVerbNounPhrase <- _evalVerbNounPhrase' <$> ask 
   evalVerbNounPhrase (verb,nounPhrase)
 primaryEvaluator (ImperativeClause (VerbPhrase2 verb prepPhrase)) = do
-  _evalVerbPrepPhrase <- _evalVerbPrepPhrase' <$> ask
-  _evalVerbPrepPhrase (verb,prepPhrase)
-primaryEvaluator _ = throwError "You need to be more clear"
+  eval <- _evalVerbPrepPhrase' <$> ask
+  eval (verb,prepPhrase)
+primaryEvaluator (ImperativeClause (VerbPhrase3 verb prepOne prepTwo)) = do 
+  eval <- _evalVerbTwoPrepPhrases' <$> ask
+  eval (verb,prepOne,prepTwo) 
+primaryEvaluator err = do 
+                          print (show err)
+                          throwError "You need to be more clear"
 {-
 data Clarification = Clarification {
     _clarifyingLabel' :: Label Lexeme

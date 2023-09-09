@@ -75,22 +75,6 @@ anchoredToList =
   , (kitchenCabinetBelowShelfGID, (kitchenShelfGID,PlacedUnder))
   , (kitchenCabinetAboveSinkGID,(kitchenSinkGID,PlacedAbove))
   , (kitchenCabinetBelowSinkGID, (kitchenSinkGID,PlacedUnder))] 
-
-kitchenCabinetAboveShelfNeighbors :: Neighbors 
-kitchenCabinetAboveShelfNeighbors = 
-  (Neighbors . NeighborMap) Data.Map.Strict.empty 
-
-kitchenCabinetBelowShelfNeighbors :: Neighbors 
-kitchenCabinetBelowShelfNeighbors =
-  (Neighbors . NeighborMap) Data.Map.Strict.empty
-
-kitchenCabinetAboveSinkNeighbors :: Neighbors 
-kitchenCabinetAboveSinkNeighbors = 
-  (Neighbors . NeighborMap) Data.Map.Strict.empty
-
-kitchenCabinetBelowSinkNeighbors :: Neighbors 
-kitchenCabinetBelowSinkNeighbors = 
-  (Neighbors . NeighborMap) Data.Map.Strict.empty
   
 objectList :: [GID Object] 
 objectList = 
@@ -105,7 +89,8 @@ objectList =
 
 kitchenObjectLabelMap :: LabelToGIDListMapping Object Object
 kitchenObjectLabelMap = LabelToGIDListMapping $ Data.Map.Strict.fromList 
-  [(cabinet,kitchenCabinets),(sink, kitchenSink),(shelf, kitchenShelf), (plantPot, kitchenPlantPot)]
+  [(cabinet,kitchenCabinets),(sink, kitchenSink),(shelf, kitchenShelf)
+  , (plantPot, kitchenPlantPot)]
 
 kitchenPlantPot :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenPlantPot = Data.List.NonEmpty.singleton plantPotGID
@@ -136,13 +121,6 @@ shelfNeighbors = Neighbors shelfNeighborMap
 
 shelfNeighborMap :: NeighborMap Proximity Object 
 shelfNeighborMap = NeighborMap $ Data.Map.Strict.fromList shelfNeighborsList
-
-eastDoorNeighborMap :: NeighborMap Proximity Object 
-eastDoorNeighborMap = NeighborMap $ Data.Map.Strict.fromList eastDoorNeighborsList
-
-eastDoorNeighborsList :: [(Proximity, GIDList Object)]
-eastDoorNeighborsList = 
-  [(PlacedLeft, Data.List.NonEmpty.singleton kitchenShelfGID)]
 
 shelfNeighborsList :: [(Proximity, GIDList Object)]
 shelfNeighborsList =

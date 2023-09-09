@@ -1,6 +1,7 @@
 module HauntedHouse.Game.Engine.Utilities where
 import HauntedHouse.Game.Model.Condition (Proximity (..))
 import HauntedHouse.Tokenizer (Lexeme (..))
+import HauntedHouse.Recognizer
 
 {-
 data Proximity
@@ -22,3 +23,11 @@ prepToProximity RIGHT = Just PlacedRight
 prepToProximity FRONT = Just PlacedFront 
 prepToProximity BEHIND = Just PlacedBehind 
 prepToProximity _ = Nothing   
+
+{-
+data NounPhrase
+  = NounPhrase1 Determiner NounPhrase
+  | NounPhrase3 Number NounPhrase
+  | Noun Noun
+  deriving stock (Show, Eq, Ord)
+-}

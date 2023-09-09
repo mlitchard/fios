@@ -1,7 +1,7 @@
 module HauntedHouse.TopLevel where
 
 import HauntedHouse.Game.Model.World
-       
+
 import HauntedHouse.Tokenizer (tokens, Lexeme, runParser)
 import System.Console.Haskeline
         (InputT, getInputLine, runInputT, defaultSettings)
@@ -12,6 +12,7 @@ import HauntedHouse.Build.GameState (buildGameState)
 import qualified Data.Text
 import HauntedHouse.Game.Narration (displaySceneM)
 import HauntedHouse.Game.Engine (catchEngine)
+import HauntedHouse.Clarifier (doReportM)
 
 data GameInput
     = MkGameInput Text
@@ -34,9 +35,18 @@ inputAction = do
     Just (MkGameInput input') -> do
       case runParser tokens input' of
           Left _ -> putStrLn "parse failed" >> displaySceneM True >> inputAction
-          Right tokens' -> either throwError catchEngine (parseTokens tokens')
+          Right tokens' -> either catchBadParseM catchEngine (parseTokens tokens')
                             >> topLevel
-  
+
+{-
+catchEngine :: Imperative -> GameStateExceptT ()
+catchEngine parsed = do
+  engine <- _evaluator' <$> get
+  engine parsed `catchError` doReportM
+-}
+catchBadParseM :: Text -> GameStateExceptT ()
+catchBadParseM = doReportM
+
 getInput :: IO (Maybe GameInput)
 getInput = do
   str <- runInputT defaultSettings go
