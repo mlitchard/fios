@@ -55,6 +55,7 @@ inCabinet = Data.List.NonEmpty.singleton plantPotGID
 containerInterface :: ContainerInterface 
 containerInterface = ContainerInterface {
       _openState'     = Open 
+    , _describe' = mempty
     , _openAction'    = pass 
     , _closeAction'   = pass 
     , _lockAction'    = pass

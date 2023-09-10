@@ -1,6 +1,6 @@
 module HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look where
 import HauntedHouse.Recognizer.WordClasses
-        (PrepPhrase (..), NounPhrase (..))
+        (PrepPhrase (..), NounPhrase (..), Preposition)
 import HauntedHouse.Tokenizer (Lexeme (..))
 import Control.Monad.Except (throwError, MonadError (..))
 import HauntedHouse.Game.Model.Mapping
@@ -14,25 +14,19 @@ import HauntedHouse.Game.Model.Display
         , updateDisplayActionM)
 import qualified Relude.List.NonEmpty as NonEmpty
 import HauntedHouse.Clarifier (clarifyingLookSubjectM)
+import HauntedHouse.Game.Engine.VerbPhraseThree.Look (updateContainerDescriptionM)
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
-doLookObjectM (PrepPhrase1 AT np) = evaluateATNounPhrase np 
+doLookObjectM (PrepPhrase1 prep np) = evaluateNounPhrase prep np 
 doLookObjectM _                   = throwError "doLookObject implementation incomplete"
-{-
-doLookObjectM (PrepPhrase1 AT np ) = evaluateATNounPhrase np `catchError` errorSee
-doLookObjectM (PrepPhrase1 IN _)  = pass
-doLookObjectM (PrepPhrase1 p _)   =
-  throwError (show p <> " not evaulated in doLookObjectM" :: Text)
-doLookObjectM (Preposition p) = throwError ("simple preposition "
-                                  <> show p <> "not evaluated in doLookObjectM")
--}
+
 errorSee :: Text -> GameStateExceptT ()
 errorSee = print 
 
 -- _objectLabelMap'  :: LabelToGIDListMapping Object Object
 
-evaluateATNounPhrase :: NounPhrase -> GameStateExceptT ()
-evaluateATNounPhrase (Noun noun) = do
+evaluateNounPhrase :: Preposition -> NounPhrase -> GameStateExceptT ()
+evaluateNounPhrase prep (Noun noun) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   objects <- throwMaybeM nopeErr 
@@ -42,11 +36,10 @@ evaluateATNounPhrase (Noun noun) = do
     then describeObjectM (snd . NonEmpty.head $ objects) 
           >> updateDisplayActionM displayActionM
     else do
+          mapM_ (updateContainerDescriptionM prep) objects
           clarifyWhich <- _clarifyWhich' <$> ask 
           clarifyWhich clarifyingLookSubjectM (Label noun, objects)
   where
     displayActionM = showPlayerActionM >> showEnvironmentM
     nopeErr = "You don't see a " <> toText noun <> " here."
-
-
-evaluateATNounPhrase _ = throwError "evaluate not completed"
+evaluateNounPhrase _ _ = throwError "evaluateATNounPhrase: evaluate not completed"

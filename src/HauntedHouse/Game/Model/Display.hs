@@ -149,10 +149,14 @@ describeContainmentM (Containment (These containedIn containedOn)) =
 
 describeContainedInM :: ContainedIn -> GameStateExceptT ()
 describeContainedInM (ContainedIn interface _) = do
+  print "DEBUG: describeContainedInM"
   case interface of
-    (ContainerInterface' cInterface) -> describeOpenStateM
-                                          (_openState' cInterface)
-                                          (_describe' cInterface)
+    (ContainerInterface' cInterface) -> do
+                                          let d = _describe' cInterface
+                                          print ("DEBUG: describe  " <> d) 
+                                          describeOpenStateM
+                                            (_openState' cInterface)
+                                            (_describe' cInterface)
     PortalInterface -> do
       updateEnvironmentM "This container has an unusual opening"
 

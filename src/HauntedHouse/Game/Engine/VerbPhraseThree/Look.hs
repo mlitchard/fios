@@ -49,10 +49,12 @@ updateContainerDescriptionM prep (gid,entity) = do
     cIn :: ContainedIn -> GameStateExceptT Nexus
     cIn  (ContainedIn (ContainerInterface' containerInterface) cmap) = do
       descriptionList <- makeDescriptionListM cmap
+      print ("DEBUG: prep is " <> show prep)
       description <- case prep of
                 AT -> pure $ openSeeShallow descriptionList
                 IN -> pure $ openSeeDeep descriptionList
                 _  -> throwError nonsenseMSG
+      print ("DEBUG: description is " <> description)
       let updatedCInterface = ContainerInterface'
                                 $ containerInterface{_describe' = description}
           container = Containment (This (ContainedIn updatedCInterface cmap))
@@ -65,10 +67,6 @@ updateContainerDescriptionM prep (gid,entity) = do
       where
         nonsenseInterfaceMSG = "Containers that are portals aren't handled yet"
 -- (ExceptT Text (StateT GameState IO)) 
-chooseLookFunction :: Preposition -> GameStateExceptT (Object -> GameStateExceptT ())
-chooseLookFunction AT = pure describeObjectM
-chooseLookFunction IN = pure describeObjectM
-chooseLookFunction prep = throwError ("Preposition unhandled :" <> show prep)
 
 {-
 data NounPhrase
