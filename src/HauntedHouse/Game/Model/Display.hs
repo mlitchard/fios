@@ -6,7 +6,7 @@ import Data.Map.Strict qualified (null, elems, toList, size)
 
 import HauntedHouse.Game.Model.World
 
-import HauntedHouse.Game.Model.Mapping (ContainerMap(..), NeighborMap (..))
+import HauntedHouse.Game.Model.Mapping (ContainerMap(..), NeighborMap (..), Label (..), GIDList)
 import HauntedHouse.Game.Object (getObjectM, getShortNameM)
 
 import Data.List.NonEmpty ( (<|), reverse, toList, singleton )
@@ -82,7 +82,7 @@ describeObjectM (Object shortName desc _ _ percept orientation mNexus) = do
     Perceptible -> updatePlayerActionM success
                     >> describeOrientationM preamble orientation
                     >> mapM_ updateEnvironmentM desc
-                    >> maybeNexusM mNexus
+                    >> maybeDescribeNexusM mNexus
   where
     success = "You look at the " <> shortName
     preamble = "The " <> shortName <> " is "
@@ -133,9 +133,9 @@ describeAnchoring roomAnchor = "In the " <> anchor
               $ Data.Text.splitOn "Anchor"
               $ toText roomAnchor
 
-maybeNexusM :: Maybe Nexus -> GameStateExceptT ()
-maybeNexusM Nothing = pass
-maybeNexusM (Just (Nexus nexus)) =
+maybeDescribeNexusM :: Maybe Nexus -> GameStateExceptT ()
+maybeDescribeNexusM Nothing = pass
+maybeDescribeNexusM (Just (Nexus nexus)) =
   either describeContainmentM describePortalM nexus
 
 describeContainmentM :: Containment -> GameStateExceptT ()
@@ -147,11 +147,11 @@ describeContainmentM (Containment (These containedIn containedOn)) =
   describeContainedInM containedIn >> describeContainedOnM containedOn
 
 describeContainedInM :: ContainedIn -> GameStateExceptT ()
-describeContainedInM (ContainedIn interface cmap) = do
+describeContainedInM (ContainedIn interface _) = do
   case interface of
     (ContainerInterface' cInterface) -> describeOpenStateM
                                           (_openState' cInterface)
-                                          cmap
+                                          (_describe' cInterface)
     PortalInterface -> do
       updateEnvironmentM "This container has an unusual opening"
 
@@ -171,17 +171,38 @@ describeContainedOnM (ContainedOn (ContainerMap cmap)) = do
     plural = "There's some things on it"
     singular = "There's something on it"
 
-describeOpenStateM :: OpenState -> ContainerMap Object -> GameStateExceptT ()
-describeOpenStateM openState (ContainerMap cmap ) = do
+describeOpenStateM :: OpenState -> Text -> GameStateExceptT ()
+describeOpenStateM openState describe = do
   case openState of
-    Open   -> updateEnvironmentM isOpenMsg >> updateEnvironmentM openSee
+    Open   -> do 
+                updateEnvironmentM isOpenMsg
+                updateEnvironmentM describe 
     Closed -> updateEnvironmentM isClosed
   where
     isClosed = "It's closed"
     isOpenMsg = "It's open"
-    openSee
-      | Data.Map.Strict.null cmap = "You don't see anything inside"
-      | otherwise  = "You see something inside"
+
+openSeeDeep :: ContainerMap Object -> Text
+openSeeDeep (ContainerMap cmap) = unlines $ fmap examineObjectsInside cList
+  where
+    cList = Data.Map.Strict.toList cmap
+
+howMany :: Int -> Text
+howMany 1 = "a"
+howMany 2 = "two"
+howMany 3 = "three"
+howMany _ = "several"
+
+examineObjectsInside :: (Label Object, GIDList Object) -> Text
+examineObjectsInside (Label name, gidList) = seen 
+  where
+    objectAmount = howMany (length gidList)
+    seen = "you see " <> objectAmount <> show name
+
+openSeeShallow :: ContainerMap Object -> Text
+openSeeShallow (ContainerMap cmap)
+  | Data.Map.Strict.null cmap = "You don't see anything inside"
+  | otherwise  = "You see something inside"
 
 describePortalM :: Portal -> GameStateExceptT ()
 describePortalM (Portal _ gid) = do

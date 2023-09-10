@@ -59,6 +59,7 @@ newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
 
 data ContainerInterface = ContainerInterface {
       _openState'    :: OpenState
+    , _describe'      :: Text 
     , _openAction'   :: GameStateExceptT ()
     , _closeAction'  :: GameStateExceptT ()
     , _lockAction'   :: GameStateExceptT ()
@@ -80,12 +81,11 @@ newtype ExitGIDMap
       deriving stock Show
 
 data FoundAnchoredTo = FoundAnchoredTo
-  {  _anchoredGID' :: GID Object
-  ,  _anchoredObject' :: Object
+  {  _anchoredObject' :: (GID Object,Object)
   ,  _proximityTo' :: (GID Object, Proximity)
   }
 instance Show FoundAnchoredTo where
-  show (FoundAnchoredTo gid _ (gid',prox)) =
+  show (FoundAnchoredTo (gid, _) (gid',prox)) =
     show gid <> " " <> show gid' <> " " <> show prox
     
 data GameState = GameState

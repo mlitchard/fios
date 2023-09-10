@@ -88,7 +88,7 @@ clarifyingLookSubjectM (ClarifyingClause1
                       $ mapMaybe (subObjectAgreement (fst obj))
                       $ Data.List.NonEmpty.toList subjects
   unless (length matchedSubjects == 1) $ throwError "several matched subjects"
-  describeObjectM $ (_anchoredObject' . head) matchedSubjects
+  describeObjectM $ (snd . _anchoredObject' . head) matchedSubjects
   primaryEvaluator <- _primaryEvaluator' <$> ask
   setEvaluatorM primaryEvaluator
   where
@@ -104,12 +104,12 @@ clarifyingLookObjectM :: Imperative -> GameStateExceptT ()
 clarifyingLookObjectM _ = throwError "clarifyingLookObjectM not implemented"
 
 subObjectAgreement :: GID Object -> FoundAnchoredTo -> Maybe FoundAnchoredTo
-subObjectAgreement gid' fat@(FoundAnchoredTo _ _ (gid,_))
+subObjectAgreement gid' fat@(FoundAnchoredTo _ (gid,_))
   | gid == gid' = Just fat
   | otherwise   = Nothing
 
 checkProximity :: PrepPhrase -> FoundAnchoredTo -> Bool
-checkProximity prep (FoundAnchoredTo _ _ (_,prox)) =
+checkProximity prep (FoundAnchoredTo _ (_,prox)) =
   matchesProximity (prox,prep)
 
 findInDirectObject :: PrepPhrase -> Noun
@@ -125,7 +125,7 @@ findNoun (NounPhrase3 _ np) = findNoun np
 findAnchoredTo :: (GID Object, Object) -> Maybe FoundAnchoredTo
 findAnchoredTo object = case object of
   (gid,obj@(Object _ _ _ _ _  (AnchoredTo' gp) _ )) -> Just $ FoundAnchoredTo
-                                                                gid obj gp
+                                                                (gid, obj) gp
   _ -> Nothing
 {-
 findAnchoredTo object@(_,Object _ _ _ _ _  (AnchoredTo' _) _) = Just object
