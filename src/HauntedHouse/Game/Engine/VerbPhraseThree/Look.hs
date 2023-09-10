@@ -9,7 +9,7 @@ import HauntedHouse.Clarifier (findNoun, findAnchoredTo, findInDirectObject, cla
 import HauntedHouse.Game.Model.Mapping (Label(..))
 import HauntedHouse.Game.Object (getObjectGIDPairM, getObjectsFromLabelM, setObjectMapM, getObjectM)
 import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Model.Display (describeObjectM, updateDisplayActionM, showPlayerActionM, showEnvironmentM, openSeeShallow, openSeeDeep, maybeDescribeNexusM)
+import HauntedHouse.Game.Model.Display (describeObjectM, updateDisplayActionM, showPlayerActionM, showEnvironmentM, openSeeShallow, openSeeDeep, maybeDescribeNexusM, makeDescriptionListM)
 import Data.These
 import HauntedHouse.Game.Model.GID
 
@@ -48,9 +48,10 @@ updateContainerDescriptionM prep (gid,entity) = do
     cInOn = throwError "cInOn not implemented"
     cIn :: ContainedIn -> GameStateExceptT Nexus
     cIn  (ContainedIn (ContainerInterface' containerInterface) cmap) = do
+      descriptionList <- makeDescriptionListM cmap
       description <- case prep of
-                AT -> pure $ openSeeShallow cmap
-                IN -> pure $ openSeeDeep cmap
+                AT -> pure $ openSeeShallow descriptionList
+                IN -> pure $ openSeeDeep descriptionList
                 _  -> throwError nonsenseMSG
       let updatedCInterface = ContainerInterface'
                                 $ containerInterface{_describe' = description}

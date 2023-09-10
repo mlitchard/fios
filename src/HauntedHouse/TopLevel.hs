@@ -7,12 +7,11 @@ import System.Console.Haskeline
         (InputT, getInputLine, runInputT, defaultSettings)
 import qualified Data.Char (toUpper)
 import HauntedHouse.Recognizer (Imperative, imperative, parser, fullParses)
-import Control.Monad.Except (throwError)
 import HauntedHouse.Build.GameState (buildGameState)
 import qualified Data.Text
 import HauntedHouse.Game.Narration (displaySceneM)
 import HauntedHouse.Game.Engine (catchEngine)
-import HauntedHouse.Clarifier (doReportM)
+import HauntedHouse.Clarifier (doReportM, clearReportM)
 
 data GameInput
     = MkGameInput Text
@@ -23,7 +22,7 @@ start :: GameStateExceptT ()
 start = buildGameState >> topLevel
 
 topLevel :: GameStateExceptT ()
-topLevel = get >>= _displayAction' >> inputAction
+topLevel = get >>= _displayAction' >> clearReportM >> inputAction
 
 inputAction :: GameStateExceptT ()
 inputAction = do
@@ -38,12 +37,6 @@ inputAction = do
           Right tokens' -> either catchBadParseM catchEngine (parseTokens tokens')
                             >> topLevel
 
-{-
-catchEngine :: Imperative -> GameStateExceptT ()
-catchEngine parsed = do
-  engine <- _evaluator' <$> get
-  engine parsed `catchError` doReportM
--}
 catchBadParseM :: Text -> GameStateExceptT ()
 catchBadParseM = doReportM
 

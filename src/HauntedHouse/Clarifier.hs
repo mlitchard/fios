@@ -30,6 +30,10 @@ setReportM report' = do
   currentReport <- _report' <$> get
   modify' (\gs -> gs{_report' = currentReport <> [report']})
 
+clearReportM :: GameStateExceptT () 
+clearReportM = do 
+  modify' (\gs -> gs{_report' = mempty})
+  
 samePageCheckM :: Label Object -> Label Object -> GameStateExceptT ()
 samePageCheckM label label'
   | label == label' = pass

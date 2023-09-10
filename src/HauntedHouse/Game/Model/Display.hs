@@ -2,12 +2,12 @@
 {-# OPTIONS_GHC -Wno-type-defaults #-}
 module HauntedHouse.Game.Model.Display where
 
-import Data.Map.Strict qualified (null, elems, toList, size)
+import Data.Map.Strict qualified (elems, toList, size)
 
 import HauntedHouse.Game.Model.World
 
-import HauntedHouse.Game.Model.Mapping (ContainerMap(..), NeighborMap (..), Label (..), GIDList)
-import HauntedHouse.Game.Object (getObjectM, getShortNameM)
+import HauntedHouse.Game.Model.Mapping (ContainerMap(..), Label (..))
+import HauntedHouse.Game.Object (getShortNameM)
 
 import Data.List.NonEmpty ( (<|), reverse, toList, singleton )
 
@@ -18,6 +18,7 @@ import Data.These (These(..))
 import qualified Data.Text
 import qualified Data.List
 import HauntedHouse.Game.World (getExitM)
+import Data.Text (toLower)
 
 updatePlayerActionM :: Text -> GameStateExceptT ()
 updatePlayerActionM action = do
@@ -174,18 +175,17 @@ describeContainedOnM (ContainedOn (ContainerMap cmap)) = do
 describeOpenStateM :: OpenState -> Text -> GameStateExceptT ()
 describeOpenStateM openState describe = do
   case openState of
-    Open   -> do 
+    Open   -> do
                 updateEnvironmentM isOpenMsg
-                updateEnvironmentM describe 
+                updateEnvironmentM describe
     Closed -> updateEnvironmentM isClosed
   where
     isClosed = "It's closed"
     isOpenMsg = "It's open"
 
-openSeeDeep :: ContainerMap Object -> Text
-openSeeDeep (ContainerMap cmap) = unlines $ fmap examineObjectsInside cList
-  where
-    cList = Data.Map.Strict.toList cmap
+openSeeDeep :: Maybe (NonEmpty (Label Object, NonEmpty Text)) -> Text
+openSeeDeep (Just cList) = unlines $ fmap examineObjectsInside (Data.List.NonEmpty.toList cList)
+openSeeDeep Nothing = "It's empty"
 
 howMany :: Int -> Text
 howMany 1 = "a"
@@ -193,16 +193,38 @@ howMany 2 = "two"
 howMany 3 = "three"
 howMany _ = "several"
 
-examineObjectsInside :: (Label Object, GIDList Object) -> Text
-examineObjectsInside (Label name, gidList) = seen 
+examineObjectsInside :: (Label Object, NonEmpty Text) -> Text
+examineObjectsInside (Label name, shortDescList) = preamble <> details
   where
-    objectAmount = howMany (length gidList)
-    seen = "you see " <> objectAmount <> show name
+    objectAmount = length shortDescList
+    objectAmountText = howMany objectAmount 
+    preamble
+      | objectAmount > 1 = pluralSeen
+      | otherwise = "you see a "
+    pluralSeen = "you see " 
+                  <> objectAmountText 
+                  <> " " 
+                  <> (toLower . show $ name) <> "\n"
+    details = unlines $ Data.List.NonEmpty.toList shortDescList
 
-openSeeShallow :: ContainerMap Object -> Text
-openSeeShallow (ContainerMap cmap)
-  | Data.Map.Strict.null cmap = "You don't see anything inside"
-  | otherwise  = "You see something inside"
+makeDescriptionListM :: ContainerMap Object
+                          -> GameStateExceptT
+                              (Maybe (NonEmpty (Label Object, NonEmpty Text)))
+makeDescriptionListM (ContainerMap cmap) = do
+  case cList' of
+    Just cList -> Just <$> mapM makeShortNameListM cList
+    Nothing -> pure Nothing
+  where
+    makeShortNameListM :: (Label Object, NonEmpty (GID Object))
+                          -> GameStateExceptT (Label Object,NonEmpty Text)
+    makeShortNameListM (label, gids) = do
+      shortNames <- mapM getShortNameM gids
+      pure (label, shortNames)
+    cList' = nonEmpty $ Data.Map.Strict.toList cmap
+
+openSeeShallow :: Maybe (NonEmpty (Label Object, NonEmpty Text)) -> Text
+openSeeShallow (Just _) = "you see something inside"
+openSeeShallow Nothing  = "You don't see anything inside"
 
 describePortalM :: Portal -> GameStateExceptT ()
 describePortalM (Portal _ gid) = do
