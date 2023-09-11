@@ -1,13 +1,15 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module HauntedHouse.Game.Object where
 
-import qualified Data.Map.Strict (lookup, insert, null, insertWith, singleton, Map)
+import qualified Data.Map.Strict (lookup, insert, insertWith)
 import HauntedHouse.Game.Model.Mapping
 
 import HauntedHouse.Game.Model.GID (GID (GID))
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.Condition
 import qualified Data.List.NonEmpty
+import Data.These
+import Control.Monad.Except (MonadError(..))
 
 getObjectM :: GID Object -> GameStateExceptT Object
 getObjectM gid@(GID gid') = do
@@ -50,7 +52,8 @@ getObjectGIDPairM gid = do
   object <- getObjectM gid
   pure (gid, object)
 
-getObjectGIDsFromLabelM :: Label Object -> GameStateExceptT (NonEmpty (GID Object))
+getObjectGIDsFromLabelM :: Label Object 
+                            -> GameStateExceptT (NonEmpty (GID Object))
 getObjectGIDsFromLabelM objectLabel@(Label obj) = do
   objectLabelMap <- unwrapMap <$> (getLocationM =<< getLocationIdM)
   throwMaybeM notFound $ Data.Map.Strict.lookup objectLabel objectLabelMap
@@ -69,8 +72,28 @@ getShortNameM gid = _shortName' <$> getObjectM gid
 capturePerceptibleM :: GIDList Object
                         -> GameStateExceptT (Maybe (NonEmpty (GID Object,Object)))
 capturePerceptibleM objectList = do
-  nonEmpty . mfilter (\(_, obj) -> isPercieved obj) 
+  nonEmpty . mfilter (\(_, obj) -> isPercieved obj)
     <$> mapM getObjectGIDPairM (Data.List.NonEmpty.toList objectList)
+
+getContainerInterfaceM :: Object -> GameStateExceptT ContainerInterface
+getContainerInterfaceM entity = do
+  nexus <- throwMaybeM notContainerMSG (_mNexus' entity)
+  containment <- throwRightM notContainerMSG . _unNexus' $ nexus 
+  case _unContainment' containment of
+    (This (ContainedIn interface _)) -> throwMaybeM portalMSG 
+                                      $ getContainerInterface interface
+    (That _) -> throwError notContainedInMSG
+    (These (ContainedIn interface _) _) -> throwMaybeM portalMSG 
+                                            $ getContainerInterface interface
+  where
+    portalMSG = "getContainerInterface error: Portals don't work that way"
+    notContainedInMSG = "getContainerInterface error: can't put things in this"
+    notContainerMSG = "getContainerInterface error: "
+                        <> "called on an entity that isn't a container."
+
+getContainerInterface :: Interface -> Maybe ContainerInterface 
+getContainerInterface (ContainerInterface' cInterface) = Just cInterface
+getContainerInterface PortalInterface                  = Nothing
 
 isPercieved :: Object -> Bool
 isPercieved (Object _ _ _ _ Perceptible _ _) = True

@@ -16,8 +16,8 @@ import HauntedHouse.Game.Model.Condition (Proximity (..))
 import HauntedHouse.Tokenizer.Data (Lexeme(..))
 import Prelude hiding (show)
 import HauntedHouse.Recognizer (NounPhrase(..))
-import HauntedHouse.Game.Object (getObjectsFromLabelM, getObjectM)
--- import HauntedHouse.Game.Engine (primaryEngine)
+import HauntedHouse.Game.Object (getObjectsFromLabelM, getObjectM, getContainerInterfaceM)
+import HauntedHouse.Game.World (findAnchoredTo)
 
 doReportM :: Text -> GameStateExceptT ()
 doReportM report' = do
@@ -66,13 +66,15 @@ objectOrientation :: Object -> GameStateExceptT ()
 objectOrientation (Object shortName _ _ _ _ orientation _) =
   describeOrientationM ("The " <> shortName) orientation
 
+checkProximity :: PrepPhrase -> FoundAnchoredTo -> Bool
+checkProximity prep (FoundAnchoredTo _ (_,prox)) =
+  matchesProximity (prox,prep)
+
 clarifyNotThere :: GameStateExceptT ()
 clarifyNotThere = throwError "You don't see that here"
 
-clarifyingLookSubjectM :: Preposition -> Imperative -> GameStateExceptT ()
-clarifyingLookSubjectM whatPrep (ClarifyingClause1
-                        (NounPhrase1 _ (Noun sub))
-                        prep) = do
+clarifyingM :: Imperative -> GameStateExceptT () 
+clarifyingM (ClarifyingClause1 (NounPhrase1 _ (Noun sub)) prep) = do
   clarified <- throwMaybeM noClarityMSG . _clarification' =<< get
   samePageCheckM (Label sub) (_clarifyingLabel' clarified)
   objectListIobj <- getObjectsFromLabelM (Label (findInDirectObject prep))
@@ -80,7 +82,7 @@ clarifyingLookSubjectM whatPrep (ClarifyingClause1
         $ nonEmpty $ filter (checkProximity prep) $ catMaybes
         $ Data.List.NonEmpty.toList
         $ Data.List.NonEmpty.map findAnchoredTo (_gidObjectPairs' clarified)
-
+  
   obj <- if length objectListIobj == 1
           then pure $ head objectListIobj
           else throwError "error with length objectListIobj"
@@ -89,35 +91,48 @@ clarifyingLookSubjectM whatPrep (ClarifyingClause1
                       $ mapMaybe (subObjectAgreement (fst obj))
                       $ Data.List.NonEmpty.toList subjects
   unless (length matchedSubjects == 1) $ throwError "several matched subjects"
-  let gsub@(gid,matchedSubject) = (_anchoredObject' . head) matchedSubjects
-  updateContainerDescriptionM whatPrep gsub
-  updatedSubject <- getObjectM gid
-  maybeDescribeNexusM (_mNexus' updatedSubject)
-  updateDisplayActionM 
-    (showPlayerActionM >> showEnvironmentM >> describeObjectM matchedSubject)
-  
-  primaryEvaluator <- _primaryEvaluator' <$> ask
-  setEvaluatorM primaryEvaluator
+  let gsub = (_anchoredObject' . head) matchedSubjects
+  modify'(\gs -> gs{_clarifiedDirectObject' = Just gsub})
   where
     tryAgain = "Try that again"
     noClarityMSG = "Programmer Error: No clarifying object list"
-clarifyingLookSubjectM _ imp@(ImperativeClause _) = do
-                                                    print ("primary engine to evaluate" :: Text)
-                                                    primaryEngine <- _primaryEvaluator' <$> ask
-                                                    primaryEngine imp
-clarifyingLookSubjectM _ _ = throwError "clarifyingLook implementation unfinished"
 
-clarifyingLookObjectM :: Imperative -> GameStateExceptT () 
-clarifyingLookObjectM _ = throwError "clarifyingLookObjectM not implemented"
+clarifyingM _ = throwError "clarifyingM implimentation not completed"
+
+clarifyingLookDirectObjectM :: Preposition -> Imperative -> GameStateExceptT ()
+clarifyingLookDirectObjectM whatPrep imperative = do
+  clarifyingM imperative
+  gsub@(gid,_) <- throwMaybeM errMSG . _clarifiedDirectObject' =<< get
+  updateContainerDescriptionM whatPrep gsub
+  updatedDirectObject <- getObjectM gid
+  maybeDescribeNexusM (_mNexus' updatedDirectObject)
+  updateDisplayActionM 
+    (showPlayerActionM >> showEnvironmentM >> describeObjectM updatedDirectObject)
+  
+  primaryEvaluator <- _primaryEvaluator' <$> ask
+  setEvaluatorM primaryEvaluator
+  where 
+    errMSG = "clarifyingLookDirectObjectM error: missing clarified direct object"
+
+
+clarifyingLookIndirectObjectM :: Imperative -> GameStateExceptT () 
+clarifyingLookIndirectObjectM _ = throwError "clarifyingLookObjectM not implemented"
+
+clarifyingOpenDirectObjectM :: Imperative -> GameStateExceptT () 
+clarifyingOpenDirectObjectM imperative = do
+  clarifyingM imperative
+  gsub@(gid,directObject) <- throwMaybeM errMSG . _clarifiedDirectObject' 
+                              =<< get
+  interface <- getContainerInterfaceM directObject
+  _openAction' interface
+  pass
+  where 
+    errMSG = "clarifyingOpenDirectObjectM error: missing clarified direct object"
 
 subObjectAgreement :: GID Object -> FoundAnchoredTo -> Maybe FoundAnchoredTo
 subObjectAgreement gid' fat@(FoundAnchoredTo _ (gid,_))
   | gid == gid' = Just fat
   | otherwise   = Nothing
-
-checkProximity :: PrepPhrase -> FoundAnchoredTo -> Bool
-checkProximity prep (FoundAnchoredTo _ (_,prox)) =
-  matchesProximity (prox,prep)
 
 findInDirectObject :: PrepPhrase -> Noun
 findInDirectObject (PrepPhrase1 _ np) = findNoun np
@@ -129,11 +144,6 @@ findNoun (NounPhrase1 _ np) = findNoun np
 findNoun (NounPhrase3 _ np) = findNoun np
 
   -- | AnchoredTo' (GID Object, Proximity) 
-findAnchoredTo :: (GID Object, Object) -> Maybe FoundAnchoredTo
-findAnchoredTo object = case object of
-  (gid,obj@(Object _ _ _ _ _  (AnchoredTo' gp) _ )) -> Just $ FoundAnchoredTo
-                                                                (gid, obj) gp
-  _ -> Nothing
 
 isAnchoredTo :: Orientation -> Bool
 isAnchoredTo (AnchoredTo' _) = True

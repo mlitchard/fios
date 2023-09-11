@@ -12,7 +12,6 @@ import Data.These (These)
 import qualified Data.Map.Strict
 import qualified Data.Text
 import Control.Monad.Except (MonadError(throwError))
-import HauntedHouse.Tokenizer (Lexeme)
 -- import qualified Control.Monad.Reader (ReaderT)
 --type ConfigT a = Control.Monad.Reader.ReaderT Parsers a 
 
@@ -28,12 +27,14 @@ type ClarifyWhich = (Imperative -> GameStateExceptT ())
                       -> (Label Object, NonEmpty (GID Object, Object)) 
                       -> GameStateExceptT ()
 
+
 data Config = Config {
   _primaryEvaluator'         :: Imperative -> GameStateExceptT () 
   , _clarifyWhich'           :: ClarifyWhich                          
   , _evalVerbNounPhrase'     :: (Verb, NounPhrase) -> GameStateExceptT ()
   , _evalVerbPrepPhrase'     :: (Verb, PrepPhrase) -> GameStateExceptT ()
-  , _evalVerbTwoPrepPhrases' :: EvalVerbThree                                      
+  , _evalVerbTwoPrepPhrases' :: EvalVerbThree   
+  , _evalVerbPhraseSeven' :: EvalVerbSeven                                   
 }
 
 newtype Containment = Containment
@@ -72,6 +73,8 @@ instance Show ContainerInterface where
 type EvalVerbThree = (Verb, PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 newtype Exit = Exit { _toDestination' :: GID Location} deriving stock Show
 
+type EvalVerbSeven = (Verb, NounPhrase, PrepPhrase) -> GameStateExceptT ()
+
 newtype ExitGIDDataMap = ExitGIDDataMap {
   _unExitGIDDataMap' :: GIDToDataMapping Exit
   } deriving stock Show
@@ -89,14 +92,15 @@ instance Show FoundAnchoredTo where
     show gid <> " " <> show gid' <> " " <> show prox
     
 data GameState = GameState
-  { _world'         :: World
-  , _report'        :: [Text]
-  , _player'        :: Player
-  , _narration'     :: Narration
-  , _verbosity'     :: Verbosity
-  , _evaluator'     :: Imperative -> GameStateExceptT () 
-  , _clarification' :: Maybe Clarification
-  , _displayAction' :: GameStateExceptT ()
+  { _world'                 :: World
+  , _report'                :: [Text]
+  , _player'                :: Player
+  , _narration'             :: Narration
+  , _verbosity'             :: Verbosity
+  , _evaluator'             :: Imperative -> GameStateExceptT () 
+  , _clarification'         :: Maybe Clarification
+  , _clarifiedDirectObject' :: Maybe (GID Object, Object)
+  , _displayAction'         :: GameStateExceptT ()
   }
 
 data Clarification = Clarification {
@@ -280,8 +284,8 @@ throwRightM errmsg (Right _) = throwError errmsg
 
 setVerbosityM :: GameStateExceptT ()
 setVerbosityM = do
-  (verbosity,report) <- setVerbose . _verbosity' <$> get
-  liftIO $ print report
+  (verbosity,report') <- setVerbose . _verbosity' <$> get
+  liftIO $ print report'
   modify' (\gs -> gs{_verbosity' = verbosity})
   pass
 

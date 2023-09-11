@@ -62,7 +62,8 @@ containedIn = ContainedIn {
 containerInterface :: ContainerInterface
 containerInterface = ContainerInterface {
       _openState'     = Closed 
-    , _openAction'    = pass 
+    , _describe' = mempty
+    , _openAction'    = print ("This is where open happens" :: Text) 
     , _closeAction'   = pass 
     , _lockAction'    = pass 
     , _unlockAction'  = pass

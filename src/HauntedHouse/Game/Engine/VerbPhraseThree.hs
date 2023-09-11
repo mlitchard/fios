@@ -6,5 +6,6 @@ import Control.Monad.Except (MonadError(..))
 import HauntedHouse.Game.Engine.VerbPhraseThree.Look 
 
 verbPhraseThree :: (Verb,PrepPhrase, PrepPhrase) -> GameStateExceptT ()
-verbPhraseThree (LOOK,prep, prep') = doLookTwoPrepM (prep, prep')
+verbPhraseThree (LOOK,whatP, whereP) = doLookTwoPrepM (whatP, whereP)
+
 verbPhraseThree _ = throwError "verbPhraseThree implementation incomplete"

@@ -28,7 +28,11 @@ primaryEvaluator (ImperativeClause (VerbPhrase2 verb prepPhrase)) = do
   eval (verb,prepPhrase)
 primaryEvaluator (ImperativeClause (VerbPhrase3 verb prepOne prepTwo)) = do 
   eval <- _evalVerbTwoPrepPhrases' <$> ask
-  eval (verb,prepOne,prepTwo) 
+  eval (verb,prepOne,prepTwo)
+primaryEvaluator (ImperativeClause (VerbPhrase7 verb np pp)) = do 
+  eval <- _evalVerbPhraseSeven' <$> ask 
+  eval (verb,np,pp)
+
 primaryEvaluator err = do 
                           print (show err)
                           throwError "You need to be more clear"

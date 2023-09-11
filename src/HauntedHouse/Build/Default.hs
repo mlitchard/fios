@@ -16,7 +16,7 @@ import HauntedHouse.Clarifier (clarifyWhich)
 import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator (evalVerbNounPhrase)
 import HauntedHouse.Game.Engine.VerbPhraseTwo (evalVerbPrepPhrase)
 import HauntedHouse.Game.Engine.VerbPhraseThree (verbPhraseThree)
-
+import HauntedHouse.Game.Engine.VerbPhraseSeven 
 defaultGameState :: GameState
 defaultGameState = GameState
   { _world' = defaultWorld
@@ -26,6 +26,7 @@ defaultGameState = GameState
   , _verbosity' = Loud
   , _displayAction' = defaultDisplayAction
   , _clarification' = Nothing
+  , _clarifiedDirectObject'  = Nothing
   , _evaluator' = primaryEvaluator
   }
 {-
@@ -44,6 +45,7 @@ config = Config {
   , _evalVerbNounPhrase' = evalVerbNounPhrase 
   , _evalVerbPrepPhrase' = evalVerbPrepPhrase   
   , _evalVerbTwoPrepPhrases' = verbPhraseThree 
+  , _evalVerbPhraseSeven' = verbPhraseSeven
 }
 defaultDisplayAction :: GameStateExceptT ()
 defaultDisplayAction = 

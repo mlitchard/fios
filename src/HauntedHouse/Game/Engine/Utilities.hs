@@ -13,6 +13,7 @@ prepToProximity FRONT = Just PlacedFront
 prepToProximity BEHIND = Just PlacedBehind 
 prepToProximity _ = Nothing   
 
+
 {-
 data PrepPhrase
   = PrepPhrase1 Preposition NounPhrase

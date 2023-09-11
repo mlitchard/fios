@@ -1,7 +1,6 @@
 module HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look where
 import HauntedHouse.Recognizer.WordClasses
         (PrepPhrase (..), NounPhrase (..), Preposition)
-import HauntedHouse.Tokenizer (Lexeme (..))
 import Control.Monad.Except (throwError, MonadError (..))
 import HauntedHouse.Game.Model.Mapping
     ( LabelToGIDListMapping(..), Label (..) )
@@ -13,19 +12,19 @@ import HauntedHouse.Game.Model.Display
         (describeObjectM, showPlayerActionM, showEnvironmentM
         , updateDisplayActionM)
 import qualified Relude.List.NonEmpty as NonEmpty
-import HauntedHouse.Clarifier (clarifyingLookSubjectM)
+import HauntedHouse.Recognizer (Imperative)
+import HauntedHouse.Clarifier (clarifyingLookDirectObjectM)
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
-doLookObjectM (PrepPhrase1 prep np) = evaluateNounPhrase prep np 
-doLookObjectM _                   = throwError "doLookObject implementation incomplete"
+doLookObjectM (PrepPhrase1 prep np) = 
+        evaluateNounPhrase (clarifyingLookDirectObjectM prep) np 
+doLookObjectM _                     = throwError "doLookObject implementation incomplete"
 
 errorSee :: Text -> GameStateExceptT ()
 errorSee = print 
 
--- _objectLabelMap'  :: LabelToGIDListMapping Object Object
-
-evaluateNounPhrase :: Preposition -> NounPhrase -> GameStateExceptT ()
-evaluateNounPhrase prep (Noun noun) = do
+evaluateNounPhrase :: (Imperative -> GameStateExceptT ()) -> NounPhrase -> GameStateExceptT ()
+evaluateNounPhrase clarifier (Noun noun) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   objects <- throwMaybeM nopeErr 
@@ -37,7 +36,7 @@ evaluateNounPhrase prep (Noun noun) = do
     else do
        --   mapM_ (updateContainerDescriptionM prep) objects
           clarifyWhich <- _clarifyWhich' <$> ask 
-          clarifyWhich (clarifyingLookSubjectM prep) (Label noun, objects)
+          clarifyWhich clarifier (Label noun, objects)
   where
     displayActionM = showPlayerActionM >> showEnvironmentM
     nopeErr = "You don't see a " <> toText noun <> " here."
