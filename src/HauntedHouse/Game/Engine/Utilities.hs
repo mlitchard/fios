@@ -3,17 +3,6 @@ import HauntedHouse.Game.Model.Condition (Proximity (..))
 import HauntedHouse.Tokenizer (Lexeme (..))
 import HauntedHouse.Recognizer
 
-{-
-data Proximity
-  = PlacedOn
-  | PlacedUnder
-  | PlacedAbove
-  | PlacedLeft
-  | PlacedRight
-  | PlacedFront 
-  | PlacedBack
-      deriving stock (Eq,Ord,Show)
--}
 prepToProximity :: Lexeme -> Maybe Proximity 
 prepToProximity ON = Just PlacedOn
 prepToProximity UNDER = Just PlacedUnder
@@ -25,9 +14,13 @@ prepToProximity BEHIND = Just PlacedBehind
 prepToProximity _ = Nothing   
 
 {-
-data NounPhrase
-  = NounPhrase1 Determiner NounPhrase
-  | NounPhrase3 Number NounPhrase
-  | Noun Noun
+data PrepPhrase
+  = PrepPhrase1 Preposition NounPhrase
+  | PrepPhrase2 Preposition  Determiner AdjPhrase NounPhrase
+  -- | Preposition Preposition
   deriving stock (Show, Eq, Ord)
 -}
+prepositionFromPhrase :: PrepPhrase -> Preposition 
+prepositionFromPhrase (PrepPhrase1 prep _)      = prep 
+prepositionFromPhrase (PrepPhrase2 prep _ _ _)  = prep
+

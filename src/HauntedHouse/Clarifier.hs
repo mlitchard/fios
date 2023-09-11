@@ -7,17 +7,18 @@ import HauntedHouse.Game.Model.Mapping (Label (..))
 import HauntedHouse.Tokenizer (Lexeme)
 import HauntedHouse.Game.Model.Display
         (describeOrientationM, updateEnvironmentM, showEnvironmentM
-        , showPlayerActionM, updateDisplayActionM, describeObjectM)
+        , showPlayerActionM, updateDisplayActionM, describeObjectM, updateContainerDescriptionM, maybeDescribeNexusM)
 import Data.Text (toLower)
 import HauntedHouse.Recognizer.WordClasses
-        (Imperative (..) , PrepPhrase (..), Noun)
+        (Imperative (..) , PrepPhrase (..), Noun, Preposition)
 import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Model.Condition (Proximity (..))
 import HauntedHouse.Tokenizer.Data (Lexeme(..))
 import Prelude hiding (show)
 import Text.Show (Show(..))
 import HauntedHouse.Recognizer (NounPhrase(..))
-import HauntedHouse.Game.Object (getObjectsFromLabelM)
+import HauntedHouse.Game.Object (getObjectsFromLabelM, getObjectM)
+import HauntedHouse.Game.Engine.Utilities (prepositionFromPhrase)
 -- import HauntedHouse.Game.Engine (primaryEngine)
 
 doReportM :: Text -> GameStateExceptT ()
@@ -70,14 +71,13 @@ objectOrientation (Object shortName _ _ _ _ orientation _) =
 clarifyNotThere :: GameStateExceptT ()
 clarifyNotThere = throwError "You don't see that here"
 
-clarifyingLookSubjectM :: Imperative -> GameStateExceptT ()
-clarifyingLookSubjectM (ClarifyingClause1
+clarifyingLookSubjectM :: Preposition -> Imperative -> GameStateExceptT ()
+clarifyingLookSubjectM whatPrep (ClarifyingClause1
                         (NounPhrase1 _ (Noun sub))
                         prep) = do
   clarified <- throwMaybeM noClarityMSG . _clarification' =<< get
   samePageCheckM (Label sub) (_clarifyingLabel' clarified)
   objectListIobj <- getObjectsFromLabelM (Label (findInDirectObject prep))
-  mapM_ (\(gid,obj) -> print (_shortName' obj) >> print gid) objectListIobj -- Remove DEBUG
   subjects <- throwMaybeM tryAgain
         $ nonEmpty $ filter (checkProximity prep) $ catMaybes
         $ Data.List.NonEmpty.toList
@@ -92,17 +92,28 @@ clarifyingLookSubjectM (ClarifyingClause1
                       $ mapMaybe (subObjectAgreement (fst obj))
                       $ Data.List.NonEmpty.toList subjects
   unless (length matchedSubjects == 1) $ throwError "several matched subjects"
-  describeObjectM $ (snd . _anchoredObject' . head) matchedSubjects
+  let gsub@(gid,matchedSubject) = (_anchoredObject' . head) matchedSubjects
+  {-
+    updateContainerDescriptionM prep gsub
+  updatedSubject <- getObjectM gid
+  maybeDescribeNexusM (_mNexus' updatedSubject)
+  updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
+  -}
+  updateContainerDescriptionM whatPrep gsub
+  updatedSubject <- getObjectM gid
+  maybeDescribeNexusM (_mNexus' updatedSubject)
+  updateDisplayActionM (showPlayerActionM >> showEnvironmentM >> describeObjectM matchedSubject)
+  
   primaryEvaluator <- _primaryEvaluator' <$> ask
   setEvaluatorM primaryEvaluator
   where
     tryAgain = "Try that again"
     noClarityMSG = "Programmer Error: No clarifying object list"
-clarifyingLookSubjectM imp@(ImperativeClause _) = do
+clarifyingLookSubjectM _ imp@(ImperativeClause _) = do
                                                     print ("primary engine to evaluate" :: Text)
                                                     primaryEngine <- _primaryEvaluator' <$> ask
                                                     primaryEngine imp
-clarifyingLookSubjectM _ = throwError "clarifyingLook implementation unfinished"
+clarifyingLookSubjectM _ _ = throwError "clarifyingLook implementation unfinished"
 
 clarifyingLookObjectM :: Imperative -> GameStateExceptT () 
 clarifyingLookObjectM _ = throwError "clarifyingLookObjectM not implemented"

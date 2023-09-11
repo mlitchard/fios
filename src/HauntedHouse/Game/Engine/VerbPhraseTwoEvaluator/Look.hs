@@ -14,7 +14,6 @@ import HauntedHouse.Game.Model.Display
         , updateDisplayActionM)
 import qualified Relude.List.NonEmpty as NonEmpty
 import HauntedHouse.Clarifier (clarifyingLookSubjectM)
-import HauntedHouse.Game.Engine.VerbPhraseThree.Look (updateContainerDescriptionM)
 
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
 doLookObjectM (PrepPhrase1 prep np) = evaluateNounPhrase prep np 
@@ -36,9 +35,9 @@ evaluateNounPhrase prep (Noun noun) = do
     then describeObjectM (snd . NonEmpty.head $ objects) 
           >> updateDisplayActionM displayActionM
     else do
-          mapM_ (updateContainerDescriptionM prep) objects
+       --   mapM_ (updateContainerDescriptionM prep) objects
           clarifyWhich <- _clarifyWhich' <$> ask 
-          clarifyWhich clarifyingLookSubjectM (Label noun, objects)
+          clarifyWhich (clarifyingLookSubjectM prep) (Label noun, objects)
   where
     displayActionM = showPlayerActionM >> showEnvironmentM
     nopeErr = "You don't see a " <> toText noun <> " here."

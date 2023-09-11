@@ -7,7 +7,7 @@ import Data.Map.Strict qualified (elems, toList, size)
 import HauntedHouse.Game.Model.World
 
 import HauntedHouse.Game.Model.Mapping (ContainerMap(..), Label (..))
-import HauntedHouse.Game.Object (getShortNameM)
+import HauntedHouse.Game.Object (getShortNameM, setObjectMapM)
 
 import Data.List.NonEmpty ( (<|), reverse, toList, singleton )
 
@@ -19,6 +19,9 @@ import qualified Data.Text
 import qualified Data.List
 import HauntedHouse.Game.World (getExitM)
 import Data.Text (toLower)
+import HauntedHouse.Tokenizer.Data (Lexeme(..))
+import HauntedHouse.Recognizer (Preposition)
+import qualified Data.Either.Combinators
 
 updatePlayerActionM :: Text -> GameStateExceptT ()
 updatePlayerActionM action = do
@@ -76,6 +79,46 @@ updateDisplayActionM :: GameStateExceptT () -> GameStateExceptT ()
 updateDisplayActionM displayAction = do
   modify' (\gs -> gs{_displayAction'  = displayAction})
 
+updateContainerDescriptionM :: Preposition
+                                -> (GID Object,Object)
+                                -> GameStateExceptT ()
+updateContainerDescriptionM prep (gid,entity) = do
+  (Nexus nexus) <- throwMaybeM notContainerMSG (_mNexus' entity)
+  Data.Either.Combinators.whenRight nexus (\_ -> throwError notContainerMSG)
+  Data.Either.Combinators.whenLeft nexus (\(Containment container) ->
+    do
+      case container of
+        (This containedIn) -> cIn containedIn >>= updateNexusM
+        (That _) -> cOn
+        (These _ _) -> cInOn
+    )
+  pass
+  where
+    updateNexusM :: Nexus -> GameStateExceptT ()
+    updateNexusM nexus = do
+      setObjectMapM gid (entity {_mNexus' = Just nexus})
+    notContainerMSG = _shortName' entity <> "isn't a container. Fix your shit"
+    cOn = throwError "cOn not implemented"
+    cInOn = throwError "cInOn not implemented"
+    cIn :: ContainedIn -> GameStateExceptT Nexus
+    cIn  (ContainedIn (ContainerInterface' containerInterface) cmap) = do
+      descriptionList <- makeDescriptionListM cmap
+      description <- case prep of
+                AT -> pure $ openSeeShallow descriptionList
+                IN -> pure $ openSeeDeep descriptionList
+                _  -> throwError nonsenseMSG
+      let updatedCInterface = ContainerInterface'
+                                $ containerInterface{_describe' = description}
+          container = Containment (This (ContainedIn updatedCInterface cmap))
+      pure $ Nexus (Left container)
+      where
+        nonsenseMSG :: Text
+        nonsenseMSG = "Nonsense Detected: updateContainerDescriptionM "
+                        <> show prep
+    cIn (ContainedIn PortalInterface _) = throwError nonsenseInterfaceMSG
+      where
+        nonsenseInterfaceMSG = "Containers that are portals aren't handled yet"
+        
 describeObjectM :: Object -> GameStateExceptT ()
 describeObjectM (Object shortName desc _ _ percept orientation mNexus) = do
   case percept of
@@ -149,11 +192,8 @@ describeContainmentM (Containment (These containedIn containedOn)) =
 
 describeContainedInM :: ContainedIn -> GameStateExceptT ()
 describeContainedInM (ContainedIn interface _) = do
-  print "DEBUG: describeContainedInM"
   case interface of
     (ContainerInterface' cInterface) -> do
-                                          let d = _describe' cInterface
-                                          print ("DEBUG: describe  " <> d) 
                                           describeOpenStateM
                                             (_openState' cInterface)
                                             (_describe' cInterface)
