@@ -15,10 +15,8 @@ import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Model.Condition (Proximity (..))
 import HauntedHouse.Tokenizer.Data (Lexeme(..))
 import Prelude hiding (show)
-import Text.Show (Show(..))
 import HauntedHouse.Recognizer (NounPhrase(..))
 import HauntedHouse.Game.Object (getObjectsFromLabelM, getObjectM)
-import HauntedHouse.Game.Engine.Utilities (prepositionFromPhrase)
 -- import HauntedHouse.Game.Engine (primaryEngine)
 
 doReportM :: Text -> GameStateExceptT ()
@@ -83,7 +81,6 @@ clarifyingLookSubjectM whatPrep (ClarifyingClause1
         $ Data.List.NonEmpty.toList
         $ Data.List.NonEmpty.map findAnchoredTo (_gidObjectPairs' clarified)
 
-  -- mapM (checkProximityM prep) x 
   obj <- if length objectListIobj == 1
           then pure $ head objectListIobj
           else throwError "error with length objectListIobj"
@@ -93,16 +90,11 @@ clarifyingLookSubjectM whatPrep (ClarifyingClause1
                       $ Data.List.NonEmpty.toList subjects
   unless (length matchedSubjects == 1) $ throwError "several matched subjects"
   let gsub@(gid,matchedSubject) = (_anchoredObject' . head) matchedSubjects
-  {-
-    updateContainerDescriptionM prep gsub
-  updatedSubject <- getObjectM gid
-  maybeDescribeNexusM (_mNexus' updatedSubject)
-  updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
-  -}
   updateContainerDescriptionM whatPrep gsub
   updatedSubject <- getObjectM gid
   maybeDescribeNexusM (_mNexus' updatedSubject)
-  updateDisplayActionM (showPlayerActionM >> showEnvironmentM >> describeObjectM matchedSubject)
+  updateDisplayActionM 
+    (showPlayerActionM >> showEnvironmentM >> describeObjectM matchedSubject)
   
   primaryEvaluator <- _primaryEvaluator' <$> ask
   setEvaluatorM primaryEvaluator
@@ -142,10 +134,7 @@ findAnchoredTo object = case object of
   (gid,obj@(Object _ _ _ _ _  (AnchoredTo' gp) _ )) -> Just $ FoundAnchoredTo
                                                                 (gid, obj) gp
   _ -> Nothing
-{-
-findAnchoredTo object@(_,Object _ _ _ _ _  (AnchoredTo' _) _) = Just object
-findAnchoredTo _                                              = Nothing
--}
+
 isAnchoredTo :: Orientation -> Bool
 isAnchoredTo (AnchoredTo' _) = True
 isAnchoredTo _               = False
@@ -180,13 +169,6 @@ matchesProximity (PlacedFront, pp) =
     _                                               -> False
 matchesProximity (PlacedBehind, PrepPhrase1 BEHIND (NounPhrase1 _ _))  = True
 matchesProximity _ = False
-
-{-
-  | PlacedLeft
-  | PlacedRight
-  | PlacedFront 
-  | PlacedBack
--}
 
 cPrepOnTo :: Lexeme -> Bool
 cPrepOnTo prep
