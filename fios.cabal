@@ -144,6 +144,7 @@ library
     HauntedHouse.TopLevel
     
   other-modules:
+    HauntedHouse.Build.Actions.Open
     HauntedHouse.Build.Locations.Kitchen.PlantPot
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
@@ -153,6 +154,9 @@ library
     HauntedHouse.Game.Engine.VerbPhraseThree.Look
     HauntedHouse.Game.Engine.VerbPhraseTwo
     HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look
+    HauntedHouse.Game.Engine.VerbPhraseSeven
+    HauntedHouse.Game.Engine.VerbPhraseSeven.Open
+    HauntedHouse.Game.Engine.Verification
     HauntedHouse.Game.Engine.Utilities
     HauntedHouse.Game.Model.Condition
     HauntedHouse.Game.Model.Display
