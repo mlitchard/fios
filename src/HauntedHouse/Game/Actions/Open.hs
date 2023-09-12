@@ -16,7 +16,7 @@ standardOpenM gid = do
     Door' door              -> openDoor door
     _                       -> throwError notContainerMSG
   let updatedEntity = entity{_mNexus' = Just updatedNexus}
-  setObjectMapM gid updatedEntity 
+  setObjectMapM gid updatedEntity
   maybeDescribeNexusM (_mNexus' updatedEntity)
   updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   where
@@ -24,23 +24,28 @@ standardOpenM gid = do
 
 openContainer :: Containment -> GameStateExceptT Nexus
 openContainer (Containment containment) = do
-  updatedContainment <- throwMaybeM openErr $ case containment of
-    (This containerIn) -> Just $ This (makeOpenContainer containerIn)
-    (That _) -> Nothing -- throwError "You can't open that."
-    (These containerIn containerOn ) -> do 
-                                          let containerIn' = 
+  updatedContainment <-  case containment of
+    (This containerIn) -> This <$> makeOpenContainer containerIn
+    (That _) -> throwError "You can't open that."
+    (These containerIn containerOn ) -> do
+                                          containerIn' <-
                                                 makeOpenContainer containerIn
-                                          Just $ These containerIn' containerOn
+                                          pure $ These containerIn' containerOn
   pure $ Containment' (Containment updatedContainment)
-  where
-    openErr = "You can't open that." 
 
-makeOpenContainer :: ContainedIn -> ContainedIn
-makeOpenContainer (ContainedIn interface contents) = 
-  ContainedIn (interface {_openState' = Open}) contents
-
+makeOpenContainer :: ContainedIn -> GameStateExceptT ContainedIn
+makeOpenContainer (ContainedIn interface contents) = do 
+  openInterface <- makeOpenThingM (_openState' interface) interface
+  pure $ ContainedIn openInterface contents
+  
 openDoor :: Door -> GameStateExceptT Nexus
-openDoor (Door doorInterface exitGID) = do
-  pure $ Door' (Door (doorInterface {_openState' = Open}) exitGID)
-
-  -- let nexus = ContainerInterface' updatedContainerInterface
+openDoor (Door interface exitGID) = do
+  openInterface <- makeOpenThingM (_openState' interface) interface
+  pure $ Door' (Door openInterface exitGID)
+  
+makeOpenThingM :: OpenState 
+                  -> ContainerInterface 
+                  -> GameStateExceptT ContainerInterface
+makeOpenThingM openState interface = case openState of 
+  Closed -> pure $ interface {_openState' = Open}
+  Open ->  throwError "It's already open"
