@@ -22,7 +22,7 @@ objects =
 
 verbs :: HashSet Lexeme
 verbs =
-  HS.fromList ([LOOK, MOVE, PLANT, PUT, PLACE, OPEN, GO] :: [Lexeme])
+  HS.fromList ([LOOK, MOVE, PLANT, PUT, PLACE, OPEN, GO, CLOSE] :: [Lexeme])
 
 determiners :: HashSet Lexeme
 determiners = HS.fromList ([THAT, THIS, THE, A, MY] :: [Lexeme])
@@ -57,6 +57,8 @@ sc = L.space (void spaceChar) lineCmnt blockCmnt
 
 data Lexeme
   = OPEN
+  | CLOSE
+  | SHUT
   | KITCHEN
   | CABINET
   | DOOR
@@ -215,6 +217,7 @@ term =
     <|> CAN <$ symbol "CAN"
     <|> BAG <$ symbol "BAG"
     <|> GO <$ symbol "GO"
+    <|> close 
     <|> CLIMB <$ symbol "CLIMB"
     <|> HALL <$ symbol "HALL"
     <|> MARQUEE <$ symbol "MARQUEE"
@@ -235,3 +238,6 @@ term =
 
 under :: Parser Lexeme
 under = UNDER <$ symbol "UNDER" <|> UNDER <$ symbol "BELOW"
+
+close :: Parser Lexeme
+close = CLOSE <$ symbol "CLOSE" <|> CLOSE <$ symbol "SHUT"

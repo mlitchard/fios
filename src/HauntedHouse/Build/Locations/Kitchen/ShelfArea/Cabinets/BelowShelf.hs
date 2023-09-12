@@ -8,10 +8,12 @@ import HauntedHouse.Game.Model.World
 import qualified Data.Map.Strict (insert, empty, singleton)
 import HauntedHouse.Build.ObjectTemplate (kitchenCabinetBelowShelfGID, kitchenShelfGID, plantPotGID)
 import Data.These (These(..))
-import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
+import HauntedHouse.Game.Model.Condition 
+        (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
 import qualified Data.List.NonEmpty
 import HauntedHouse.Tokenizer (Lexeme(PLANT, POT))
 import HauntedHouse.Game.Actions.Open (standardOpenM)
+import HauntedHouse.Game.Actions.Close (standardCloseM)
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
 buildKitchenCabinetBelowShelf = do
@@ -58,7 +60,7 @@ containerInterface = ContainerInterface {
       _openState'     = Closed 
     , _describe' = mempty
     , _openAction'    = standardOpenM kitchenCabinetBelowShelfGID 
-    , _closeAction'   = pass 
+    , _closeAction'   = standardCloseM kitchenCabinetBelowShelfGID
     , _lockAction'    = pass
     , _unlockAction'  = pass
   }

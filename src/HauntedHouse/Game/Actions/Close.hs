@@ -46,5 +46,5 @@ makeClosedThingM :: OpenState
                   -> ContainerInterface 
                   -> GameStateExceptT ContainerInterface
 makeClosedThingM openState interface = case openState of 
-  Open -> throwError "It's already closed." 
-  Closed -> pure $ interface {_openState' = Closed} 
+  Closed -> throwError "It's already closed." 
+  Open -> pure $ interface {_openState' = Closed} 
