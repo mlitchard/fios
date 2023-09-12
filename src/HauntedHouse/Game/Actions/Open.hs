@@ -12,8 +12,8 @@ standardOpenM gid = do
   entity <- getObjectM gid
   nexus <- throwMaybeM notContainerMSG (_mNexus' entity)
   updatedNexus <- case nexus of
-    Containment' containment -> openContainer containment
-    Door' door              -> openDoor door
+    Containment' containment -> openContainerM containment
+    Door' door              -> openDoorM door
     _                       -> throwError notContainerMSG
   let updatedEntity = entity{_mNexus' = Just updatedNexus}
   setObjectMapM gid updatedEntity
@@ -22,24 +22,24 @@ standardOpenM gid = do
   where
     notContainerMSG = "You can't open that."
 
-openContainer :: Containment -> GameStateExceptT Nexus
-openContainer (Containment containment) = do
+openContainerM :: Containment -> GameStateExceptT Nexus
+openContainerM (Containment containment) = do
   updatedContainment <-  case containment of
-    (This containerIn) -> This <$> makeOpenContainer containerIn
+    (This containerIn) -> This <$> makeOpenContainerM containerIn
     (That _) -> throwError "You can't open that."
     (These containerIn containerOn ) -> do
                                           containerIn' <-
-                                                makeOpenContainer containerIn
+                                                makeOpenContainerM containerIn
                                           pure $ These containerIn' containerOn
   pure $ Containment' (Containment updatedContainment)
 
-makeOpenContainer :: ContainedIn -> GameStateExceptT ContainedIn
-makeOpenContainer (ContainedIn interface contents) = do 
+makeOpenContainerM :: ContainedIn -> GameStateExceptT ContainedIn
+makeOpenContainerM (ContainedIn interface contents) = do 
   openInterface <- makeOpenThingM (_openState' interface) interface
   pure $ ContainedIn openInterface contents
   
-openDoor :: Door -> GameStateExceptT Nexus
-openDoor (Door interface exitGID) = do
+openDoorM :: Door -> GameStateExceptT Nexus
+openDoorM (Door interface exitGID) = do
   openInterface <- makeOpenThingM (_openState' interface) interface
   pure $ Door' (Door openInterface exitGID)
   
