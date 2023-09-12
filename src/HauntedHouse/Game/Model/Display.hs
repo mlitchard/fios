@@ -118,7 +118,7 @@ updateContainerDescriptionM prep (gid,entity) = do
                         <> show prep
 
 describeObjectM :: Object -> GameStateExceptT ()
-describeObjectM (Object shortName desc _ _ percept orientation mNexus) = do
+describeObjectM (Object shortName desc _ _ percept orientation mNexus _) = do
   case percept of
     Imperceptible -> throwError "You don't see that."
     Perceptible -> updatePlayerActionM success

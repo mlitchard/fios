@@ -93,5 +93,5 @@ getContainerInterfaceM entity = do
                         <> "called on an entity that isn't a container."
 
 isPercieved :: Object -> Bool
-isPercieved (Object _ _ _ _ Perceptible _ _) = True
+isPercieved (Object _ _ _ _ Perceptible _ _ _) = True
 isPercieved _ = False

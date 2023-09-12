@@ -5,7 +5,7 @@ import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Engine.OnlyVerb ( evalOnlyVerb )
 
 import HauntedHouse.Recognizer.WordClasses
-        ( Imperative(..), VerbPhrase(..))
+        ( Imperative(..), VerbPhrase(..), NounPhrase (..), AdjPhrase (..))
 
 import Control.Monad.Except (MonadError(..))
 
@@ -32,6 +32,9 @@ primaryEvaluator (ImperativeClause (VerbPhrase3 verb prepOne prepTwo)) = do
 primaryEvaluator (ImperativeClause (VerbPhrase7 verb np pp)) = do 
   eval <- _evalVerbPhraseSeven' <$> ask 
   eval (verb,np,pp)
+primaryEvaluator (ImperativeClause (VerbPhrase5 verb (AdjNoun _ ap np))) = do 
+  eval <- _evalVerbPhraseFive' <$> ask 
+  eval (verb,ap,np)
 
 primaryEvaluator err = do 
                           print (show err)

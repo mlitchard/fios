@@ -46,6 +46,7 @@ config = Config {
   , _evalVerbPrepPhrase' = evalVerbPrepPhrase   
   , _evalVerbTwoPrepPhrases' = verbPhraseThree 
   , _evalVerbPhraseSeven' = verbPhraseSeven
+  , _evalVerbPhraseFive' = verbPhraseFive 
 }
 defaultDisplayAction :: GameStateExceptT ()
 defaultDisplayAction = 

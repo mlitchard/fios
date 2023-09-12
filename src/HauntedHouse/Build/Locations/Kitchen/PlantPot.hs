@@ -5,6 +5,7 @@ import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..)
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import Data.These (These(..))
+import HauntedHouse.Game.Actions.Get (standardGetM)
 
 buildPlantPot :: GameStateExceptT ()
 buildPlantPot = do
@@ -24,10 +25,16 @@ plantPot = Object {
     , _perceptability' = Perceptible
     , _orientation'    = orientation 
     , _mNexus'         = Nothing
+    , _standardActions' = standardActions
   }
   where 
     desc = "You can plant plants in the plant pot."
 
+standardActions :: StandardActions
+standardActions = StandardActions 
+  { _get' = standardGetM plantPotGID
+  , _put' = pass 
+  }
 orientation :: Orientation 
 orientation = ContainedBy' $ ContainedBy {
     _containedBy' = On kitchenShelfGID

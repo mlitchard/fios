@@ -7,7 +7,9 @@ import Data.These qualified (These(..))
 import HauntedHouse.Build.ObjectTemplate 
 import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Model.World
-import HauntedHouse.Game.Model.Condition (Perceptibility(Perceptible), Moveability (..))
+import HauntedHouse.Game.Model.Condition 
+        (Perceptibility(Perceptible), Moveability (..))
+import HauntedHouse.Game.Actions.Get
 
 buildKitchenSink :: GameStateExceptT ()
 buildKitchenSink = do
@@ -27,9 +29,16 @@ buildSink = Object {
   , _perceptability' = Perceptible
   , _orientation' = orientation
   , _mNexus'         = (Just . Containment') sinkContainer 
+  , _standardActions' = standardActions 
   }
   where 
     desc = "This sink is broken. You can put things in it."
+
+standardActions :: StandardActions
+standardActions = StandardActions 
+  { _get' = noGetM
+  , _put' = pass 
+  }
 
 orientation :: Orientation 
 orientation = Anchoring EastAnchor

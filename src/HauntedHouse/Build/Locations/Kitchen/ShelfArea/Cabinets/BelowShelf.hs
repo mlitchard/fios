@@ -14,6 +14,7 @@ import qualified Data.List.NonEmpty
 import HauntedHouse.Tokenizer (Lexeme(PLANT, POT))
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Close (standardCloseM)
+import HauntedHouse.Game.Actions.Get (noGetM)
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
 buildKitchenCabinetBelowShelf = do
@@ -35,9 +36,16 @@ buildCabinet = Object {
     , _perceptability' = Perceptible
     , _orientation' = orientation
     , _mNexus' = (Just . Containment') cabinetContainer
+    , _standardActions' = standardActions 
   }
   where 
     desc = "You can put things in it."
+
+standardActions :: StandardActions
+standardActions = StandardActions 
+  { _get' = noGetM
+  , _put' = pass 
+  }
 
 orientation :: Orientation 
 orientation = AnchoredTo' (kitchenShelfGID,PlacedUnder)

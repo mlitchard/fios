@@ -5,6 +5,7 @@ import Data.Hashable (hashUsing)
 import Text.Megaparsec (Parsec)
 import Text.Megaparsec.Char (spaceChar)
 import Text.Megaparsec.Char.Lexer qualified as L
+import Prelude hiding (get)
 
 type Parser = Parsec Void String
 
@@ -22,14 +23,14 @@ objects =
 
 verbs :: HashSet Lexeme
 verbs =
-  HS.fromList ([LOOK, MOVE, PLANT, PUT, PLACE, OPEN, GO, CLOSE] :: [Lexeme])
+  HS.fromList ([LOOK, MOVE, PLANT, PUT, PLACE, OPEN, GO, CLOSE, GET] :: [Lexeme])
 
 determiners :: HashSet Lexeme
 determiners = HS.fromList ([THAT, THIS, THE, A, MY] :: [Lexeme])
 
 prepositions :: HashSet Lexeme
 prepositions =
-  HS.fromList [TO, WITH, IN, WHEN, UNDER, OVER, ABOVE, AT, ON, OF, BEHIND]
+  HS.fromList [TO, WITH, IN, WHEN, UNDER, OVER, ABOVE, AT, ON, OF, BEHIND, FROM]
 
 adjectives :: HashSet Lexeme
 adjectives = 
@@ -56,7 +57,8 @@ sc = L.space (void spaceChar) lineCmnt blockCmnt
     blockCmnt = L.skipBlockComment "/*" "*/"
 
 data Lexeme
-  = OPEN
+  = FROM
+  | OPEN
   | CLOSE
   | SHUT
   | KITCHEN
@@ -114,7 +116,7 @@ data Lexeme
   | SOUTH
   | WEST
   | DOWN
-  | TAKE
+  | GET
   | SINK
   | THROUGH
   | SOIL
@@ -155,6 +157,7 @@ instance Hashable Lexeme where
 term :: Parser Lexeme
 term = 
   PALACE <$ symbol "PALACE"
+    <|> FROM <$ symbol "FROM"
     <|> BASEMENT <$ symbol "BASEMENT"
     <|> ATTIC <$ symbol "ATTIC"
     <|> MAZE <$ symbol "MAZE"
@@ -205,7 +208,7 @@ term =
     <|> UP <$ symbol "UP"
     <|> DOWN <$ symbol "DOWN"
     <|> EXAMINE <$ symbol "EXAMINE"
-    <|> TAKE <$ symbol "TAKE"
+    <|> get
     <|> OPEN <$ symbol "OPEN"
     <|> CABINET <$ symbol "CABINET"
     <|> DOOR <$ symbol "DOOR"
@@ -238,6 +241,9 @@ term =
 
 under :: Parser Lexeme
 under = UNDER <$ symbol "UNDER" <|> UNDER <$ symbol "BELOW"
+
+get :: Parser Lexeme 
+get = GET <$ symbol "GET" <|> GET <$ symbol "TAKE"
 
 close :: Parser Lexeme
 close = CLOSE <$ symbol "CLOSE" <|> CLOSE <$ symbol "SHUT"

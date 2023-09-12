@@ -1,7 +1,7 @@
 module HauntedHouse.Game.Model.World where
 
 import HauntedHouse.Game.Model.Mapping
-import HauntedHouse.Recognizer (Adjective, Imperative, NounPhrase, Verb, PrepPhrase)
+import HauntedHouse.Recognizer (Adjective, Imperative, NounPhrase, Verb, PrepPhrase, AdjPhrase)
 import HauntedHouse.Game.Model.Condition (Proximity, Moveability, Perceptibility (..))
 import System.Console.Haskeline (InputT)
 import Text.Show (Show(..))
@@ -34,7 +34,8 @@ data Config = Config {
   , _evalVerbNounPhrase'     :: (Verb, NounPhrase) -> GameStateExceptT ()
   , _evalVerbPrepPhrase'     :: (Verb, PrepPhrase) -> GameStateExceptT ()
   , _evalVerbTwoPrepPhrases' :: EvalVerbThree   
-  , _evalVerbPhraseSeven' :: EvalVerbSeven                                   
+  , _evalVerbPhraseFive'     :: EvalVerbFive
+  , _evalVerbPhraseSeven'    :: EvalVerbSeven                                   
 }
 
 newtype Containment = Containment
@@ -74,6 +75,8 @@ type EvalVerbThree = (Verb, PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 newtype Exit = Exit { _toDestination' :: GID Location} deriving stock Show
 
 type EvalVerbSeven = (Verb, NounPhrase, PrepPhrase) -> GameStateExceptT ()
+
+type EvalVerbFive = (Verb, AdjPhrase, NounPhrase) -> GameStateExceptT ()
 
 newtype ExitGIDDataMap = ExitGIDDataMap {
   _unExitGIDDataMap' :: GIDToDataMapping Exit
@@ -160,8 +163,13 @@ data Object = Object {
   , _perceptability'  :: Perceptibility
   , _orientation'     :: Orientation
   , _mNexus'          :: Maybe Nexus
+  , _standardActions'  :: StandardActions
 }
 
+data StandardActions = StandardActions 
+  {   _get' :: GameStateExceptT ()
+    , _put' :: GameStateExceptT ()
+  }
 newtype ObjectAnchors = ObjectAnchors {
   _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors
   } deriving stock Show

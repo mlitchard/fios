@@ -146,6 +146,7 @@ library
   other-modules:
     HauntedHouse.Game.Actions.Close
     HauntedHouse.Game.Actions.Open
+    HauntedHouse.Game.Actions.Get
     HauntedHouse.Build.Locations.Kitchen.PlantPot
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
@@ -155,6 +156,7 @@ library
     HauntedHouse.Game.Engine.VerbPhraseThree.Look
     HauntedHouse.Game.Engine.VerbPhraseTwo
     HauntedHouse.Game.Engine.VerbPhraseTwoEvaluator.Look
+    HauntedHouse.Game.Engine.VerbPhraseFive
     HauntedHouse.Game.Engine.VerbPhraseSeven
     HauntedHouse.Game.Engine.VerbPhraseSeven.Close
     HauntedHouse.Game.Engine.VerbPhraseSeven.Open

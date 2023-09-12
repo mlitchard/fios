@@ -99,7 +99,7 @@ makeErrorReport _np _pp = "You don't see that here"
 
 findAnchoredTo :: (GID Object, Object) -> Maybe FoundAnchoredTo
 findAnchoredTo object = case object of
-  (gid,obj@(Object _ _ _ _ _  (AnchoredTo' gp) _ )) -> Just $ FoundAnchoredTo
+  (gid,obj@(Object _ _ _ _ _  (AnchoredTo' gp) _ _)) -> Just $ FoundAnchoredTo
                                                                 (gid, obj) gp
   _ -> Nothing
   
