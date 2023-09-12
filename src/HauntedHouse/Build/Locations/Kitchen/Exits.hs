@@ -3,7 +3,7 @@ module HauntedHouse.Build.Locations.Kitchen.Exits where
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Build.ExitTemplate (kitchenEastExitGID)
 import HauntedHouse.Game.World (setWorldExitMapM, setLocationDirectionM)
-import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID)
+import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID, kitchenEastPortalGID)
 import HauntedHouse.Game.Object
     ( setObjectMapM, setObjectLabelMapM )
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedBehind))
@@ -26,6 +26,7 @@ kitchenEastExit = Exit {_toDestination' = hallGID }
 kitchenEastDoor :: GameStateExceptT ()
 kitchenEastDoor = do
   setObjectMapM kitchenEastDoorGID kitchenEastDoorObject
+  setObjectMapM kitchenEastPortalGID kitchenEastDoorObject 
   setObjectLabelMapM kitchenGID door kitchenEastDoorGID
   setLocationDirectionM  kitchenGID eastLabel kitchenEastDoorGID
 
@@ -49,31 +50,12 @@ orientation = Anchoring EastAnchor
 eastDoor :: Door 
 eastDoor = Door 
   {_doorInterface' = kitchenEastDoorGateInterface
- -- , _blockedObject'  
+  , _blockedObject' = kitchenEastPortalGID   
   }
 eastDoorNexus :: Nexus
 eastDoorNexus = Door' eastDoor
-{-
-  where
-    portal = Portal {
-        _portalInterface' = kitchenEastDoorPortalInterface
-      , _portalExit' = kitchenEastExitGID
-    }
-    -}
 
-{-
 
-data Object = Object {
-    _shortName'       :: Text
-  , _odescription'    :: [Text]
-  , _descriptives'    :: [Label Adjective]
-  , _moveability'     :: Moveability
-  , _perceptability'  :: Perceptibility
-  , _orientation'     :: Orientation
-  , _mNexus'          :: Maybe Nexus
-}
-
--}
 kitchenEastPortalObject :: Object 
 kitchenEastPortalObject = Object 
   { _shortName' = "The way through the east door"
@@ -101,7 +83,7 @@ kitchenEastDoorPortalInterface = PortalInterface
   { _lookThrough' = pass
   , _goThrough' = pass
   }
-  
+
 kitchenEastDoorGateInterface :: ContainerInterface
 kitchenEastDoorGateInterface = ContainerInterface {
       _openState'     = Open

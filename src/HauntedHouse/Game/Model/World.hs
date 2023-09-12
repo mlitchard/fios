@@ -149,7 +149,7 @@ data Nexus
 
 data Door = Door 
   {_doorInterface' :: ContainerInterface
- -- , _blockedObject' :: GID Object
+  , _blockedObject' :: GID Object
   }
 
 data Object = Object {
