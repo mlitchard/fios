@@ -35,6 +35,7 @@ objectNames =
   , "kitchenCabinetAboveShelf"
   , "kitchenCabinetBelowShelf"
   , "kitchenEastDoor"
+  , "kitchenEastPortal"
   , "plantPot"]
 
 numberOfObjects :: [Integer]

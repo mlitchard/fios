@@ -144,7 +144,7 @@ library
     HauntedHouse.TopLevel
     
   other-modules:
-    HauntedHouse.Build.Actions.Open
+    HauntedHouse.Game.Actions.Open
     HauntedHouse.Build.Locations.Kitchen.PlantPot
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook

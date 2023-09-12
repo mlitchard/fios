@@ -6,7 +6,7 @@ import HauntedHouse.Game.World (setWorldExitMapM, setLocationDirectionM)
 import HauntedHouse.Build.ObjectTemplate (kitchenEastDoorGID)
 import HauntedHouse.Game.Object
     ( setObjectMapM, setObjectLabelMapM )
-import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
+import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedBehind))
 import HauntedHouse.Build.ObjectLabels
 import HauntedHouse.Build.LocationTemplate
 import HauntedHouse.Build.DirectionTemplate (eastLabel)
@@ -46,16 +46,64 @@ kitchenEastDoorObject = Object {
 orientation :: Orientation
 orientation = Anchoring EastAnchor
 
+eastDoor :: Door 
+eastDoor = Door 
+  {_doorInterface' = kitchenEastDoorGateInterface
+ -- , _blockedObject'  
+  }
 eastDoorNexus :: Nexus
-eastDoorNexus = (Nexus . Right) portal
+eastDoorNexus = Door' eastDoor
+{-
   where
     portal = Portal {
-        _portalInterface' = ContainerInterface' kitchenEastDoorPortalInterface
+        _portalInterface' = kitchenEastDoorPortalInterface
       , _portalExit' = kitchenEastExitGID
     }
+    -}
 
-kitchenEastDoorPortalInterface :: ContainerInterface
-kitchenEastDoorPortalInterface = ContainerInterface {
+{-
+
+data Object = Object {
+    _shortName'       :: Text
+  , _odescription'    :: [Text]
+  , _descriptives'    :: [Label Adjective]
+  , _moveability'     :: Moveability
+  , _perceptability'  :: Perceptibility
+  , _orientation'     :: Orientation
+  , _mNexus'          :: Maybe Nexus
+}
+
+-}
+kitchenEastPortalObject :: Object 
+kitchenEastPortalObject = Object 
+  { _shortName' = "The way through the east door"
+  , _odescription' = ["Walking through would lead you to the hall"]
+  , _descriptives' = mempty 
+  , _moveability' = NotMoveable 
+  , _perceptability' = Perceptible -- placeholder 
+  , _orientation' = AnchoredTo' (kitchenEastDoorGID, PlacedBehind)
+  , _mNexus' = (Just . Portal') kitchenEastDoorPortal
+  }
+  
+kitchenEastDoorPortal :: Portal 
+kitchenEastDoorPortal = Portal 
+  { _portalInterface' = kitchenEastDoorPortalInterface
+  , _portalExit' = kitchenEastExitGID
+  }
+{-
+data PortalInterface = PortalInterface 
+  { _lookThrough' :: GameStateExceptT ()
+  , _goThrough'   :: GameStateExceptT ()
+  }
+-}
+kitchenEastDoorPortalInterface :: PortalInterface 
+kitchenEastDoorPortalInterface = PortalInterface 
+  { _lookThrough' = pass
+  , _goThrough' = pass
+  }
+  
+kitchenEastDoorGateInterface :: ContainerInterface
+kitchenEastDoorGateInterface = ContainerInterface {
       _openState'     = Open
     , _openAction'    = pass
     , _closeAction'   = pass

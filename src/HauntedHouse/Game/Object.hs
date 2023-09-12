@@ -78,22 +78,19 @@ capturePerceptibleM objectList = do
 getContainerInterfaceM :: Object -> GameStateExceptT ContainerInterface
 getContainerInterfaceM entity = do
   nexus <- throwMaybeM notContainerMSG (_mNexus' entity)
-  containment <- throwRightM notContainerMSG . _unNexus' $ nexus 
-  case _unContainment' containment of
-    (This (ContainedIn interface _)) -> throwMaybeM portalMSG 
-                                      $ getContainerInterface interface
-    (That _) -> throwError notContainedInMSG
-    (These (ContainedIn interface _) _) -> throwMaybeM portalMSG 
-                                            $ getContainerInterface interface
+  containment <- case nexus of 
+                  Containment' containment -> pure containment 
+                  _ -> throwError notContainerMSG 
+  throwMaybeM notContainedInMSG $ case _unContainment' containment of
+    (This (ContainedIn interface _)) -> Just interface
+                                      
+    (That _) -> Nothing -- throwError notContainedInMSG
+    (These (ContainedIn interface _) _) -> Just interface
+                                            
   where
-    portalMSG = "getContainerInterface error: Portals don't work that way"
     notContainedInMSG = "getContainerInterface error: can't put things in this"
     notContainerMSG = "getContainerInterface error: "
                         <> "called on an entity that isn't a container."
-
-getContainerInterface :: Interface -> Maybe ContainerInterface 
-getContainerInterface (ContainerInterface' cInterface) = Just cInterface
-getContainerInterface PortalInterface                  = Nothing
 
 isPercieved :: Object -> Bool
 isPercieved (Object _ _ _ _ Perceptible _ _) = True

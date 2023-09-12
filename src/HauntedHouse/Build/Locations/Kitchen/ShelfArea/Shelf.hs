@@ -34,7 +34,7 @@ buildShelf= Object {
     , _moveability' = NotMoveable
     , _perceptability' = Perceptible
     , _orientation' = orientation
-    , _mNexus' =  (Just . Nexus . Left) shelfContainer
+    , _mNexus' =  (Just . Containment') shelfContainer
   }
   where
     desc = "It's a shelf. You can put things on it"

@@ -35,7 +35,7 @@ orientation = ContainedBy' $ ContainedBy {
 }
 
 potNexus :: Nexus 
-potNexus = (Nexus . Left) potContainment
+potNexus = Containment' potContainment
 
 potContainment :: Containment 
 potContainment = (Containment . This) potContainedIn  
@@ -46,14 +46,12 @@ potContainedIn = ContainedIn
   , _containedIn' = ContainerMap mempty
   }
 
-potInterface :: Interface 
-potInterface = ContainerInterface' containerInterface 
-
-containerInterface :: ContainerInterface
-containerInterface = ContainerInterface {
-    _openState' = Open
+potInterface :: ContainerInterface 
+potInterface =  ContainerInterface {
+    _describe' = mempty
+  , _openState' = Open
   , _openAction' = pass 
   , _closeAction' = pass 
   , _lockAction' = pass
   , _unlockAction' = pass 
-}
+} 

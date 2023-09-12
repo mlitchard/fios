@@ -27,7 +27,7 @@ buildCabinet = Object {
     , _moveability' = NotMoveable
     , _perceptability' = Perceptible
     , _orientation' = orientation
-    , _mNexus' =  (Just . Nexus . Left) cabinetContainer
+    , _mNexus' =  (Just . Containment') cabinetContainer
   }
   where 
     desc = "You can put things in it."
@@ -39,7 +39,7 @@ cabinetContainer = (Containment . This) containedIn
 
 containedIn :: ContainedIn
 containedIn = ContainedIn 
-  {_containerInterface' = ContainerInterface' containerInterface
+  {_containerInterface' = containerInterface
   , _containedIn' = ContainerMap Data.Map.Strict.empty  
   }
 

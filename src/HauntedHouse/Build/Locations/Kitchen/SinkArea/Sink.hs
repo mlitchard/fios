@@ -26,7 +26,7 @@ buildSink = Object {
   , _moveability'   = NotMoveable
   , _perceptability' = Perceptible
   , _orientation' = orientation
-  , _mNexus'         = (Just . Nexus . Left) sinkContainer 
+  , _mNexus'         = (Just . Containment') sinkContainer 
   }
   where 
     desc = "This sink is broken. You can put things in it."

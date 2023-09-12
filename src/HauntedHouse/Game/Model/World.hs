@@ -51,7 +51,7 @@ data OnOrIn
     deriving stock Show 
 
 data ContainedIn = ContainedIn
-  { _containerInterface'  :: Interface
+  { _containerInterface'  :: ContainerInterface
   , _containedIn'         :: ContainerMap Object
   }
 
@@ -111,12 +111,12 @@ report :: GameStateExceptT ()
 report = do
   report' <- _report' <$> get  
   mapM_ print report'
-
+{-
 data Interface
   = ContainerInterface' ContainerInterface
   | PortalInterface
       deriving stock Show
-
+-}
 data Location = Location {
   _title'             :: Text
   , _description'     :: Text
@@ -139,9 +139,18 @@ data Narration = Narration {
 newtype Neighbors = Neighbors
   {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show
 
-newtype Nexus = Nexus {
-    _unNexus' :: Either Containment Portal
-  } deriving stock (Show)
+-- FIXME: Change Nexus to Special to accomodate all the objects with 
+-- special interfaces
+data Nexus 
+  = Containment' Containment 
+  | Door' Door -- a specialized Gate 
+  -- | Gate'  
+  | Portal' Portal 
+
+data Door = Door 
+  {_doorInterface' :: ContainerInterface
+ -- , _blockedObject' :: GID Object
+  }
 
 data Object = Object {
     _shortName'       :: Text
@@ -172,10 +181,15 @@ data Player = Player
   , _p_inv'           :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
   } deriving stock Show
 
+data PortalInterface = PortalInterface 
+  { _lookThrough' :: GameStateExceptT ()
+  , _goThrough'   :: GameStateExceptT ()
+  }
+
 data Portal = Portal {
-      _portalInterface' :: Interface
+      _portalInterface' :: PortalInterface
     , _portalExit' :: GID Exit
-  } deriving stock Show
+  }
 
 data RoomAnchor
   = NorthAnchor
@@ -226,14 +240,15 @@ data Verbosity
   | Loud
   | Normal
     deriving stock Show
-
+{-
 instance Eq Nexus where
   (Nexus _) == (Nexus _) = True
-
+-}
+{-
 instance Ord Nexus where
   compare (Nexus _) (Nexus _) = EQ
   (<=) (Nexus _) (Nexus _) = True
-
+-}
 directionFromRoomAnchor :: RoomAnchor -> Text
 directionFromRoomAnchor roomAnchor =
   Data.Text.toLower . fst $ Data.Text.breakOn "Anchor" (toText $ show roomAnchor)

@@ -2,7 +2,7 @@ module HauntedHouse.Game.Engine.Utilities where
 import HauntedHouse.Game.Model.Condition (Proximity (..))
 import HauntedHouse.Tokenizer (Lexeme (..))
 import HauntedHouse.Recognizer
-
+import HauntedHouse.Game.Model.World
 prepToProximity :: Lexeme -> Maybe Proximity 
 prepToProximity ON = Just PlacedOn
 prepToProximity UNDER = Just PlacedUnder
@@ -12,7 +12,6 @@ prepToProximity RIGHT = Just PlacedRight
 prepToProximity FRONT = Just PlacedFront 
 prepToProximity BEHIND = Just PlacedBehind 
 prepToProximity _ = Nothing   
-
 
 {-
 data PrepPhrase

@@ -39,10 +39,10 @@ getExitObjectM exitLabel = do
 
 getExitFromObjectM :: GID Object -> GameStateExceptT Exit
 getExitFromObjectM gid = do
-  (Nexus nexus) <- throwMaybeM nexusErr . _mNexus' =<< getObjectM gid
-  case nexus of
-    Left _ -> throwError notExitMsg
-    Right (Portal _ exitGID) -> getExitM exitGID
+  nexus <- throwMaybeM nexusErr . _mNexus' =<< getObjectM gid
+  case nexus of 
+    Portal' (Portal _ exitGID) -> getExitM exitGID 
+    _ -> throwError notExitMsg 
   where
     nexusErr = "Not a nexus"
     notExitMsg = "Not an exit"

@@ -83,42 +83,40 @@ updateContainerDescriptionM :: Preposition
                                 -> (GID Object,Object)
                                 -> GameStateExceptT ()
 updateContainerDescriptionM prep (gid,entity) = do
-  (Nexus nexus) <- throwMaybeM notContainerMSG (_mNexus' entity)
-  Data.Either.Combinators.whenRight nexus (\_ -> throwError notContainerMSG)
-  Data.Either.Combinators.whenLeft nexus (\(Containment container) ->
-    do
-      case container of
+  nexus <- throwMaybeM notContainerMSG (_mNexus' entity)
+  case nexus of
+    (Containment' (Containment containment)) -> caseContainement containment
+    _ -> throwError notContainerMSG
+  where
+    caseContainement containment = 
+      case containment of
         (This containedIn) -> cIn containedIn >>= updateNexusM
         (That _) -> cOn
         (These _ _) -> cInOn
-    )
-  pass
-  where
+
     updateNexusM :: Nexus -> GameStateExceptT ()
     updateNexusM nexus = do
       setObjectMapM gid (entity {_mNexus' = Just nexus})
+
     notContainerMSG = _shortName' entity <> "isn't a container. Fix your shit"
     cOn = throwError "cOn not implemented"
     cInOn = throwError "cInOn not implemented"
+
     cIn :: ContainedIn -> GameStateExceptT Nexus
-    cIn  (ContainedIn (ContainerInterface' containerInterface) cmap) = do
+    cIn  (ContainedIn containerInterface cmap) = do
       descriptionList <- makeDescriptionListM cmap
       description <- case prep of
                 AT -> pure $ openSeeShallow descriptionList
                 IN -> pure $ openSeeDeep descriptionList
                 _  -> throwError nonsenseMSG
-      let updatedCInterface = ContainerInterface'
-                                $ containerInterface{_describe' = description}
+      let updatedCInterface = containerInterface{_describe' = description}
           container = Containment (This (ContainedIn updatedCInterface cmap))
-      pure $ Nexus (Left container)
+      pure (Containment' container)
       where
         nonsenseMSG :: Text
         nonsenseMSG = "Nonsense Detected: updateContainerDescriptionM "
                         <> show prep
-    cIn (ContainedIn PortalInterface _) = throwError nonsenseInterfaceMSG
-      where
-        nonsenseInterfaceMSG = "Containers that are portals aren't handled yet"
-        
+
 describeObjectM :: Object -> GameStateExceptT ()
 describeObjectM (Object shortName desc _ _ percept orientation mNexus) = do
   case percept of
@@ -179,8 +177,25 @@ describeAnchoring roomAnchor = "In the " <> anchor
 
 maybeDescribeNexusM :: Maybe Nexus -> GameStateExceptT ()
 maybeDescribeNexusM Nothing = pass
-maybeDescribeNexusM (Just (Nexus nexus)) =
-  either describeContainmentM describePortalM nexus
+maybeDescribeNexusM (Just nexus) =
+  case nexus of
+    (Containment' containment) -> describeContainmentM containment
+    (Portal' portal) ->  describePortalM portal
+    (Door' door)       -> describeDoorM door
+
+describeDoorM :: Door -> GameStateExceptT ()
+describeDoorM (Door interface) = do
+  updateEnvironmentM openStateMSG
+  where
+    openState = _openState' interface
+    openStateMSG = "The door is " <> toLower (show openState)
+{-
+describePortalM :: Portal -> GameStateExceptT ()
+describePortalM (Portal _ gid) = do
+  exit <- _title' <$> (getLocationM . _toDestination' =<< getExitM gid)
+  updateEnvironmentM ("an exit leading to " <> exit)
+-}
+--  either describeContainmentM describePortalM nexus
 
 describeContainmentM :: Containment -> GameStateExceptT ()
 describeContainmentM (Containment (This containedIn)) =
@@ -192,13 +207,7 @@ describeContainmentM (Containment (These containedIn containedOn)) =
 
 describeContainedInM :: ContainedIn -> GameStateExceptT ()
 describeContainedInM (ContainedIn interface _) = do
-  case interface of
-    (ContainerInterface' cInterface) -> do
-                                          describeOpenStateM
-                                            (_openState' cInterface)
-                                            (_describe' cInterface)
-    PortalInterface -> do
-      updateEnvironmentM "This container has an unusual opening"
+  describeOpenStateM (_openState' interface) (_describe' interface)
 
 describeContainedOnM :: ContainedOn -> GameStateExceptT ()
 describeContainedOnM (ContainedOn (ContainerMap cmap)) = do
@@ -241,13 +250,13 @@ examineObjectsInside :: (Label Object, NonEmpty Text) -> Text
 examineObjectsInside (Label name, shortDescList) = preamble <> details
   where
     objectAmount = length shortDescList
-    objectAmountText = howMany objectAmount 
+    objectAmountText = howMany objectAmount
     preamble
       | objectAmount > 1 = pluralSeen
       | otherwise = "you see a "
-    pluralSeen = "you see " 
-                  <> objectAmountText 
-                  <> " " 
+    pluralSeen = "you see "
+                  <> objectAmountText
+                  <> " "
                   <> (toLower . show $ name) <> "\n"
     details = unlines $ Data.List.NonEmpty.toList shortDescList
 
