@@ -12,8 +12,8 @@ doLookTwoPrepM :: (PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 doLookTwoPrepM (PrepPhrase1 prep np,pp) = do
   gsub@(gid,_) <- verifyExistenceNPPP (clarifyingLookDirectObjectM prep) np pp
   updateContainerDescriptionM prep gsub
-  updatedSubject <- getObjectM gid
-  maybeDescribeNexusM (_mNexus' updatedSubject)
+  updatedEntity <- getObjectM gid
+  maybeDescribeNexusM (_mNexus' updatedEntity)
   updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
 doLookTwoPrepM _ = throwError "doLookTwoPrep implementation unfinished"
 

@@ -9,6 +9,7 @@ import HauntedHouse.Build.ObjectTemplate
 import Data.These (These(This))
 import HauntedHouse.Game.Model.Condition 
         (Moveability(..), Perceptibility (..), Proximity (PlacedAbove))
+import HauntedHouse.Game.Actions.Open (standardOpenM)
 
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do
@@ -47,8 +48,9 @@ containedIn = ContainedIn
 
 containerInterface :: ContainerInterface 
 containerInterface = ContainerInterface {
-      _openState'     = Open 
-    , _openAction'    = pass 
+      _describe' = mempty
+    , _openState'     = Open 
+    , _openAction'    = standardOpenM kitchenCabinetAboveShelfGID 
     , _closeAction'   = pass 
     , _lockAction'    = pass
     , _unlockAction'  = pass

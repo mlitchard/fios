@@ -184,7 +184,7 @@ maybeDescribeNexusM (Just nexus) =
     (Door' door)       -> describeDoorM door
 
 describeDoorM :: Door -> GameStateExceptT ()
-describeDoorM (Door interface) = do
+describeDoorM (Door interface _) = do
   updateEnvironmentM openStateMSG
   where
     openState = _openState' interface

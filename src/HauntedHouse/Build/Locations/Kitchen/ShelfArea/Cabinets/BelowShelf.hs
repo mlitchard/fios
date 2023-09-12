@@ -11,6 +11,7 @@ import Data.These (These(..))
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
 import qualified Data.List.NonEmpty
 import HauntedHouse.Tokenizer (Lexeme(PLANT, POT))
+import HauntedHouse.Game.Actions.Open (standardOpenM)
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
 buildKitchenCabinetBelowShelf = do
@@ -54,9 +55,9 @@ inCabinet = Data.List.NonEmpty.singleton plantPotGID
 
 containerInterface :: ContainerInterface 
 containerInterface = ContainerInterface {
-      _openState'     = Open 
+      _openState'     = Closed 
     , _describe' = mempty
-    , _openAction'    = pass 
+    , _openAction'    = standardOpenM kitchenCabinetBelowShelfGID 
     , _closeAction'   = pass 
     , _lockAction'    = pass
     , _unlockAction'  = pass

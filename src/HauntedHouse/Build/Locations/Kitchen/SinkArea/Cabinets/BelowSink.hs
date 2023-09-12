@@ -1,8 +1,5 @@
 module HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink where
 
-import HauntedHouse.Build.DescriptiveTemplate
-    ( unlockedLabel, kitchenLabel, visibleLabel )  
-
 import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
     
@@ -22,18 +19,6 @@ buildKitchenCabinetBelowSink = do
               kitchenCabinetBelowSinkGID buildCabinet 
                 $ (_unGIDToDataMapping' . _objectMap') world
   modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
-
-
-{-
-data Object = Object {
-    _shortName'       :: Text
-  , _odescription'    :: [Text]
-  , _descriptives'    :: [Label Adjective]
-  , _moveability'     :: Moveability
-  , _perceptability'  :: Perceptibility
-  , _mNexus'          :: Maybe Nexus
-}
--}
 
 buildCabinet :: Object 
 buildCabinet = Object { 

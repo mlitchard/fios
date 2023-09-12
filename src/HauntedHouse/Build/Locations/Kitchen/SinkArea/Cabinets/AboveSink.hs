@@ -7,6 +7,7 @@ import qualified Data.Map.Strict
 import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenSinkGID)
 import Data.These (These(..))
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedAbove))
+import HauntedHouse.Game.Actions.Open (standardOpenM)
 
 buildKitchenCabinetAboveSink :: GameStateExceptT ()
 buildKitchenCabinetAboveSink = do
@@ -45,8 +46,9 @@ containedIn = ContainedIn
 
 containerInterface :: ContainerInterface 
 containerInterface = ContainerInterface {
-      _openState'     = Open 
-    , _openAction'    = pass 
+      _describe' = mempty
+    , _openState'     = Open 
+    , _openAction'    = standardOpenM kitchenCabinetAboveSinkGID
     , _closeAction'   = pass 
     , _lockAction'    = pass
     , _unlockAction'  = pass

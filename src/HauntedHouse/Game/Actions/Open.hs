@@ -1,4 +1,6 @@
 module HauntedHouse.Game.Actions.Open where
+
+import HauntedHouse.Game.Model.Display
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Object (getObjectM, setObjectMapM)
@@ -13,7 +15,10 @@ standardOpenM gid = do
     Containment' containment -> openContainer containment
     Door' door              -> openDoor door
     _                       -> throwError notContainerMSG
-  setObjectMapM gid (entity{_mNexus' = Just updatedNexus})
+  let updatedEntity = entity{_mNexus' = Just updatedNexus}
+  setObjectMapM gid updatedEntity 
+  maybeDescribeNexusM (_mNexus' updatedEntity)
+  updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   where
     notContainerMSG = "You can't open that."
 
@@ -35,7 +40,7 @@ makeOpenContainer (ContainedIn interface contents) =
   ContainedIn (interface {_openState' = Open}) contents
 
 openDoor :: Door -> GameStateExceptT Nexus
-openDoor (Door doorInterface) = do
-  pure $ Door' (Door (doorInterface {_openState' = Open}))
+openDoor (Door doorInterface exitGID) = do
+  pure $ Door' (Door (doorInterface {_openState' = Open}) exitGID)
 
   -- let nexus = ContainerInterface' updatedContainerInterface
