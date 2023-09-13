@@ -35,6 +35,7 @@ finalizePlayerActionM = do
   let flippedAction = Data.List.NonEmpty.reverse playerAction
   modify' (\gs -> gs{_narration' = narration{_playerAction' = flippedAction}})
 
+-- FIXME - residual empty list
 updateEnvironmentM :: Text -> GameStateExceptT ()
 updateEnvironmentM result = do
   narration@(Narration _ env _ _) <- _narration' <$> get
@@ -88,7 +89,7 @@ updateContainerDescriptionM prep (gid,entity) = do
     (Containment' (Containment containment)) -> caseContainement containment
     _ -> throwError notContainerMSG
   where
-    caseContainement containment = 
+    caseContainement containment =
       case containment of
         (This containedIn) -> cIn containedIn >>= updateNexusM
         (That _) -> cOn
@@ -116,7 +117,7 @@ updateContainerDescriptionM prep (gid,entity) = do
         nonsenseMSG :: Text
         nonsenseMSG = "Nonsense Detected: updateContainerDescriptionM "
                         <> show prep
-
+-- FIXME perception test should happen seperately
 describeObjectM :: Object -> GameStateExceptT ()
 describeObjectM (Object shortName desc _ _ percept orientation mNexus _) = do
   case percept of
@@ -129,6 +130,16 @@ describeObjectM (Object shortName desc _ _ percept orientation mNexus _) = do
     success = "You look at the " <> shortName
     preamble = "The " <> shortName <> " is "
 
+describeInventoryM :: GameStateExceptT ()
+describeInventoryM = do
+  mInventory <- _p_inv' . _player' <$> get
+  case mInventory of 
+    Nothing -> updateEnvironmentM "You are empty-handed"
+    Just gids -> do
+                   inv <- mapM getShortNameM gids
+                   updateEnvironmentM "You are carrying:"
+                   mapM_ updateEnvironmentM inv
+                  
 describeOrientationM :: Text -> Orientation -> GameStateExceptT ()
 describeOrientationM preamble orientation = do
   desc <- case orientation of

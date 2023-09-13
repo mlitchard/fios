@@ -19,6 +19,13 @@ setWorldExitMapM gid exit = do
                   $ (_unGIDToDataMapping' . _exitMap') world
   modify' (\gs -> gs {_world' = world {_exitMap' = updated}})
 
+setLocationMapM :: GID Location -> Location -> GameStateExceptT () 
+setLocationMapM gid location = do 
+  world <- _world' <$> get
+  let updated = GIDToDataMapping $ Data.Map.Strict.insert gid location
+                  $ (_unGIDToDataMapping' . _locationMap') world
+  modify' (\gs -> gs {_world' = world {_locationMap' = updated}})
+
 getExitM :: GID Exit -> GameStateExceptT Exit
 getExitM gid = do
   throwLookup . _unGIDToDataMapping' . _exitMap' . _world' =<< get

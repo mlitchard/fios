@@ -13,8 +13,8 @@ import HauntedHouse.Clarifier
 import HauntedHouse.Game.Model.Mapping (Label(..))
 import Control.Monad.Except (MonadError(..))
 
-verifyExistenceAP :: AdjPhrase -> GameStateExceptT (GID Object, Object)
-verifyExistenceAP (AdjNoun _ (Adjective adj) (Noun noun)) = do
+verifyAccessabilityAP :: AdjPhrase -> GameStateExceptT (GID Object, Object)
+verifyAccessabilityAP (AdjNoun _ (Adjective adj) (Noun noun)) = do
   possibleDirectObjects <- getObjectsFromLabelM directObjectLabel
   testableEntity <- if length possibleDirectObjects > 1
     then throwError "verifyExistenceAP can't differentiate yet"
@@ -33,12 +33,12 @@ verifyExistenceAP (AdjNoun _ (Adjective adj) (Noun noun)) = do
     descriptiveLabel = Label adj
     directObjectLabel = Label noun
 
-verifyExistenceAP _ = throwError "verifyExistenceAP unfinished"
+verifyAccessabilityAP _ = throwError "verifyExistenceAP unfinished"
 
 matchDescriptive :: Label Adjective -> [Label Adjective] -> Bool
 matchDescriptive  testDescriptive descriptives =
   testDescriptive `elem` descriptives
-
+--- FIXME perceptibility
 verifyExistenceNPPP :: (Imperative -> GameStateExceptT ())
                         -> NounPhrase
                         -> PrepPhrase

@@ -1,6 +1,6 @@
 module HauntedHouse.TopLevel where
 
-import HauntedHouse.Game.Model.World
+import HauntedHouse.Game.Model.World hiding (Inventory)
 
 import HauntedHouse.Tokenizer (tokens, Lexeme, runParser)
 import System.Console.Haskeline
@@ -12,10 +12,12 @@ import qualified Data.Text
 import HauntedHouse.Game.Narration (displaySceneM)
 import HauntedHouse.Game.Engine (catchEngine)
 import HauntedHouse.Clarifier (doReportM, clearReportM)
+import HauntedHouse.Game.Model.Display
 
 data GameInput
     = MkGameInput Text
     | Verbose
+    | Inventory
     | Quit
 
 start :: GameStateExceptT ()
@@ -31,6 +33,9 @@ inputAction = do
     Nothing -> inputAction
     Just Verbose -> setVerbosityM >> topLevel
     Just Quit -> pass
+    Just Inventory -> describeInventoryM 
+                        >> updateDisplayActionM showEnvironmentM 
+                        >> topLevel
     Just (MkGameInput input') -> do
       case runParser tokens input' of
           Left _ -> putStrLn "parse failed" >> displaySceneM True >> inputAction
@@ -46,6 +51,7 @@ getInput = do
   case str of
     ""     -> pure Nothing
     "quit" -> pure $ Just Quit
+    "inventory" -> pure $ Just Inventory
     "verbose" -> pure $ Just Verbose
     input  -> pure $ Just (mkGameInput input)
   where

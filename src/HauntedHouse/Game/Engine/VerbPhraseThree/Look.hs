@@ -18,4 +18,5 @@ doLookTwoPrepM (PrepPhrase1 prep np,pp) = do
 doLookTwoPrepM _ = throwError "doLookTwoPrep implementation unfinished"
 
 -- FIXME . change data Object to data Entity everywhere
-
+-- FIXME set player action
+-- FIXME what about entities that aren't a nexus?

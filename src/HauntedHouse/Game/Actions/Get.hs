@@ -6,17 +6,24 @@ import HauntedHouse.Game.Model.Mapping
 import HauntedHouse.Game.Object (getObjectM)
 import qualified Data.Map.Strict
 import qualified Data.List.NonEmpty
+import HauntedHouse.Game.World (setLocationMapM)
+import HauntedHouse.Game.Player (setPlayerInventoryM)
 
 noGetM :: GameStateExceptT ()
 noGetM = throwError "Are you serious?"
 
+-- assumes object is on floor
 standardGetM :: GID Object -> GameStateExceptT ()
 standardGetM gid = do
-  gidList <- concatMap Data.List.NonEmpty.toList . toElems
-                <$> (getLocationIdM >>= getLocationM)
-  if gid `elem` gidList
-    then print "You would check for visiblity here"
-    else throwError "You don't see that here."
-  pass
+  lid <- getLocationIdM
+  location <- getLocationM lid
+  floorInv <- throwMaybeM notHereMSG $ _floorInventory' location
+  if gid `elem` floorInv 
+    then do
+          let updatedInv = nonEmpty (Data.List.NonEmpty.filter (/= gid) floorInv)
+              updatedLocation = location{_floorInventory' = updatedInv}
+          setLocationMapM lid updatedLocation
+          setPlayerInventoryM gid
+    else throwError notHereMSG
   where
-    toElems = Data.Map.Strict.elems . _unLabelToGIDListMapping' . _objectLabelMap'
+    notHereMSG = "It should be on the floor but it isn't"
