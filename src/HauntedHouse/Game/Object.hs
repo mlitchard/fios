@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module HauntedHouse.Game.Object where
 
-import qualified Data.Map.Strict (lookup, insert, insertWith, toList, elems)
+import qualified Data.Map.Strict (lookup, insert, insertWith, elems)
 import HauntedHouse.Game.Model.Mapping
 
 import HauntedHouse.Game.Model.GID (GID (GID))

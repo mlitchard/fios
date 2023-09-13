@@ -23,6 +23,8 @@ door = Label DOOR
 plantPot :: Label Object 
 plantPot = Label POT 
 
+floorLabel :: Label Object 
+floorLabel = Label FLOOR
 {-
 These generate the Labels for the specific objects
 -}
@@ -36,6 +38,7 @@ objectNames =
   , "kitchenCabinetBelowShelf"
   , "kitchenEastDoor"
   , "kitchenEastPortal"
+  , "kitchenFloor"
   , "plantPot"]
 
 numberOfObjects :: [Integer]

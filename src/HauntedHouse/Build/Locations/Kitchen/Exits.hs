@@ -95,7 +95,8 @@ kitchenEastDoorPortalInterface = PortalInterface
 
 kitchenEastDoorGateInterface :: ContainerInterface
 kitchenEastDoorGateInterface = ContainerInterface {
-      _openState'     = Open
+      _describe'      = mempty
+    , _openState'     = Open
     , _openAction'    = pass
     , _closeAction'   = pass
     , _lockAction'    = pass

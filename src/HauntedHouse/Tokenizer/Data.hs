@@ -17,7 +17,7 @@ locations =
 objects :: HashSet Lexeme
 objects = 
   HS.fromList [PLANT, POT, BOOK, BELL, CANDLE, TEA, DOOR, CABINET, SINK, SHELF
-                , LEFT, RIGHT, FRONT, BACK]
+                , LEFT, RIGHT, FRONT, BACK,FLOOR]
 
 -- https://stackoverflow.com/questions/44130436/how-to-have-a-sum-type-adt-with-a-known-set-of-string-literals
 
@@ -58,6 +58,7 @@ sc = L.space (void spaceChar) lineCmnt blockCmnt
 
 data Lexeme
   = FROM
+  | FLOOR
   | SMALL
   | LARGE
   | OPEN
@@ -160,6 +161,7 @@ term :: Parser Lexeme
 term = 
   PALACE <$ symbol "PALACE"
     <|> FROM <$ symbol "FROM"
+    <|> floor'
     <|> small
     <|> large
     <|> BASEMENT <$ symbol "BASEMENT"
@@ -254,6 +256,10 @@ small =
   SMALL <$ symbol "SMALL" 
     <|> SMALL <$ symbol "TINY" 
     <|> SMALL <$ symbol "LITTLE"
+
+floor' :: Parser Lexeme 
+floor' = 
+  FLOOR <$ symbol "FLOOR" <|> FLOOR <$ symbol "GROUND"
 
 get :: Parser Lexeme 
 get = GET <$ symbol "GET" <|> GET <$ symbol "TAKE"

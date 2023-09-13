@@ -17,11 +17,11 @@ import qualified Data.Map.Strict
  
 import HauntedHouse.Build.Locations.Kitchen.Exits ( buildExits )
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink 
-import HauntedHouse.Build.ObjectLabels (cabinet, sink, shelf, plantPot)
+import HauntedHouse.Build.ObjectLabels (cabinet, sink, shelf, plantPot, floorLabel)
 import HauntedHouse.Build.ObjectTemplate
         (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID
         , kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID
-        , kitchenEastDoorGID, kitchenShelfGID, kitchenSinkGID, plantPotGID)
+        , kitchenEastDoorGID, kitchenShelfGID, kitchenSinkGID, plantPotGID, kitchenFloorGID)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping
         (LabelToGIDMapping (LabelToGIDMapping), Label (..)
@@ -37,6 +37,7 @@ import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink
 import HauntedHouse.Game.Model.Condition (Proximity (..))
 import HauntedHouse.Build.Locations.Kitchen.PlantPot (buildPlantPot)
+import HauntedHouse.Build.Locations.Kitchen.Floor (buildKitchenFloor)
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
@@ -45,6 +46,7 @@ buildKitchen = do
   buildExits 
   buildKitchenSink
   buildKitchenShelf
+  buildKitchenFloor 
   buildPlantPot
   buildKitchenCabinetAboveShelf
   buildKitchenCabinetBelowShelf
@@ -54,13 +56,14 @@ buildKitchen = do
 kitchenDescription :: Text 
 kitchenDescription = "It's a kitchen"
 
+-- FIXME - when generating Locations, don't hardwire in data
 kitchenLocation :: Location 
 kitchenLocation = Location 
   { _title' = "The Test Kitchen"
   , _description' = kitchenDescription
   , _anchoredTo' = kitchenAnchoredTo
   , _anchoredObjects' = kitchenAnchors
-  , _floorInventory' = Nothing
+  , _floorInventory' = [plantPotGID]
   , _objectLabelMap' = kitchenObjectLabelMap
   , _directions' = Just directions
   }
@@ -90,13 +93,16 @@ objectList =
 kitchenObjectLabelMap :: LabelToGIDListMapping Object Object
 kitchenObjectLabelMap = LabelToGIDListMapping $ Data.Map.Strict.fromList 
   [(cabinet,kitchenCabinets),(sink, kitchenSink),(shelf, kitchenShelf)
-  , (plantPot, kitchenPlantPot)]
+  , (plantPot, kitchenPlantPot), (floorLabel,kitchenFloor )]
 
 kitchenPlantPot :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenPlantPot = Data.List.NonEmpty.singleton plantPotGID
 
 kitchenSink :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenSink = Data.List.NonEmpty.singleton kitchenSinkGID
+
+kitchenFloor :: Data.List.NonEmpty.NonEmpty (GID Object)
+kitchenFloor = Data.List.NonEmpty.singleton kitchenFloorGID 
 
 kitchenShelf :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenShelf = Data.List.NonEmpty.singleton kitchenShelfGID 
@@ -109,12 +115,21 @@ kitchenCabinets = Data.List.NonEmpty.fromList
   , kitchenCabinetBelowShelfGID]
  
 kitchenAnchors :: RoomAnchors 
-kitchenAnchors = 
-  RoomAnchors $ Data.Map.Strict.fromList [(EastAnchor, objectAnchors)]
+kitchenAnchors = RoomAnchors $ Data.Map.Strict.fromList anchorList 
+
+anchorList :: [(RoomAnchor,ObjectAnchors)]
+anchorList = [(EastAnchor, objectAnchors), (CenterAnchor,floorAnchor)]
 
 objectAnchors :: ObjectAnchors 
 objectAnchors = ObjectAnchors $ Data.Map.Strict.fromList 
   [(kitchenSinkGID,sinkNeighbors),(kitchenShelfGID,shelfNeighbors)]
+
+floorAnchor :: ObjectAnchors 
+floorAnchor = ObjectAnchors 
+  $ Data.Map.Strict.singleton kitchenFloorGID noFloorNeighbors
+
+noFloorNeighbors :: Neighbors 
+noFloorNeighbors = Neighbors $ NeighborMap $ Data.Map.Strict.empty 
 
 shelfNeighbors :: Neighbors 
 shelfNeighbors = Neighbors shelfNeighborMap

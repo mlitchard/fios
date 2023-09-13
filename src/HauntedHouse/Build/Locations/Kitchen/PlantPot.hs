@@ -23,8 +23,8 @@ plantPot = Object {
     , _odescription'   = [desc]
     , _descriptives'   = [Label PLANT, Label SMALL]
     , _moveability'    = NotMoveable
-    , _perceptability' = Imperceptible
-    , _orientation'    = orientation 
+    , _perceptability' = Perceptible
+    , _orientation'    = floorOrientation -- orientation 
     , _mNexus'         = Nothing
     , _standardActions' = standardActions
   }
@@ -41,6 +41,9 @@ orientation = ContainedBy' $ ContainedBy {
     _containedBy' = On kitchenShelfGID
   , _self = plantPotGID
 }
+
+floorOrientation :: Orientation 
+floorOrientation = Floor 
 
 potNexus :: Nexus 
 potNexus = Containment' potContainment

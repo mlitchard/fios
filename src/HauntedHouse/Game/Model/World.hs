@@ -125,7 +125,7 @@ data Location = Location {
   , _description'     :: Text
   , _anchoredObjects' :: RoomAnchors
   , _anchoredTo'      :: AnchoredTo
-  , _floorInventory'  :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
+  , _floorInventory'  :: [GID Object]
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
   , _directions'      :: Maybe ExitGIDMap
 }
@@ -220,7 +220,7 @@ data Scene = Scene
   {_sceneTitle'         :: Text
   , _sceneDescription'  :: Text
   , _roomAnchored'      :: Maybe (NonEmpty (Text,[SceneAnchored])) -- text is Room area preamble
-  , _floor'             :: Maybe (NonEmpty Text)
+  , _floor'             :: [Text]
   , _visibleExits'      :: Maybe (NonEmpty Text)
   } deriving stock Show
 

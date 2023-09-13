@@ -2,20 +2,17 @@
 {-# HLINT ignore "Use one" #-}
 module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
   where
-
-import qualified Data.List.NonEmpty
-
+    
 import HauntedHouse.Game.Model.Mapping
-        (GIDToDataMapping (..), ContainerMap (..), GIDList, Label (..))
+        (GIDToDataMapping (..), ContainerMap (..))
 import HauntedHouse.Game.Model.World
     ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..)
     , GameStateExceptT, GameState (..), Nexus (..), RoomAnchor (EastAnchor), Orientation (Anchoring), StandardActions (..))
-import qualified Data.Map.Strict (insert, singleton, empty)
+import qualified Data.Map.Strict (insert, empty)
 import HauntedHouse.Build.ObjectTemplate
-    ( kitchenShelfGID, plantPotGID )
+    ( kitchenShelfGID )
 import Data.These (These(..))
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
-import HauntedHouse.Tokenizer (Lexeme(..))
 import HauntedHouse.Game.Actions.Get 
 
 buildKitchenShelf :: GameStateExceptT ()
