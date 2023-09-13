@@ -12,6 +12,7 @@ import HauntedHouse.Game.Model.Condition
 import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Get (noGetM)
+import HauntedHouse.Tokenizer (Lexeme(SINK))
 
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do
@@ -27,6 +28,7 @@ buildKitchenCabinetAboveShelf = do
 buildCabinet :: Object 
 buildCabinet = Object {
       _shortName' = "cabinet"
+    , _entityLabel' = Label SINK
     , _odescription' = [desc]
     , _descriptives' = []
     , _moveability' = NotMoveable
@@ -40,8 +42,8 @@ buildCabinet = Object {
 
 standardActions :: StandardActions
 standardActions = StandardActions 
-  { _get' = noGetM
-  , _put' = pass 
+  { _get' = const pass -- noGetM
+  , _put' = const pass 
   }
 
 orientation :: Orientation 

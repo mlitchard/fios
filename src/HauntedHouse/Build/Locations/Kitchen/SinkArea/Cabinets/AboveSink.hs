@@ -1,7 +1,7 @@
 module HauntedHouse.Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink where
 
 import HauntedHouse.Game.Model.Mapping 
-        (GIDToDataMapping (..), ContainerMap (..))
+        (GIDToDataMapping (..), ContainerMap (..), Label (..))
 import HauntedHouse.Game.Model.World
 import qualified Data.Map.Strict
 import HauntedHouse.Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenSinkGID)
@@ -11,6 +11,7 @@ import HauntedHouse.Game.Model.Condition
 import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Get (noGetM)
+import HauntedHouse.Tokenizer (Lexeme (CABINET))
 
 buildKitchenCabinetAboveSink :: GameStateExceptT ()
 buildKitchenCabinetAboveSink = do
@@ -26,6 +27,7 @@ buildKitchenCabinetAboveSink = do
 buildCabinet :: Object 
 buildCabinet = Object { 
       _shortName' = "cabinet"
+    , _entityLabel' = Label CABINET
     , _odescription' = [desc]
     , _descriptives' = []
     , _moveability' = NotMoveable
@@ -39,8 +41,8 @@ buildCabinet = Object {
 
 standardActions :: StandardActions
 standardActions = StandardActions 
-  { _get' = noGetM
-  , _put' = pass 
+  { _get' = const pass -- noGetM
+  , _put' = const pass 
   }
 
 orientation :: Orientation 

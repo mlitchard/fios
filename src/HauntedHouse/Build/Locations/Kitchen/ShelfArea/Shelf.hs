@@ -4,7 +4,7 @@ module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
   where
     
 import HauntedHouse.Game.Model.Mapping
-        (GIDToDataMapping (..), ContainerMap (..))
+        (GIDToDataMapping (..), ContainerMap (..), Label (..))
 import HauntedHouse.Game.Model.World
     ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..)
     , GameStateExceptT, GameState (..), Nexus (..), RoomAnchor (EastAnchor), Orientation (Anchoring), StandardActions (..))
@@ -14,6 +14,7 @@ import HauntedHouse.Build.ObjectTemplate
 import Data.These (These(..))
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import HauntedHouse.Game.Actions.Get 
+import HauntedHouse.Tokenizer (Lexeme (SHELF))
 
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf = do
@@ -27,6 +28,7 @@ buildKitchenShelf = do
 buildShelf :: Object
 buildShelf= Object {
       _shortName' = "shelf"
+    , _entityLabel' = Label SHELF
     , _odescription' = [desc]
     , _descriptives' = []
     , _moveability' = NotMoveable
@@ -40,8 +42,8 @@ buildShelf= Object {
 
 standardActions :: StandardActions
 standardActions = StandardActions 
-  { _get' = noGetM
-  , _put' = pass 
+  { _get' = const pass -- noGetM
+  , _put' = const pass 
   }
   
 orientation :: Orientation 

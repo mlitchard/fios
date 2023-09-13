@@ -48,8 +48,8 @@ kitchenEastDoorObject = Object {
 
 standardActions :: StandardActions
 standardActions = StandardActions 
-  { _get' = noGetM
-  , _put' = pass 
+  { _get' = const pass -- noGetM
+  , _put' = const pass 
   }
   
 orientation :: Orientation

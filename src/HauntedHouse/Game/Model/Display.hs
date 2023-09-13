@@ -117,9 +117,10 @@ updateContainerDescriptionM prep (gid,entity) = do
         nonsenseMSG :: Text
         nonsenseMSG = "Nonsense Detected: updateContainerDescriptionM "
                         <> show prep
+
 -- FIXME perception test should happen seperately
 describeObjectM :: Object -> GameStateExceptT ()
-describeObjectM (Object shortName desc _ _ percept orientation mNexus _) = do
+describeObjectM (Object shortName _ desc _ _ percept orientation mNexus _) = do
   case percept of
     Imperceptible -> throwError "You don't see that."
     Perceptible -> updatePlayerActionM success
@@ -145,7 +146,7 @@ describeOrientationM preamble orientation = do
   desc <- case orientation of
             ContainedBy' containedBy -> describeContainedByM containedBy
             Inventory -> pure "in your inventory."
-            Floor     -> pure "on the floor."
+            (Floor _) -> pure "on the floor."
             (AnchoredTo' anchoredTo) -> describeAnchoredToM anchoredTo
             Anchoring roomAnchor -> pure $ describeAnchoring roomAnchor
   updateEnvironmentM (preamble <> desc)

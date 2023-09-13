@@ -63,7 +63,6 @@ kitchenLocation = Location
   , _description' = kitchenDescription
   , _anchoredTo' = kitchenAnchoredTo
   , _anchoredObjects' = kitchenAnchors
-  , _floorInventory' = [plantPotGID]
   , _objectLabelMap' = kitchenObjectLabelMap
   , _directions' = Just directions
   }

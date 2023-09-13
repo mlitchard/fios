@@ -18,7 +18,7 @@ newtype GIDToGIDMapping a b
     {_unGIDtoGIDMapping' :: Data.Map.Strict.Map (GID a ) (GID b)}
         deriving stock Show 
 
-type GIDList a = (Data.List.NonEmpty.NonEmpty (GID a))
+type GIDList a = NonEmpty (GID a)
 
 newtype Label a = Label {_unLabel' :: Lexeme} deriving stock (Show,Eq,Ord)
 

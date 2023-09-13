@@ -63,7 +63,7 @@ setEvaluatorM engine = do
   modify' (\gs -> gs{_evaluator' = engine})
 
 objectOrientation :: Object -> GameStateExceptT ()
-objectOrientation (Object shortName _ _ _ _ orientation _ _) =
+objectOrientation (Object shortName _ _ _ _ _ orientation _ _) =
   describeOrientationM ("The " <> shortName) orientation
 
 checkProximity :: PrepPhrase -> FoundAnchoredTo -> Bool

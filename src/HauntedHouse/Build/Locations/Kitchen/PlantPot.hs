@@ -34,7 +34,7 @@ plantPot = Object {
 standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = standardGetM plantPotGID
-  , _put' = pass 
+  , _put' = const pass 
   }
 orientation :: Orientation 
 orientation = ContainedBy' $ ContainedBy {
@@ -43,7 +43,7 @@ orientation = ContainedBy' $ ContainedBy {
 }
 
 floorOrientation :: Orientation 
-floorOrientation = Floor 
+floorOrientation = Floor kitchenFloorGID
 
 potNexus :: Nexus 
 potNexus = Containment' potContainment

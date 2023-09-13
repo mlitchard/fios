@@ -125,7 +125,6 @@ data Location = Location {
   , _description'     :: Text
   , _anchoredObjects' :: RoomAnchors
   , _anchoredTo'      :: AnchoredTo
-  , _floorInventory'  :: [GID Object]
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
   , _directions'      :: Maybe ExitGIDMap
 }
@@ -157,6 +156,7 @@ data Door = Door
 
 data Object = Object {
     _shortName'       :: Text
+  , _entityLabel'     :: Label Object
   , _odescription'    :: [Text]
   , _descriptives'    :: [Label Adjective]
   , _moveability'     :: Moveability
@@ -167,8 +167,8 @@ data Object = Object {
 }
 
 data StandardActions = StandardActions 
-  {   _get' :: GameStateExceptT ()
-    , _put' :: GameStateExceptT ()
+  {   _get' :: GID Object -> GameStateExceptT ()
+    , _put' :: GID Object -> GameStateExceptT ()
   }
 newtype ObjectAnchors = ObjectAnchors {
   _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors
@@ -179,7 +179,7 @@ data OpenState = Open | Closed deriving stock Show
 data Orientation 
   = ContainedBy' ContainedBy 
   | Inventory 
-  | Floor 
+  | Floor (GID Object)
   | AnchoredTo' (GID Object, Proximity) 
   | Anchoring RoomAnchor
     deriving stock Show 
@@ -220,7 +220,6 @@ data Scene = Scene
   {_sceneTitle'         :: Text
   , _sceneDescription'  :: Text
   , _roomAnchored'      :: Maybe (NonEmpty (Text,[SceneAnchored])) -- text is Room area preamble
-  , _floor'             :: [Text]
   , _visibleExits'      :: Maybe (NonEmpty Text)
   } deriving stock Show
 

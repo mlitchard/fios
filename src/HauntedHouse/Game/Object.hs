@@ -32,7 +32,7 @@ setObjectLabelMapM :: GID Location
                         -> GID Object
                         -> GameStateExceptT ()
 setObjectLabelMapM locationGID objectLabel objectGID = do
-  location@(Location _ _ _ _ _ (LabelToGIDListMapping objectLabelMap) _)
+  location@(Location _ _ _ _ (LabelToGIDListMapping objectLabelMap) _)
     <- getLocationM locationGID
   let updatedMap = LabelToGIDListMapping $ insertGID objectLabelMap
       updatedLocation = location{_objectLabelMap' = updatedMap}
@@ -112,7 +112,10 @@ getContainerInterfaceM entity = do
     notContainedInMSG = "getContainerInterface error: can't put things in this"
     notContainerMSG = "getContainerInterface error: "
                         <> "called on an entity that isn't a container."
-
+{-
 isPercieved :: Object -> Bool
-isPercieved (Object _ _ _ _ Perceptible _ _ _) = True
+isPercieved (Object _ _ _ _ _ Perceptible _ _ _) = True
 isPercieved _ = False
+-}
+isPercieved :: Object -> Bool 
+isPercieved (Object {..}) = _perceptability' == Perceptible 

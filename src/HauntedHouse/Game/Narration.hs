@@ -15,21 +15,18 @@ reportFloorM :: [GID Object] -> GameStateExceptT [Text]
 reportFloorM = mapM getShortNameM
 
 makeSceneM :: Location -> GameStateExceptT ()
-makeSceneM (Location title desc anchObj anchTo floor' olmap d) = do
+makeSceneM (Location title desc anchObj anchTo olmap d) = do
   narration <- _narration' <$> get
   roomAnchors <- makeScenePart anchObj
-  floorDesc <- mapM getShortNameM floor'
   exits <- makeExits d
-  print ("floorDesc is " : floorDesc)
   modify (\gs -> gs {_narration' =
                         narration {_scene' =
-                          scene roomAnchors exits floorDesc}})
+                          scene roomAnchors exits}})
   where
-    scene roomAnchors exits floorDesc = Scene {
+    scene roomAnchors exits = Scene {
       _sceneTitle' = title
       , _sceneDescription' = desc
       , _roomAnchored' =  roomAnchors
-      , _floor' = floorDesc
       , _visibleExits' = exits
     }
 
@@ -60,24 +57,21 @@ displaySceneM useVerbosity  =  do
   display scene
 
 displayQuietM :: Scene -> GameStateExceptT ()
-displayQuietM (Scene title _ _ _ _) =
+displayQuietM (Scene title _ _ _ ) =
   liftIO $ print ("You are in the " <> title)
 
 displayNormalM :: Scene -> GameStateExceptT ()
-displayNormalM (Scene title desc _ _  exit) =
+displayNormalM (Scene title desc _   exit) =
   print ("You are in the " <> title) >> print desc >> displayExitsM exit
 
 displayLoudM :: Scene -> GameStateExceptT ()
-displayLoudM (Scene title desc anchored floor' exit) = do
+displayLoudM (Scene title desc anchored exit) = do
   print ("You are in the " <> title)
   print desc
   print ("This is what you see" :: Text)
-  let showItems = case (anchored,floor') of
-                    (Nothing,[]) -> print ("An Empty Room" :: Text)
-                    (Just a,[])  -> mapM_ displayAnchoredM a
-                    (Just a, fl) -> mapM_ displayAnchoredM a
-                                      >> displayFloorM fl
-                    (Nothing, fl) -> displayFloorM fl
+  let showItems = case anchored of
+                    Nothing -> print ("An Empty Room" :: Text)
+                    Just a  -> mapM_ displayAnchoredM a
   showItems >> displayExitsM exit
 
 displayExitsM :: Maybe (NonEmpty Text) -> GameStateExceptT ()

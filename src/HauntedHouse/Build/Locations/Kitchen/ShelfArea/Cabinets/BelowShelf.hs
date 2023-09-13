@@ -3,7 +3,8 @@
 module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf 
   where
   
-import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..), GIDList, Label (..))
+import HauntedHouse.Game.Model.Mapping 
+        (GIDToDataMapping (..), ContainerMap (..), GIDList, Label (..))
 import HauntedHouse.Game.Model.World
 import qualified Data.Map.Strict (insert, empty, singleton)
 import HauntedHouse.Build.ObjectTemplate (kitchenCabinetBelowShelfGID, kitchenShelfGID, plantPotGID)
@@ -11,7 +12,7 @@ import Data.These (These(..))
 import HauntedHouse.Game.Model.Condition 
         (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
 import qualified Data.List.NonEmpty
-import HauntedHouse.Tokenizer (Lexeme(PLANT, POT))
+import HauntedHouse.Tokenizer (Lexeme(PLANT, POT, CABINET))
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Get (noGetM)
@@ -30,6 +31,7 @@ buildKitchenCabinetBelowShelf = do
 buildCabinet :: Object 
 buildCabinet = Object { 
       _shortName' = "cabinet"
+    , _entityLabel' = Label CABINET
     , _odescription' = [desc]
     , _descriptives' = [] 
     , _moveability' = NotMoveable
@@ -43,8 +45,8 @@ buildCabinet = Object {
 
 standardActions :: StandardActions
 standardActions = StandardActions 
-  { _get' = noGetM
-  , _put' = pass 
+  { _get' = const pass --  noGetM
+  , _put' = const pass 
   }
 
 orientation :: Orientation 

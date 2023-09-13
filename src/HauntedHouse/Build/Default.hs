@@ -84,7 +84,6 @@ defaultScene = Scene
   { _sceneTitle' = Data.Text.empty
   , _sceneDescription' = Data.Text.empty
   , _roomAnchored' = mempty
-  , _floor' = mempty
   , _visibleExits' = mempty
   }
 

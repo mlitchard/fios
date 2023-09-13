@@ -48,6 +48,6 @@ floorInv = Data.List.NonEmpty.singleton plantPotGID
 
 standardActions :: StandardActions
 standardActions = StandardActions 
-  { _get' = pass 
-  , _put' = pass 
+  { _get' = const pass 
+  , _put' = const pass 
   }
