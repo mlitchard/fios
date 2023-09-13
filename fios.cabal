@@ -120,6 +120,7 @@ library
     HauntedHouse.Build.Locations.Hall
     HauntedHouse.Build.Locations.Kitchen
     HauntedHouse.Build.Locations.Kitchen.Exits
+    HauntedHouse.Build.Locations.Kitchen.Floor
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
