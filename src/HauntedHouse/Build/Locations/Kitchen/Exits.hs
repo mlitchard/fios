@@ -10,6 +10,7 @@ import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..), 
 import HauntedHouse.Build.ObjectLabels
 import HauntedHouse.Build.LocationTemplate
 import HauntedHouse.Build.DirectionTemplate (eastLabel)
+import HauntedHouse.Game.Actions.Get (noGetM)
 
 buildExits :: GameStateExceptT ()
 buildExits =
@@ -39,11 +40,18 @@ kitchenEastDoorObject = Object {
     , _perceptability' = Perceptible
     , _orientation'    = orientation
     , _mNexus'         = Just eastDoorNexus
+    , _standardActions' = standardActions 
   }
   where
     kitchenShortName    = "door to the east hall."
     kitchenEastDoorDesc = "It's a door made from some mysterious substance."
 
+standardActions :: StandardActions
+standardActions = StandardActions 
+  { _get' = noGetM
+  , _put' = pass 
+  }
+  
 orientation :: Orientation
 orientation = Anchoring EastAnchor
 
@@ -65,6 +73,7 @@ kitchenEastPortalObject = Object
   , _perceptability' = Perceptible -- placeholder 
   , _orientation' = AnchoredTo' (kitchenEastDoorGID, PlacedBehind)
   , _mNexus' = (Just . Portal') kitchenEastDoorPortal
+  , _standardActions' = standardActions
   }
   
 kitchenEastDoorPortal :: Portal 

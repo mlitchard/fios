@@ -1,7 +1,7 @@
 module HauntedHouse.Game.Actions.Close where 
 import HauntedHouse.Game.Model.World 
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.Object (getObjectM, setObjectMapM)
+import HauntedHouse.Game.Object (getObjectM, setObjectMapM, togglePerceptabilityM)
 import Control.Monad.Except (MonadError(..))
 import HauntedHouse.Game.Model.Display (maybeDescribeNexusM, updateDisplayActionM, showPlayerActionM, showEnvironmentM)
 import Data.These
@@ -24,12 +24,15 @@ standardCloseM gid = do
 closeContainerM :: Containment -> GameStateExceptT Nexus
 closeContainerM (Containment containment) = do
   updatedContainment <-  case containment of
-    (This containerIn) -> This <$> makeClosedContainerM containerIn
+    (This contIn) -> do
+                       contIn' <- makeClosedContainerM contIn
+                       togglePerceptabilityM Closed contIn'
+                       pure (This contIn') 
     (That _) -> throwError "You can't close that."
-    (These containerIn containerOn ) -> do
-                                          containerIn' <-
-                                            makeClosedContainerM containerIn
-                                          pure $ These containerIn' containerOn
+    (These contIn contOn ) -> do
+                                contIn' <- makeClosedContainerM contIn
+                                togglePerceptabilityM Closed contIn 
+                                pure $ These contIn' contOn
   pure $ Containment' (Containment updatedContainment)
 
 makeClosedContainerM :: ContainedIn -> GameStateExceptT ContainedIn

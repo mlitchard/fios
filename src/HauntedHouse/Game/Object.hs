@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module HauntedHouse.Game.Object where
 
-import qualified Data.Map.Strict (lookup, insert, insertWith)
+import qualified Data.Map.Strict (lookup, insert, insertWith, toList, elems)
 import HauntedHouse.Game.Model.Mapping
 
 import HauntedHouse.Game.Model.GID (GID (GID))
@@ -72,8 +72,29 @@ getShortNameM gid = _shortName' <$> getObjectM gid
 capturePerceptibleM :: GIDList Object
                         -> GameStateExceptT (Maybe (NonEmpty (GID Object,Object)))
 capturePerceptibleM objectList = do
-  nonEmpty . mfilter (\(_, obj) -> isPercieved obj)
+  nonEmpty . mfilter testPerceptability -- (\(_, obj) -> isPercieved obj)
     <$> mapM getObjectGIDPairM (Data.List.NonEmpty.toList objectList)
+
+togglePerceptabilityM :: OpenState -> ContainedIn -> GameStateExceptT ()
+togglePerceptabilityM openState (ContainedIn _ (ContainerMap contents)) = do
+  let gidList = concatMap Data.List.NonEmpty.toList 
+            $ Data.Map.Strict.elems contents 
+  mapM_ togglePerceptabilityM' gidList 
+    where
+      toggledPerceptibility = togglePerceptability openState
+      togglePerceptabilityM' :: GID Object -> GameStateExceptT () 
+      togglePerceptabilityM' gid = do 
+        entity <- getObjectM gid
+        let updatedEntity = entity {_perceptability' = toggledPerceptibility }
+        setObjectMapM gid updatedEntity
+
+togglePerceptability :: OpenState -> Perceptibility 
+togglePerceptability Open = Perceptible 
+togglePerceptability Closed = Imperceptible 
+
+-- changePerceptabilityM :: GIDList Object 
+testPerceptability :: (GID Object, Object) -> Bool 
+testPerceptability (_,obj) = isPercieved obj
 
 getContainerInterfaceM :: Object -> GameStateExceptT ContainerInterface
 getContainerInterfaceM entity = do

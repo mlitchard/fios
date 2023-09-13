@@ -36,7 +36,7 @@ adjectives :: HashSet Lexeme
 adjectives = 
   HS.fromList [MIND, BLUE, RED, GREAT, LONG, OLD, DRUNK, PLANT, POT, TEA
               , CABINET, LOCKED, UNLOCKED, KITCHEN, VISIBLE, LEFT, RIGHT
-              , FRONT, BEHIND]
+              , FRONT, BEHIND, SMALL, LARGE]
 
 directions :: HashSet Lexeme
 directions = HS.fromList [NORTH, EAST, SOUTH, WEST, DOWN, UP]
@@ -58,6 +58,8 @@ sc = L.space (void spaceChar) lineCmnt blockCmnt
 
 data Lexeme
   = FROM
+  | SMALL
+  | LARGE
   | OPEN
   | CLOSE
   | SHUT
@@ -158,6 +160,8 @@ term :: Parser Lexeme
 term = 
   PALACE <$ symbol "PALACE"
     <|> FROM <$ symbol "FROM"
+    <|> small
+    <|> large
     <|> BASEMENT <$ symbol "BASEMENT"
     <|> ATTIC <$ symbol "ATTIC"
     <|> MAZE <$ symbol "MAZE"
@@ -241,6 +245,15 @@ term =
 
 under :: Parser Lexeme
 under = UNDER <$ symbol "UNDER" <|> UNDER <$ symbol "BELOW"
+
+large :: Parser Lexeme 
+large = LARGE <$ symbol "LARGE" <|> LARGE <$ symbol "BIG" 
+
+small :: Parser Lexeme
+small = 
+  SMALL <$ symbol "SMALL" 
+    <|> SMALL <$ symbol "TINY" 
+    <|> SMALL <$ symbol "LITTLE"
 
 get :: Parser Lexeme 
 get = GET <$ symbol "GET" <|> GET <$ symbol "TAKE"

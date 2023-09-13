@@ -143,8 +143,6 @@ findNoun (Noun n) = n
 findNoun (NounPhrase1 _ np) = findNoun np
 findNoun (NounPhrase3 _ np) = findNoun np
 
-  -- | AnchoredTo' (GID Object, Proximity) 
-
 isAnchoredTo :: Orientation -> Bool
 isAnchoredTo (AnchoredTo' _) = True
 isAnchoredTo _               = False

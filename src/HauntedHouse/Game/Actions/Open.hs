@@ -3,7 +3,7 @@ module HauntedHouse.Game.Actions.Open where
 import HauntedHouse.Game.Model.Display
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.Object (getObjectM, setObjectMapM)
+import HauntedHouse.Game.Object (getObjectM, setObjectMapM, togglePerceptabilityM)
 import Control.Monad.Except (MonadError(..))
 import Data.These (These(..))
 
@@ -25,7 +25,10 @@ standardOpenM gid = do
 openContainerM :: Containment -> GameStateExceptT Nexus
 openContainerM (Containment containment) = do
   updatedContainment <-  case containment of
-    (This containerIn) -> This <$> makeOpenContainerM containerIn
+    (This containerIn) -> do
+                            contIn' <- makeOpenContainerM containerIn
+                            togglePerceptabilityM Open contIn'
+                            pure (This contIn') 
     (That _) -> throwError "You can't open that."
     (These containerIn containerOn ) -> do
                                           containerIn' <-

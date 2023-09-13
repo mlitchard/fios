@@ -76,7 +76,7 @@ newtype Exit = Exit { _toDestination' :: GID Location} deriving stock Show
 
 type EvalVerbSeven = (Verb, NounPhrase, PrepPhrase) -> GameStateExceptT ()
 
-type EvalVerbFive = (Verb, AdjPhrase, NounPhrase) -> GameStateExceptT ()
+type EvalVerbFive = (Verb, AdjPhrase) -> GameStateExceptT ()
 
 newtype ExitGIDDataMap = ExitGIDDataMap {
   _unExitGIDDataMap' :: GIDToDataMapping Exit

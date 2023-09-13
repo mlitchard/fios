@@ -17,6 +17,7 @@ import HauntedHouse.Game.Engine.VerbPhraseOneEvaluator (evalVerbNounPhrase)
 import HauntedHouse.Game.Engine.VerbPhraseTwo (evalVerbPrepPhrase)
 import HauntedHouse.Game.Engine.VerbPhraseThree (verbPhraseThree)
 import HauntedHouse.Game.Engine.VerbPhraseSeven 
+import HauntedHouse.Game.Engine.VerbPhraseFive (verbPhraseFive)
 defaultGameState :: GameState
 defaultGameState = GameState
   { _world' = defaultWorld

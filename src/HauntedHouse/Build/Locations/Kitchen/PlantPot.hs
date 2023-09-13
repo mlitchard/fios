@@ -1,11 +1,12 @@
 module HauntedHouse.Build.Locations.Kitchen.PlantPot where 
 import HauntedHouse.Game.Model.World 
 import HauntedHouse.Build.ObjectTemplate 
-import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..))
+import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..), Label (..))
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import Data.These (These(..))
 import HauntedHouse.Game.Actions.Get (standardGetM)
+import HauntedHouse.Tokenizer (Lexeme(PLANT, SMALL))
 
 buildPlantPot :: GameStateExceptT ()
 buildPlantPot = do
@@ -20,9 +21,9 @@ plantPot :: Object
 plantPot = Object {
       _shortName'      = "plant pot"
     , _odescription'   = [desc]
-    , _descriptives'   = []
+    , _descriptives'   = [Label PLANT, Label SMALL]
     , _moveability'    = NotMoveable
-    , _perceptability' = Perceptible
+    , _perceptability' = Imperceptible
     , _orientation'    = orientation 
     , _mNexus'         = Nothing
     , _standardActions' = standardActions
