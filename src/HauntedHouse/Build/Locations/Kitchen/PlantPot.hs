@@ -6,7 +6,7 @@ import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import Data.These (These(..))
 import HauntedHouse.Game.Actions.Get (standardGetM)
-import HauntedHouse.Tokenizer (Lexeme(PLANT, SMALL))
+import HauntedHouse.Tokenizer (Lexeme(PLANT, SMALL, POT))
 
 buildPlantPot :: GameStateExceptT ()
 buildPlantPot = do
@@ -20,6 +20,7 @@ buildPlantPot = do
 plantPot :: Object 
 plantPot = Object {
       _shortName'      = "plant pot"
+    , _entityLabel' = Label POT 
     , _odescription'   = [desc]
     , _descriptives'   = [Label PLANT, Label SMALL]
     , _moveability'    = NotMoveable

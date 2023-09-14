@@ -80,11 +80,11 @@ anchoredToList =
   
 objectList :: [GID Object] 
 objectList = 
-  [kitchenShelfGID
+  [ kitchenShelfGID
   , kitchenCabinetAboveShelfGID
   , kitchenCabinetBelowShelfGID
   , kitchenSinkGID
- -- , plantPotGID
+  , plantPotGID
   , kitchenEastDoorGID
   , kitchenCabinetAboveSinkGID
   , kitchenCabinetBelowSinkGID] 

@@ -83,8 +83,10 @@ displayAnchoredM (preamble,xs) =
   print preamble >> mapM_ displaySceneAnchoredM xs
 
 displaySceneAnchoredM :: SceneAnchored -> GameStateExceptT ()
-displaySceneAnchoredM (SceneAnchored anchor related) =
-  print anchor >> mapM_ print related
+displaySceneAnchoredM (SceneAnchored anchor related inventory) =
+  print anchor
+    >> mapM_ print inventory 
+    >> mapM_ print related
 
 displayFloorM :: [Text] -> GameStateExceptT ()
 displayFloorM = mapM_ print

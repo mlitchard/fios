@@ -225,6 +225,7 @@ data Scene = Scene
 
 data SceneAnchored = SceneAnchored {
   _sceneAnchored' :: Text
+, _anchoredInventory' :: Maybe Text
 , _sceneRelated' :: [Text]
 } deriving stock Show
 

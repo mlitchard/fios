@@ -10,6 +10,7 @@ import qualified Data.List.NonEmpty
 import Data.These
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import HauntedHouse.Build.ObjectLabels (floorLabel)
+import HauntedHouse.Tokenizer (Lexeme(..))
 -- Anchoring RoomAnchor
 
 buildKitchenFloor :: GameStateExceptT ()
@@ -24,6 +25,7 @@ buildKitchenFloor = do
 buildFloor :: Object 
 buildFloor = Object 
   { _shortName'         = "kitchen floor."
+    , _entityLabel' = Label FLOOR
     , _odescription'    = [desc]
     , _descriptives'     = [] 
     , _moveability'     = NotMoveable
