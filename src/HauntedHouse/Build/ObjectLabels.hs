@@ -20,8 +20,8 @@ cabinet = Label CABINET
 door :: Label Object 
 door = Label DOOR 
 
-plantPot :: Label Object 
-plantPot = Label POT 
+plantPotLabel :: Label Object 
+plantPotLabel = Label POT 
 
 floorLabel :: Label Object 
 floorLabel = Label FLOOR

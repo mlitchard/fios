@@ -17,7 +17,7 @@ import qualified Data.Map.Strict
  
 import HauntedHouse.Build.Locations.Kitchen.Exits ( buildExits )
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink 
-import HauntedHouse.Build.ObjectLabels (cabinet, sink, shelf, plantPot, floorLabel)
+import HauntedHouse.Build.ObjectLabels (cabinet, sink, shelf, floorLabel, plantPotLabel)
 import HauntedHouse.Build.ObjectTemplate
         (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID
         , kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID
@@ -92,7 +92,7 @@ objectList =
 kitchenObjectLabelMap :: LabelToGIDListMapping Object Object
 kitchenObjectLabelMap = LabelToGIDListMapping $ Data.Map.Strict.fromList 
   [(cabinet,kitchenCabinets),(sink, kitchenSink),(shelf, kitchenShelf)
-  , (plantPot, kitchenPlantPot), (floorLabel,kitchenFloor )]
+  , (plantPotLabel, kitchenPlantPot), (floorLabel,kitchenFloor )]
 
 kitchenPlantPot :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenPlantPot = Data.List.NonEmpty.singleton plantPotGID

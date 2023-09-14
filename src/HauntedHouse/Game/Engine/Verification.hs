@@ -38,6 +38,22 @@ verifyAccessabilityAP _ = throwError "verifyExistenceAP unfinished"
 matchDescriptive :: Label Adjective -> [Label Adjective] -> Bool
 matchDescriptive  testDescriptive descriptives =
   testDescriptive `elem` descriptives
+
+{-
+data Orientation 
+  = ContainedBy' ContainedBy 
+  | Inventory 
+  | Floor (GID Object)
+  | AnchoredTo' (GID Object, Proximity) 
+  | Anchoring RoomAnchor
+    deriving stock Show 
+-}
+
+{-
+tryGetFromGIDM (ContainedBy' (ContainedBy {..})) = pass 
+tryGetFromGIDM Inventory = throwError "You already have that."
+tryGetFromGIDM
+-} 
 --- FIXME perceptibility
 verifyExistenceNPPP :: (Imperative -> GameStateExceptT ())
                         -> NounPhrase

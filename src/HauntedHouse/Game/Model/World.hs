@@ -106,6 +106,13 @@ data GameState = GameState
   , _displayAction'         :: GameStateExceptT ()
   }
 
+data GetInput = GetInput 
+  {   _removedEntityGID' :: GID Object
+    , _removedEntity' :: Object
+    , _removedEntityLabel' :: Label Object
+    , _entityOnOrIn' :: OnOrIn 
+  }
+
 data Clarification = Clarification {
     _clarifyingLabel' :: Label Object
   , _gidObjectPairs' :: NonEmpty (GID Object,Object)
@@ -167,7 +174,7 @@ data Object = Object {
 }
 
 data StandardActions = StandardActions 
-  {   _get' :: GID Object -> GameStateExceptT ()
+  {   _get' :: Object -> GameStateExceptT ()
     , _put' :: GID Object -> GameStateExceptT ()
   }
 newtype ObjectAnchors = ObjectAnchors {

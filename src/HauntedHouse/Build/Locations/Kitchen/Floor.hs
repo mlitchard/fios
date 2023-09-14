@@ -9,8 +9,9 @@ import qualified Data.Map.Strict
 import qualified Data.List.NonEmpty
 import Data.These
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
-import HauntedHouse.Build.ObjectLabels (floorLabel)
+import HauntedHouse.Build.ObjectLabels (plantPotLabel)
 import HauntedHouse.Tokenizer (Lexeme(..))
+
 -- Anchoring RoomAnchor
 
 buildKitchenFloor :: GameStateExceptT ()
@@ -43,13 +44,13 @@ floorContainer = (Containment . Data.These.That) containedOn
 
 containedOn :: ContainedOn 
 containedOn = 
-  (ContainedOn . ContainerMap) $ Data.Map.Strict.singleton floorLabel floorInv
+  (ContainedOn . ContainerMap) $ Data.Map.Strict.singleton plantPotLabel floorInv
 
 floorInv :: GIDList Object
 floorInv = Data.List.NonEmpty.singleton plantPotGID 
 
 standardActions :: StandardActions
 standardActions = StandardActions 
-  { _get' = const pass 
+  { _get' = const pass
   , _put' = const pass 
   }
