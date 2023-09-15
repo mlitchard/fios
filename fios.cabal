@@ -154,6 +154,7 @@ library
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.OnlyVerb.DoGo
     HauntedHouse.Game.Engine.VerbPhraseOneEvaluator
+    HauntedHouse.Game.Engine.VerbPhraseOneEvaluator.Get
     HauntedHouse.Game.Engine.VerbPhraseThree 
     HauntedHouse.Game.Engine.VerbPhraseThree.Look
     HauntedHouse.Game.Engine.VerbPhraseTwo

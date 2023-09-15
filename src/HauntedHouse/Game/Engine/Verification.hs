@@ -12,9 +12,36 @@ import HauntedHouse.Clarifier
       findNoun)
 import HauntedHouse.Game.Model.Mapping (Label(..))
 import Control.Monad.Except (MonadError(..))
+import HauntedHouse.Tokenizer.Data (Lexeme)
 
-verifyAccessabilityAP :: AdjPhrase -> GameStateExceptT (GID Object, Object)
-verifyAccessabilityAP (AdjNoun _ (Adjective adj) (Noun noun)) = do
+verifySimple :: Label Adjective 
+                              -> Label Object 
+                              -> GameStateExceptT (GID Object, Object)
+verifySimple descriptiveLabel' directObjectLabel' = do
+  possibleDirectObjects <- getObjectsFromLabelM directObjectLabel'
+  testableEntity <- if length possibleDirectObjects > 1
+    then throwError "verifyExistenceAP can't differentiate yet"
+    else pure (head possibleDirectObjects)
+  let descriptives = _descriptives' (snd testableEntity)
+  -- does it match description?
+  unless (matchDescriptive descriptiveLabel' descriptives)
+    $ throwError noSeeMSG
+  -- can player see it?
+  unless (testPerceptability testableEntity)
+    $ throwError noSeeMSG
+  -- tests pass
+  pure testableEntity
+  where
+    noSeeMSG = "You don't see that here."
+-- (AdjNoun _ (Adjective adj) (Noun noun))
+
+verifyAccessability :: NounPhrase -> GameStateExceptT (GID Object, Object)
+verifyAccessability (NounPhrase1 _ (NounPhrase2 (Adjective adj) (Noun n))) = 
+  verifySimple (descriptiveLabel adj) (directObjectLabel n)
+verifyAccessability (NounPhrase2 (Adjective adj) (Noun n)) = 
+  verifySimple (descriptiveLabel adj) (directObjectLabel n)
+verifyAccessability _ = throwError "verifyAccessabilityAP unfinished"
+  {-
   possibleDirectObjects <- getObjectsFromLabelM directObjectLabel
   testableEntity <- if length possibleDirectObjects > 1
     then throwError "verifyExistenceAP can't differentiate yet"
@@ -28,12 +55,14 @@ verifyAccessabilityAP (AdjNoun _ (Adjective adj) (Noun noun)) = do
     $ throwError noSeeMSG
   -- tests pass
   pure testableEntity
-  where
-    noSeeMSG = "You don't see that here."
-    descriptiveLabel = Label adj
-    directObjectLabel = Label noun
+  -}
 
-verifyAccessabilityAP _ = throwError "verifyExistenceAP unfinished"
+descriptiveLabel :: Lexeme -> Label Adjective
+descriptiveLabel = Label
+
+directObjectLabel :: Lexeme -> Label Object
+directObjectLabel = Label
+-- verifyAccessabilityAP _ = throwError "verifyExistenceAP unfinished"
 
 matchDescriptive :: Label Adjective -> [Label Adjective] -> Bool
 matchDescriptive  testDescriptive descriptives =

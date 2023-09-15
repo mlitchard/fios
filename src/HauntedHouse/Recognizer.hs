@@ -48,12 +48,9 @@ imperative = mdo
   nounPhrase <-
     rule $
       Noun <$> noun
-        <|> NounPhrase3 <$> number <*> nounPhrase
-  --      <|> NounPhrase4 <$> nounPhrase <*> prepPhrase
-  --      <|> NounPhrase5 <$> adjPhrase <*> nounPhrase 
-  --      <|> NounPhrase2 <$> determiner <*> adjPhrase
         <|> NounPhrase1 <$> determiner <*> nounPhrase
-  --      <|> NounPhrase6 <$> nounPhrase <*> adjPhrase
+        <|> NounPhrase2 <$> adjPhrase <*> nounPhrase 
+        <|> NounPhrase3 <$> number <*> nounPhrase
         <?> toText ("noun phrase" :: String)
 {-
 VerbPhrase7 Verb NounPhrase PrepPhrase
