@@ -2,7 +2,7 @@ module HauntedHouse.Game.Player where
 
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.World
-        (Player (..), Location, GameStateExceptT, GameState (..), Object (..), Nexus)
+        (Player (..), Location, GameStateExceptT, GameState (..), Object (..), Nexus, Orientation (..))
 import qualified Data.List.NonEmpty (insert, singleton)
 import HauntedHouse.Game.Object (setObjectMapM)
 
@@ -13,13 +13,14 @@ setPlayerLocationM gid = do
   pass
 
 -- FIXME: all add/remove happens here. 
-setPlayerInventoryM :: GID Object -> GameStateExceptT ()
-setPlayerInventoryM gid = do
+setPlayerInventoryM :: GID Object -> Object -> GameStateExceptT ()
+setPlayerInventoryM newEntityGid newEntity = do
   player <- _player' <$> get
   let updatedInv = case _p_inv' player of
-                    []      -> [gid]
-                    invList -> gid : invList
+                    []      -> [newEntityGid]
+                    invList -> newEntityGid : invList
       updatedPlayer = player{_p_inv' = updatedInv}
+  setObjectMapM newEntityGid (newEntity{_orientation' = Inventory})
   modify' (\gs -> gs{_player' = updatedPlayer})
   pass
 

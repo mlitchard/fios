@@ -34,7 +34,7 @@ tryGetM gid entity@(Object{..}) = do
 
 standardGetM :: GetInput
                   -> GameStateExceptT ()
-standardGetM (GetInput rGid _removedEntity' rLabel (On fromGid)) = do
+standardGetM (GetInput rGid removedEntity rLabel (On fromGid)) = do
   print ("*** ON ***" :: Text)
   fromEntity@(Object {..}) <- getObjectM fromGid
   nexus <- throwMaybeM notContainerMSG _mNexus'
@@ -49,14 +49,14 @@ standardGetM (GetInput rGid _removedEntity' rLabel (On fromGid)) = do
                        pure (These cin updatedCon)
   -- setObjectMapM fromGid (fromEntity{_mNexus' = Just updatedNexus})
   removeObject fromGid fromEntity updatedNexus
-  setPlayerInventoryM rGid
-  setObjectMapM rGid (_removedEntity'{_orientation' = Inventory})
+  setPlayerInventoryM rGid removedEntity
+  -- setObjectMapM rGid (removedEntity{_orientation' = Inventory})
   where
     conConstructor = Containment' . Containment
     notContainerMSG = "standardGetM' error: fromObject not a container"
     impassMSG = "standardGetM: illogical situation "
 
-standardGetM (GetInput rGid _removedEntity' rLabel (In fromGid)) = do 
+standardGetM (GetInput rGid removedEntity rLabel (In fromGid)) = do 
   print (" *** IN ***" :: Text)
   fromEntity@(Object {..}) <- getObjectM fromGid
   nexus <- throwMaybeM notContainerMSG _mNexus'
@@ -71,8 +71,8 @@ standardGetM (GetInput rGid _removedEntity' rLabel (In fromGid)) = do
                        pure (These updatedCin con)
   -- removeObject fromGid fromEntity updatedNexus 
   setObjectMapM fromGid (fromEntity{_mNexus' = Just updatedNexus})
-  setPlayerInventoryM rGid
-  setObjectMapM rGid (_removedEntity'{_orientation' = Inventory})
+  setPlayerInventoryM rGid removedEntity
+ -- setObjectMapM rGid (_removedEntity'{_orientation' = Inventory})
   where
     conConstructor = Containment' . Containment
     notContainerMSG = "standardGetM' error: fromObject not a container"
