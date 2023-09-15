@@ -8,9 +8,9 @@ import qualified Data.Map.Strict (lookup)
 import HauntedHouse.Game.Object (capturePerceptibleM)
 import HauntedHouse.Game.Model.World 
 import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Model.Display 
+import HauntedHouse.Game.Model.Display
         (describeObjectM, showPlayerActionM, showEnvironmentM
-        , updateDisplayActionM)
+        , updateDisplayActionM, maybeDescribeNexusM)
 import qualified Relude.List.NonEmpty as NonEmpty
 import HauntedHouse.Recognizer (Imperative)
 import HauntedHouse.Clarifier (clarifyingLookDirectObjectM)
@@ -26,9 +26,12 @@ doLookObjectM (PrepPhrase1 prep np) =
 doLookObjectM _                     = throwError "doLookObject implementation incomplete"
 -}
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
-doLookObjectM pp@(PrepPhrase1 _ _) = do
-  _ <- verifyAccessabilityPP pp
-  pass 
+doLookObjectM pp@(PrepPhrase1 prep _) = do
+  res <- verifyAccessabilityPP (clarifyingLookDirectObjectM prep) pp 
+  case res of 
+    (Left clarifyM) -> clarifyM
+    (Right (_, Object{..})) -> maybeDescribeNexusM _mNexus'
+ 
  -- evaluateNounPhrase (clarifyingLookDirectObjectM prep) np 
  -- (clarifyingLookDirectObjectM prep)
 doLookObjectM (PrepPhrase2 prep _ ap np) = throwError "doLookOject unfinished"

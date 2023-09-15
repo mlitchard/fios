@@ -177,6 +177,7 @@ data Object = Object {
 data StandardActions = StandardActions 
   {   _get' :: Object -> GameStateExceptT ()
     , _put' :: GID Object -> GameStateExceptT ()
+    , _lookIn' :: Object -> GameStateExceptT ()
   }
 newtype ObjectAnchors = ObjectAnchors {
   _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors

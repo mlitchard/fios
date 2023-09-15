@@ -147,8 +147,9 @@ library
     
   other-modules:
     HauntedHouse.Game.Actions.Close
-    HauntedHouse.Game.Actions.Open
     HauntedHouse.Game.Actions.Get
+    HauntedHouse.Game.Actions.Look
+    HauntedHouse.Game.Actions.Open
     HauntedHouse.Build.Locations.Kitchen.PlantPot
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook

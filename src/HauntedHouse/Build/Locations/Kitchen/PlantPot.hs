@@ -36,6 +36,7 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = tryGetM plantPotGID
   , _put' = const pass 
+  , _lookIn' = const pass -- gets special lookIn
   }
 orientation :: Orientation 
 orientation = ContainedBy' $ ContainedBy {

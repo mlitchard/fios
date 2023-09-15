@@ -11,6 +11,7 @@ import HauntedHouse.Build.ObjectLabels
 import HauntedHouse.Build.LocationTemplate
 import HauntedHouse.Build.DirectionTemplate (eastLabel)
 import HauntedHouse.Game.Actions.Get (noGetM)
+import Control.Monad.Except (MonadError(..))
 
 buildExits :: GameStateExceptT ()
 buildExits =
@@ -50,7 +51,10 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = const pass -- noGetM
   , _put' = const pass 
+  , _lookIn' = const (throwError doorLookInErr) 
   }
+  where 
+    doorLookInErr = "you can't see inside the door"
   
 orientation :: Orientation
 orientation = Anchoring EastAnchor

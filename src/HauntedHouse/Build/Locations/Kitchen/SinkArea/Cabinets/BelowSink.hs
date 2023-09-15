@@ -13,6 +13,7 @@ import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Get (noGetM)
 import HauntedHouse.Game.Model.Mapping (Label (..))
 import HauntedHouse.Tokenizer (Lexeme (CABINET))
+import HauntedHouse.Game.Actions.Look (lookIn)
 
 buildKitchenCabinetBelowSink :: GameStateExceptT ()
 buildKitchenCabinetBelowSink = do
@@ -44,6 +45,7 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = const pass
   , _put' = const pass 
+  , _lookIn' = lookIn
   }
 
 orientation :: Orientation 

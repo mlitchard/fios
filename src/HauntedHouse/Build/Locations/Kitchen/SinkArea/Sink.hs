@@ -11,6 +11,7 @@ import HauntedHouse.Game.Model.Condition
         (Perceptibility(Perceptible), Moveability (..))
 import HauntedHouse.Game.Actions.Get
 import HauntedHouse.Tokenizer (Lexeme (SINK)) 
+import HauntedHouse.Game.Actions.Look (lookIn)
 
 buildKitchenSink :: GameStateExceptT ()
 buildKitchenSink = do
@@ -39,7 +40,8 @@ buildSink = Object {
 standardActions :: StandardActions
 standardActions = StandardActions
   { _get' = const pass
-  , _put' = const pass 
+  , _put' = const pass
+  , _lookIn' = const pass 
   }
 
 orientation :: Orientation
