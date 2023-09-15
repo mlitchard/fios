@@ -133,13 +133,13 @@ describeObjectM (Object shortName _ desc _ _ percept orientation mNexus _) = do
 
 describeInventoryM :: GameStateExceptT ()
 describeInventoryM = do
-  mInventory <- _p_inv' . _player' <$> get
-  case mInventory of 
-    Nothing -> updateEnvironmentM "You are empty-handed"
-    Just gids -> do
-                   inv <- mapM getShortNameM gids
-                   updateEnvironmentM "You are carrying:"
-                   mapM_ updateEnvironmentM inv
+  inventory <- _p_inv' . _player' <$> get
+  case inventory of 
+    [] -> updateEnvironmentM "You are empty-handed"
+    gids -> do
+              inv <- mapM getShortNameM gids
+              updateEnvironmentM "You are carrying:"
+              mapM_ updateEnvironmentM inv
                   
 describeOrientationM :: Text -> Orientation -> GameStateExceptT ()
 describeOrientationM preamble orientation = do

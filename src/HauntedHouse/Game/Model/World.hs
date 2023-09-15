@@ -193,7 +193,7 @@ data Orientation
 
 data Player = Player
   { _playerLocation'  :: GID Location
-  , _p_inv'           :: Maybe (Data.List.NonEmpty.NonEmpty (GID Object))
+  , _p_inv'           :: [GID Object]
   } deriving stock Show
 
 data PortalInterface = PortalInterface 

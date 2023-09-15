@@ -68,7 +68,7 @@ defaultWorld = World
 defaultPlayer :: Player
 defaultPlayer = Player
   {_playerLocation' = kitchenGID
-    , _p_inv'         = Nothing
+    , _p_inv'         = mempty 
   }
 
 defaultNarration :: Narration
