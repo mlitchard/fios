@@ -6,7 +6,7 @@ import HauntedHouse.Game.Object (getObjectM, setObjectMapM)
 import Prelude hiding (fromLabel)
 import HauntedHouse.Game.Engine.Utilities
 import Data.These
-import HauntedHouse.Game.Player (setPlayerInventoryM)
+import HauntedHouse.Game.Player (setPlayerInventoryM, removeObject)
 import HauntedHouse.Recognizer (AdjPhrase)
 import HauntedHouse.Game.Engine.Verification (verifyAccessabilityAP)
 
@@ -35,10 +35,11 @@ tryGetM gid entity@(Object{..}) = do
 standardGetM :: GetInput
                   -> GameStateExceptT ()
 standardGetM (GetInput rGid _removedEntity' rLabel (On fromGid)) = do
-  fromObject@(Object {..}) <- getObjectM fromGid
+  print ("*** ON ***" :: Text)
+  fromEntity@(Object {..}) <- getObjectM fromGid
   nexus <- throwMaybeM notContainerMSG _mNexus'
   containment <- throwMaybeM notContainerMSG (maybeContainment nexus)
-  nexus' <- Containment' . Containment <$> case _unContainment' containment of
+  updatedNexus <- conConstructor <$> case _unContainment' containment of
     This _ -> throwError impassMSG
     That con -> do
                   updatedCon <- removeFromContainedOnM rGid rLabel con
@@ -46,18 +47,21 @@ standardGetM (GetInput rGid _removedEntity' rLabel (On fromGid)) = do
     These cin con -> do
                        updatedCon <- removeFromContainedOnM rGid rLabel con
                        pure (These cin updatedCon)
-  setObjectMapM fromGid (fromObject{_mNexus' = Just nexus'})
+  -- setObjectMapM fromGid (fromEntity{_mNexus' = Just updatedNexus})
+  removeObject fromGid fromEntity updatedNexus
   setPlayerInventoryM rGid
   setObjectMapM rGid (_removedEntity'{_orientation' = Inventory})
   where
+    conConstructor = Containment' . Containment
     notContainerMSG = "standardGetM' error: fromObject not a container"
     impassMSG = "standardGetM: illogical situation "
 
 standardGetM (GetInput rGid _removedEntity' rLabel (In fromGid)) = do 
-  fromObject@(Object {..}) <- getObjectM fromGid
+  print (" *** IN ***" :: Text)
+  fromEntity@(Object {..}) <- getObjectM fromGid
   nexus <- throwMaybeM notContainerMSG _mNexus'
   containment <- throwMaybeM notContainerMSG (maybeContainment nexus)
-  nexus' <- Containment' . Containment <$> case _unContainment' containment of
+  updatedNexus <- conConstructor <$> case _unContainment' containment of
     This cin -> do 
                 updatedCin <- removeFromContainedInM rGid rLabel cin
                 pure (This updatedCin) -- throwError impassMSG
@@ -65,12 +69,15 @@ standardGetM (GetInput rGid _removedEntity' rLabel (In fromGid)) = do
     These cin con -> do
                        updatedCin <- removeFromContainedInM rGid rLabel cin
                        pure (These updatedCin con)
-  setObjectMapM fromGid (fromObject{_mNexus' = Just nexus'})
+  -- removeObject fromGid fromEntity updatedNexus 
+  setObjectMapM fromGid (fromEntity{_mNexus' = Just updatedNexus})
   setPlayerInventoryM rGid
   setObjectMapM rGid (_removedEntity'{_orientation' = Inventory})
   where
+    conConstructor = Containment' . Containment
     notContainerMSG = "standardGetM' error: fromObject not a container"
     impassMSG = "standardGetM: illogical situation "
+
 
 {-
 standardGetM :: GID Object -- entity gotten

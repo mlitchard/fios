@@ -2,8 +2,9 @@ module HauntedHouse.Game.Player where
 
 import HauntedHouse.Game.Model.GID
 import HauntedHouse.Game.Model.World
-        (Player (..), Location, GameStateExceptT, GameState (..), Object)
+        (Player (..), Location, GameStateExceptT, GameState (..), Object (..), Nexus)
 import qualified Data.List.NonEmpty (insert, singleton)
+import HauntedHouse.Game.Object (setObjectMapM)
 
 setPlayerLocationM :: GID Location -> GameStateExceptT ()
 setPlayerLocationM gid = do
@@ -22,3 +23,6 @@ setPlayerInventoryM gid = do
   modify' (\gs -> gs{_player' = updatedPlayer})
   pass
 
+removeObject :: GID Object -> Object -> Nexus -> GameStateExceptT ()
+removeObject fromGid fromEntity updatedNexus = do 
+  setObjectMapM fromGid (fromEntity{_mNexus' = Just updatedNexus})
