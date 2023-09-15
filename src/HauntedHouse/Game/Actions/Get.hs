@@ -2,13 +2,11 @@ module HauntedHouse.Game.Actions.Get where
 import HauntedHouse.Game.Model.World
 import Control.Monad.Except (MonadError(..))
 import HauntedHouse.Game.Model.GID (GID)
-import HauntedHouse.Game.Object (getObjectM, setObjectMapM)
+import HauntedHouse.Game.Object (getObjectM)
 import Prelude hiding (fromLabel)
 import HauntedHouse.Game.Engine.Utilities
 import Data.These
-import HauntedHouse.Game.Player (setPlayerInventoryM, removeObject)
-import HauntedHouse.Recognizer (AdjPhrase)
-import HauntedHouse.Game.Engine.Verification (verifyAccessabilityAP)
+import HauntedHouse.Game.Player (setPlayerInventoryM)
 
 noGetM :: GameStateExceptT ()
 noGetM = throwError "Are you serious?"
@@ -35,7 +33,6 @@ tryGetM gid entity@(Object{..}) = do
 standardGetM :: GetInput
                   -> GameStateExceptT ()
 standardGetM (GetInput rGid removedEntity rLabel (On fromGid)) = do
-  print ("*** ON ***" :: Text)
   fromEntity@(Object {..}) <- getObjectM fromGid
   nexus <- throwMaybeM notContainerMSG _mNexus'
   containment <- throwMaybeM notContainerMSG (maybeContainment nexus)
@@ -47,69 +44,26 @@ standardGetM (GetInput rGid removedEntity rLabel (On fromGid)) = do
     These cin con -> do
                        updatedCon <- removeFromContainedOnM rGid rLabel con
                        pure (These cin updatedCon)
-  -- setObjectMapM fromGid (fromEntity{_mNexus' = Just updatedNexus})
-  removeObject fromGid fromEntity updatedNexus
-  setPlayerInventoryM rGid removedEntity
-  -- setObjectMapM rGid (removedEntity{_orientation' = Inventory})
+  setPlayerInventoryM rGid removedEntity fromGid fromEntity updatedNexus
   where
     conConstructor = Containment' . Containment
     notContainerMSG = "standardGetM' error: fromObject not a container"
     impassMSG = "standardGetM: illogical situation "
 
-standardGetM (GetInput rGid removedEntity rLabel (In fromGid)) = do 
-  print (" *** IN ***" :: Text)
+standardGetM (GetInput rGid removedEntity rLabel (In fromGid)) = do
   fromEntity@(Object {..}) <- getObjectM fromGid
   nexus <- throwMaybeM notContainerMSG _mNexus'
   containment <- throwMaybeM notContainerMSG (maybeContainment nexus)
   updatedNexus <- conConstructor <$> case _unContainment' containment of
     This cin -> do 
                 updatedCin <- removeFromContainedInM rGid rLabel cin
-                pure (This updatedCin) -- throwError impassMSG
+                pure (This updatedCin)
     That _ -> throwError impassMSG 
     These cin con -> do
                        updatedCin <- removeFromContainedInM rGid rLabel cin
                        pure (These updatedCin con)
-  -- removeObject fromGid fromEntity updatedNexus 
-  setObjectMapM fromGid (fromEntity{_mNexus' = Just updatedNexus})
-  setPlayerInventoryM rGid removedEntity
- -- setObjectMapM rGid (_removedEntity'{_orientation' = Inventory})
+  setPlayerInventoryM rGid removedEntity fromGid fromEntity updatedNexus
   where
     conConstructor = Containment' . Containment
     notContainerMSG = "standardGetM' error: fromObject not a container"
     impassMSG = "standardGetM: illogical situation "
-
-
-{-
-standardGetM :: GID Object -- entity gotten
-                  -> GID Object -- entity gotten from
-
-                  -> GameStateExceptT ()
-standardGetM removedGID fromGID = do
-  fromEntity <- getObjectM fromGID
-  removedEntity <- getObjectM removedGID
-  let labelRemovedEntity = _entityLabel' removedEntity
-      removeFunctionIn = removeFromContainedInM removedGID labelRemovedEntity
-      removeFunctionOn = removeFromContainedOnM removedGID labelRemovedEntity
-  nexus <- throwMaybeM notContainerMSG (_mNexus' fromEntity)
-  containment <- throwMaybeM notContainerMSG (maybeContainment nexus)
-  onOrIn <- throwMaybeM notContainedMSG (toOnOrIn (_orientation' removedEntity))
-  let unContainment = _unContainment' containment
-  res <- throwMaybeM impassMSG =<< (case unContainment of
-    (This cIn) -> case onOrIn of
-                    (On _) -> pure Nothing
-                    (In _) -> Just . This <$> removeFunctionIn cIn
-    (That cOn) -> case onOrIn of
-                    (On _) -> Just . That <$> removeFunctionOn cOn
-                    (In _) -> pure Nothing
-    (These cIn cOn) -> case onOrIn of
-                        (On _) -> Just . That <$> removeFunctionOn cOn
-                        (In _) -> Just . This <$> removeFunctionIn cIn)
-  let updatedNexus = (Containment' . Containment) res
-      updatedFromEntity = fromEntity {_mNexus' = Just updatedNexus}
-  setObjectMapM fromGID updatedFromEntity
-  -- FIXME change orientation of gotten object to Inventory
-  where
-    impassMSG = "standardGetM: illogical situation "
-    notContainedMSG = "Not contained"
-    notContainerMSG = "Not a container"
--}
