@@ -113,6 +113,7 @@ data GetInput = GetInput
     , _entityOnOrIn' :: OnOrIn 
   }
 
+type GIDObjectPair = (GID Object,Object)
 data Clarification = Clarification {
     _clarifyingLabel' :: Label Object
   , _gidObjectPairs' :: NonEmpty (GID Object,Object)

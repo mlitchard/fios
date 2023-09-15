@@ -1,9 +1,8 @@
 module HauntedHouse.Game.Engine.VerbPhraseOneEvaluator.Get where 
 import HauntedHouse.Game.Model.World 
   (GameStateExceptT, Object (..), StandardActions (..))
-import HauntedHouse.Recognizer (NounPhrase (..), AdjPhrase (..))
-import Control.Monad.Except (MonadError(..))
-import HauntedHouse.Game.Engine.Verification (verifyAccessability)
+import HauntedHouse.Recognizer (NounPhrase (..))
+import HauntedHouse.Game.Engine.Verification (verifyAccessabilityNP)
 
 {-
   (_,entity@Object{..}) <- verifyAccessabilityAP ap
@@ -12,7 +11,7 @@ import HauntedHouse.Game.Engine.Verification (verifyAccessability)
 -}
 doGet :: NounPhrase -> GameStateExceptT ()
 doGet np = do 
-  (_,entity@Object{..}) <- verifyAccessability np
+  (_,entity@Object{..}) <- verifyAccessabilityNP np
   let getM = _get' _standardActions'
   getM entity     
 {-
