@@ -16,7 +16,7 @@ import HauntedHouse.Tokenizer (Lexeme(PLANT, POT, CABINET))
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Get (noGetM)
-import HauntedHouse.Game.Actions.Look (lookIn)
+import HauntedHouse.Game.Actions.Look (lookIn, lookAt)
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
 buildKitchenCabinetBelowShelf = do
@@ -49,6 +49,8 @@ standardActions = StandardActions
   { _get' = const pass --  noGetM
   , _put' = const pass 
   , _lookIn' = lookIn
+  , _lookAt' = lookAt -- ToDo
+  , _lookOn' = const . const (print ("You can't look on this cabinet. Try looking in it." :: Text))
   }
 
 orientation :: Orientation 
@@ -60,8 +62,8 @@ cabinetContainer = (Containment . This) containedIn
 containedIn :: ContainedIn
 containedIn = ContainedIn 
   {_containerInterface' = containerInterface
-  , _containedIn' = ContainerMap 
-                      $ Data.Map.Strict.singleton (Label POT) inCabinet 
+  , _containedIn' = ContainerMap $ Data.Map.Strict.empty {-ContainerMap 
+                      $ Data.Map.Strict.singleton (Label POT) inCabinet -}
   }
 
 inCabinet :: GIDList Object

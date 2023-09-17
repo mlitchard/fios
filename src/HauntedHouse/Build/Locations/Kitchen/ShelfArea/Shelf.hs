@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use one" #-}
+{-# OPTIONS_GHC -Wno-deferred-out-of-scope-variables #-}
 module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
   where
     
@@ -16,6 +17,7 @@ import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import HauntedHouse.Game.Actions.Get 
 import HauntedHouse.Tokenizer (Lexeme (SHELF))
 import Control.Monad.Except (MonadError(..))
+import HauntedHouse.Game.Actions.Look (lookAt,lookOn)
 
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf = do
@@ -45,7 +47,9 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = const pass -- noGetM
   , _put' = const pass
-  , _lookIn' = const (throwError shelfLookInErr) 
+  , _lookIn' = const . const (throwError shelfLookInErr) 
+  , _lookAt' = lookAt  -- ToDo
+  , _lookOn' = lookOn 
   }
   where
     shelfLookInErr = "You summon unearlthy concentration, "

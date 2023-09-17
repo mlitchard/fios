@@ -46,6 +46,8 @@ standardActions = StandardActions
   { _get' = const pass -- noGetM
   , _put' = const pass 
   , _lookIn' = lookIn
+  , _lookAt' = const pass -- ToDo
+  , _lookOn' = const . const (print ("There's nothing on this cabinet. Try looking in it." :: Text))
   }
 
 orientation :: Orientation 

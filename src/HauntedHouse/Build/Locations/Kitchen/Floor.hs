@@ -12,6 +12,7 @@ import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import HauntedHouse.Build.ObjectLabels (plantPotLabel)
 import HauntedHouse.Tokenizer (Lexeme(..))
 import Control.Monad.Except (MonadError(..))
+import HauntedHouse.Game.Actions.Look (lookOn, lookAt)
 
 -- Anchoring RoomAnchor
 
@@ -54,7 +55,9 @@ standardActions :: StandardActions
 standardActions = StandardActions
   { _get' = const pass
   , _put' = const pass
-  , _lookIn' = const (throwError lookInErr)
+  , _lookIn' = const . const (throwError lookInErr)
+  , _lookAt' = lookAt -- ToDo
+  , _lookOn' = lookOn 
   }
   where
     lookInErr = "After you concentrate very hard, "

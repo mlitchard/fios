@@ -69,10 +69,16 @@ namedDirectionM (label, gid) = do
 getShortNameM :: GID Object -> GameStateExceptT Text
 getShortNameM gid = _shortName' <$> getObjectM gid
 
-capturePerceptibleM :: GIDList Object
-                        -> GameStateExceptT (Maybe (NonEmpty (GID Object,Object)))
-capturePerceptibleM objectList = do
-  nonEmpty . mfilter testPerceptability -- (\(_, obj) -> isPercieved obj)
+capturePerceptiblesM :: GIDList Object
+                         -> GameStateExceptT (Maybe (NonEmpty (GID Object,Object)))
+capturePerceptiblesM objectList = do
+  nonEmpty . mfilter testPerceptability 
+    <$> mapM getObjectGIDPairM (Data.List.NonEmpty.toList objectList)
+
+captureInPerceptiblesM :: GIDList Object
+                           -> GameStateExceptT (Maybe (NonEmpty (GID Object,Object))) 
+captureInPerceptiblesM objectList = do 
+  nonEmpty . mfilter (not . testPerceptability) 
     <$> mapM getObjectGIDPairM (Data.List.NonEmpty.toList objectList)
 
 togglePerceptabilityM :: OpenState -> ContainedIn -> GameStateExceptT ()
@@ -112,10 +118,6 @@ getContainerInterfaceM entity = do
     notContainedInMSG = "getContainerInterface error: can't put things in this"
     notContainerMSG = "getContainerInterface error: "
                         <> "called on an entity that isn't a container."
-{-
-isPercieved :: Object -> Bool
-isPercieved (Object _ _ _ _ _ Perceptible _ _ _) = True
-isPercieved _ = False
--}
+
 isPercieved :: Object -> Bool 
 isPercieved (Object {..}) = _perceptability' == Perceptible 

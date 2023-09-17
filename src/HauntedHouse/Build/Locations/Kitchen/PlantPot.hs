@@ -5,8 +5,9 @@ import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..)
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import Data.These (These(..))
-import HauntedHouse.Game.Actions.Get (standardGetM, tryGetM)
+import HauntedHouse.Game.Actions.Get (tryGetM)
 import HauntedHouse.Tokenizer (Lexeme(PLANT, SMALL, POT))
+import HauntedHouse.Game.Actions.Look
 
 buildPlantPot :: GameStateExceptT ()
 buildPlantPot = do
@@ -36,7 +37,9 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = tryGetM plantPotGID
   , _put' = const pass 
-  , _lookIn' = const pass -- gets special lookIn
+  , _lookIn' = lookIn -- gets special lookIn
+  , _lookAt' = lookAt
+  , _lookOn' = lookOn-- ToDo
   }
 orientation :: Orientation 
 orientation = ContainedBy' $ ContainedBy {

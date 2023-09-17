@@ -23,19 +23,19 @@ newtype AnchoredTo = AnchoredTo
   { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)}
     deriving stock (Show, Eq, Ord)
 
-type ClarifyWhich = (Imperative -> GameStateExceptT ()) 
-                      -> (Label Object, NonEmpty (GID Object, Object)) 
+type ClarifyWhich = (Imperative -> GameStateExceptT ())
+                      -> (Label Object, NonEmpty (GID Object, Object))
                       -> GameStateExceptT ()
 
 
 data Config = Config {
-  _primaryEvaluator'         :: Imperative -> GameStateExceptT () 
-  , _clarifyWhich'           :: ClarifyWhich                          
+  _primaryEvaluator'         :: Imperative -> GameStateExceptT ()
+  , _clarifyWhich'           :: ClarifyWhich
   , _evalVerbNounPhrase'     :: (Verb, NounPhrase) -> GameStateExceptT ()
   , _evalVerbPrepPhrase'     :: (Verb, PrepPhrase) -> GameStateExceptT ()
-  , _evalVerbTwoPrepPhrases' :: EvalVerbThree   
+  , _evalVerbTwoPrepPhrases' :: EvalVerbThree
   , _evalVerbPhraseFive'     :: EvalVerbFive
-  , _evalVerbPhraseSeven'    :: EvalVerbSeven                                   
+  , _evalVerbPhraseSeven'    :: EvalVerbSeven
 }
 
 newtype Containment = Containment
@@ -46,10 +46,10 @@ data ContainedBy = ContainedBy
   , _self :: GID Object
   } deriving stock Show
 
-data OnOrIn 
-  = On (GID Object) 
+data OnOrIn
+  = On (GID Object)
   | In (GID Object)
-    deriving stock Show 
+    deriving stock Show
 
 data ContainedIn = ContainedIn
   { _containerInterface'  :: ContainerInterface
@@ -61,7 +61,7 @@ newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
 
 data ContainerInterface = ContainerInterface {
       _openState'    :: OpenState
-    , _describe'      :: Text 
+    , _describe'      :: Text
     , _openAction'   :: GameStateExceptT ()
     , _closeAction'  :: GameStateExceptT ()
     , _lockAction'   :: GameStateExceptT ()
@@ -93,24 +93,24 @@ data FoundAnchoredTo = FoundAnchoredTo
 instance Show FoundAnchoredTo where
   show (FoundAnchoredTo (gid, _) (gid',prox)) =
     show gid <> " " <> show gid' <> " " <> show prox
-    
+
 data GameState = GameState
   { _world'                 :: World
   , _report'                :: [Text]
   , _player'                :: Player
   , _narration'             :: Narration
   , _verbosity'             :: Verbosity
-  , _evaluator'             :: Imperative -> GameStateExceptT () 
+  , _evaluator'             :: Imperative -> GameStateExceptT ()
   , _clarification'         :: Maybe Clarification
   , _clarifiedDirectObject' :: Maybe (GID Object, Object)
   , _displayAction'         :: GameStateExceptT ()
   }
 
-data GetInput = GetInput 
+data GetInput = GetInput
   {   _removedEntityGID' :: GID Object
     , _removedEntity' :: Object
     , _removedEntityLabel' :: Label Object
-    , _entityOnOrIn' :: OnOrIn 
+    , _entityOnOrIn' :: OnOrIn
   }
 
 type GIDObjectPair = (GID Object,Object)
@@ -120,7 +120,7 @@ data Clarification = Clarification {
 }
 report :: GameStateExceptT ()
 report = do
-  report' <- _report' <$> get  
+  report' <- _report' <$> get
   mapM_ print report'
 {-
 data Interface
@@ -151,13 +151,13 @@ newtype Neighbors = Neighbors
 
 -- FIXME: Change Nexus to Special to accomodate all the objects with 
 -- special interfaces
-data Nexus 
-  = Containment' Containment 
+data Nexus
+  = Containment' Containment
   | Door' Door -- a specialized Gate 
   -- | Gate'  
-  | Portal' Portal 
+  | Portal' Portal
 
-data Door = Door 
+data Door = Door
   {_doorInterface' :: ContainerInterface
   , _blockedObject' :: GID Object
   }
@@ -174,10 +174,12 @@ data Object = Object {
   , _standardActions'  :: StandardActions
 }
 
-data StandardActions = StandardActions 
+data StandardActions = StandardActions
   {   _get' :: Object -> GameStateExceptT ()
     , _put' :: GID Object -> GameStateExceptT ()
-    , _lookIn' :: Object -> GameStateExceptT ()
+    , _lookIn' :: Text -> Containment -> GameStateExceptT ()
+    , _lookAt' :: Object -> GameStateExceptT ()
+    , _lookOn' :: Text -> Containment -> GameStateExceptT ()
   }
 newtype ObjectAnchors = ObjectAnchors {
   _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors
@@ -185,20 +187,20 @@ newtype ObjectAnchors = ObjectAnchors {
 
 data OpenState = Open | Closed deriving stock Show
 
-data Orientation 
-  = ContainedBy' ContainedBy 
-  | Inventory 
+data Orientation
+  = ContainedBy' ContainedBy
+  | Inventory
   | Floor (GID Object)
-  | AnchoredTo' (GID Object, Proximity) 
+  | AnchoredTo' (GID Object, Proximity)
   | Anchoring RoomAnchor
-    deriving stock Show 
+    deriving stock Show
 
 data Player = Player
   { _playerLocation'  :: GID Location
   , _p_inv'           :: [GID Object]
   } deriving stock Show
 
-data PortalInterface = PortalInterface 
+data PortalInterface = PortalInterface
   { _lookThrough' :: GameStateExceptT ()
   , _goThrough'   :: GameStateExceptT ()
   }

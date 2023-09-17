@@ -19,6 +19,7 @@ data Perceptibility
 
 data Proximity
   = PlacedOn
+  | PlacedIn
   | PlacedUnder
   | PlacedAbove
   | PlacedLeft

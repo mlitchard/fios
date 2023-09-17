@@ -5,7 +5,6 @@ import Control.Monad.Except (throwError, MonadError (..))
 import HauntedHouse.Game.Model.Mapping
     ( LabelToGIDListMapping(..), Label (..) )
 import qualified Data.Map.Strict (lookup)
-import HauntedHouse.Game.Object (capturePerceptibleM)
 import HauntedHouse.Game.Model.World 
 import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Model.Display
@@ -44,6 +43,7 @@ describeObjectM (snd . NonEmpty.head $ objects)
           >> updateDisplayActionM displayActionM
 -}
 -- FIXME seperate verification
+{-
 evaluateNounPhrase :: (Imperative -> GameStateExceptT ()) 
                         -> NounPhrase 
                         -> GameStateExceptT ()
@@ -51,7 +51,7 @@ evaluateNounPhrase clarifier (Noun noun) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   objects <- throwMaybeM nopeErr 
-              =<< capturePerceptibleM 
+              =<< capturePerceptiblesM 
               =<< throwMaybeM nopeErr (Data.Map.Strict.lookup (Label noun) m)
   if Data.List.NonEmpty.length objects == 1
     then describeObjectM (snd . NonEmpty.head $ objects) 
@@ -64,3 +64,4 @@ evaluateNounPhrase clarifier (Noun noun) = do
     displayActionM = showPlayerActionM >> showEnvironmentM
     nopeErr = "You don't see a " <> toText noun <> " here."
 evaluateNounPhrase _ _ = throwError "evaluateNounPhrase: evaluate not completed"
+-}

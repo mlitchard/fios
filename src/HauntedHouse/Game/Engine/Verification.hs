@@ -1,8 +1,13 @@
 module HauntedHouse.Game.Engine.Verification where
-import HauntedHouse.Recognizer
+import HauntedHouse.Recognizer.WordClasses
+    ( AdjPhrase(Adjective),
+      Adjective,
+      Imperative,
+      NounPhrase(Noun, NounPhrase1, NounPhrase2),
+      PrepPhrase(PrepPhrase1) )
 import HauntedHouse.Game.Model.GID (GID)
 import qualified Data.List.NonEmpty
-import HauntedHouse.Game.Object (getObjectsFromLabelM, testPerceptability, capturePerceptibleM)
+import HauntedHouse.Game.Object (getObjectsFromLabelM, testPerceptability, capturePerceptiblesM)
 import HauntedHouse.Game.World (makeErrorReport, findAnchoredTo)
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Clarifier
@@ -12,9 +17,9 @@ import HauntedHouse.Clarifier
       findNoun)
 import HauntedHouse.Game.Model.Mapping (Label(..), LabelToGIDListMapping (..))
 import Control.Monad.Except (MonadError(..))
-import HauntedHouse.Tokenizer.Data (Lexeme (IN, AT))
 import qualified Data.Map.Strict
 import Data.These (These(..))
+import HauntedHouse.Tokenizer (Lexeme)
 
 verifySimple :: Label Adjective
                               -> Label Object
@@ -43,21 +48,7 @@ verifyAccessabilityNP (NounPhrase1 _ (NounPhrase2 (Adjective adj) (Noun n))) =
 verifyAccessabilityNP (NounPhrase2 (Adjective adj) (Noun n)) =
   verifySimple (descriptiveLabel adj) (directObjectLabel n)
 verifyAccessabilityNP _ = throwError "verifyAccessabilityAP unfinished"
-  {-
-  possibleDirectObjects <- getObjectsFromLabelM directObjectLabel
-  testableEntity <- if length possibleDirectObjects > 1
-    then throwError "verifyExistenceAP can't differentiate yet"
-    else pure (head possibleDirectObjects)
-  let descriptives = _descriptives' (snd testableEntity)
-  -- does it match description?
-  unless (matchDescriptive descriptiveLabel descriptives)
-    $ throwError noSeeMSG
-  -- can player see it?
-  unless (testPerceptability testableEntity)
-    $ throwError noSeeMSG
-  -- tests pass
-  pure testableEntity
-  -}
+  
 
 descriptiveLabel :: Lexeme -> Label Adjective
 descriptiveLabel = Label
@@ -100,7 +91,7 @@ verifyAccessabilityPP clarifierM (PrepPhrase1 _ (Noun noun)) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   objects <- throwMaybeM nopeErr
-              =<< capturePerceptibleM
+              =<< capturePerceptiblesM
               =<< throwMaybeM nopeErr (Data.Map.Strict.lookup (Label noun) m)
   if Data.List.NonEmpty.length objects == 1
     then pure (Right (head objects))
@@ -123,7 +114,7 @@ verifySensibilityNPPP clarifyingM np pp = do
   anchoredEntities <- throwMaybeM (makeErrorReport np pp)
                       $ nonEmpty
                       $ filter (checkProximity pp)
-                      $ mapMaybe findAnchoredTo
+                      $ mapMaybe findAnchoredTo -- FIXME - not all indirect objects anchored
                       $ toList possibleDirectObjects
   possibleObjects@(object:|_) <- getObjectsFromLabelM indirectObjectLabel
 
@@ -142,47 +133,13 @@ verifySensibilityNPPP clarifyingM np pp = do
   pure (_anchoredObject' matched)
   where
     indirectObjectLabel  = Label $ findInDirectObject pp
-{-
-verifySensibilityNPPP :: NounPhrase
-                        -> PrepPhrase
-                        -> (Imperative -> GameStateExceptT ())
-                        -> GameStateExceptT (GID Object, Object)
-verifySensibilityNPPP np pp clarifyingM= do
-  possibleDirectObjects <- getObjectsFromLabelM (directObjectLabel (findNoun np))
-  anchoredEntities <- throwMaybeM (makeErrorReport np pp)
-                      $ nonEmpty
-                      $ filter (checkProximity pp)
-                      $ mapMaybe findAnchoredTo
-                      $ toList possibleDirectObjects
-  possibleObjects@(object:|_) <- getObjectsFromLabelM indirectObjectLabel
 
-  when (length possibleObjects > 1) $ do
-    clarifyWhich <- _clarifyWhich' <$> ask
-    clarifyWhich clarifyingM (indirectObjectLabel, possibleObjects)
-  -- toList anchoredEntities
-  allMatches@(matched:|_) <- throwMaybeM (makeErrorReport np pp)
-                  $ nonEmpty
-                  $ mapMaybe (subObjectAgreement (fst object))
-                  $ Data.List.NonEmpty.toList anchoredEntities
-  when (length allMatches > 1) $ do
-    let pairMatches = _anchoredObject' <$> allMatches
-    clarifyWhich <- _clarifyWhich' <$> ask
-    clarifyWhich clarifyingM (directObjectLabel (findNoun np), pairMatches)
-  pure (_anchoredObject' matched)
-  where
-    indirectObjectLabel  = Label $ findInDirectObject pp
--}
-containerTest :: Object -> GameStateExceptT ()
-containerTest Object{..} = do
-  nexus <- throwMaybeM nope _mNexus'
+containerTest :: Nexus -> Maybe Containment
+containerTest nexus= do
   case nexus of
-    (Containment' (Containment containment)) -> case containment of 
-                                                  (This _) -> throwError nope
-                                                  _ -> pass -- good  
-                                                  
-    _ -> throwError nope
-  where
-   nope = "You can't look in that."
+    (Containment' containment) -> Just containment                    
+    _ -> Nothing
+
 
 
 

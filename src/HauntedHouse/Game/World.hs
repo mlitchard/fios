@@ -3,7 +3,7 @@
 module HauntedHouse.Game.World where
 
 import HauntedHouse.Game.Object
-import qualified Data.Map.Strict 
+import qualified Data.Map.Strict
   (delete,insert, lookup, Map, singleton, adjust)
 import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'),
@@ -119,6 +119,9 @@ findAnchoredTo object = case object of
                                                                 (gid, obj) gp
   _ -> Nothing
 
+getContainment :: Nexus -> Maybe Containment
+getContainment (Containment' containment) = Just containment
+getContainment _ = Nothing
 -- assumes if the Label exists, the gid is in it's list
 -- used when player leaves location
 removeEntityLabelMapM :: Label Object -> GID Object  -> GameStateExceptT ()
@@ -127,20 +130,19 @@ removeEntityLabelMapM entityLabel gid = do
   location <- getLocationM lid
   -- adjust :: Ord k => (a -> a) -> k -> Map k a -> Map k a
   let labelMap = (_unLabelToGIDListMapping' . _objectLabelMap') location
-  gidList :: GIDList Object <- throwMaybeM lFailMSG 
+  gidList :: GIDList Object <- throwMaybeM lFailMSG
               $ Data.Map.Strict.lookup entityLabel labelMap
 
   let mUpdatedLabelMap :: Maybe (LabelToGIDListMapping Object Object)
       mUpdatedLabelMap = removeGID gidList labelMap
-      updatedLabelMap = case mUpdatedLabelMap of 
-        Just updatedLabelMap -> updatedLabelMap 
+      updatedLabelMap = case mUpdatedLabelMap of
+        Just updatedLabelMap' -> updatedLabelMap'
         Nothing              -> LabelToGIDListMapping
-                                  $ Data.Map.Strict.delete entityLabel labelMap 
+                                  $ Data.Map.Strict.delete entityLabel labelMap
   setLocationMapM lid (location {_objectLabelMap' = updatedLabelMap})
   where
     lFailMSG = "removeEntityLabelMapM: That label doesn't exit"
-    failMSG = "removal failed"
-    
+
     removeGID gidList labelMap = do
       filteredList <- nonEmpty $ Data.List.NonEmpty.filter (/= gid) gidList
       pure
