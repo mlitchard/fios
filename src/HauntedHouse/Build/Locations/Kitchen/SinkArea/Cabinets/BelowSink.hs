@@ -13,7 +13,8 @@ import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Get (noGetM)
 import HauntedHouse.Game.Model.Mapping (Label (..))
 import HauntedHouse.Tokenizer (Lexeme (CABINET))
-import HauntedHouse.Game.Actions.Look (lookIn, lookAt)
+import HauntedHouse.Game.Actions.Look (lookIn, lookAt, lookWrapper)
+import Control.Monad.Except (MonadError(..))
 
 buildKitchenCabinetBelowSink :: GameStateExceptT ()
 buildKitchenCabinetBelowSink = do
@@ -45,9 +46,11 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = const pass
   , _put' = const pass 
-  , _lookIn' = lookIn
+  , _lookIn' = lookWrapper lookIn
   , _lookAt' = lookAt -- ToDo
-  , _lookOn' = const . const (print ("There's nothing on this cabinet. Try looking in it." :: Text))
+  , _lookOn' = const $ throwError ("This cabinet is flush with the sink."
+                              <> "There's no way to put anything on it."
+                              <> " Try looking in it." :: Text)
   }
 
 orientation :: Orientation 

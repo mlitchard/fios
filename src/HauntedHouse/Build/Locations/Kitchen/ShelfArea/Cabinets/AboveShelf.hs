@@ -11,9 +11,8 @@ import HauntedHouse.Game.Model.Condition
         (Moveability(..), Perceptibility (..), Proximity (PlacedAbove))
 import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Open (standardOpenM)
-import HauntedHouse.Game.Actions.Get (noGetM)
 import HauntedHouse.Tokenizer (Lexeme(SINK))
-import HauntedHouse.Game.Actions.Look (lookIn)
+import HauntedHouse.Game.Actions.Look (lookIn, lookWrapper)
 
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do
@@ -45,9 +44,9 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = const pass -- noGetM
   , _put' = const pass 
-  , _lookIn' = lookIn
+  , _lookIn' = lookWrapper lookIn
   , _lookAt' = const pass -- ToDo
-  , _lookOn' = const . const (print ("There's nothing on this cabinet. Try looking in it." :: Text))
+  , _lookOn' = const (print ("There's nothing on this cabinet. Try looking in it." :: Text))
   }
 
 orientation :: Orientation 

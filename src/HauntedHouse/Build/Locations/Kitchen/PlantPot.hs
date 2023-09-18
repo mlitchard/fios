@@ -27,7 +27,7 @@ plantPot = Object {
     , _moveability'    = NotMoveable
     , _perceptability' = Perceptible
     , _orientation'    = floorOrientation -- orientation 
-    , _mNexus'         = Nothing
+    , _mNexus'         = Nothing -- ToDo must be a container
     , _standardActions' = standardActions
   }
   where 
@@ -37,9 +37,9 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = tryGetM plantPotGID
   , _put' = const pass 
-  , _lookIn' = lookIn -- gets special lookIn
+  , _lookIn' = const (print ("plant pot gets special lookin" :: Text))
   , _lookAt' = lookAt
-  , _lookOn' = lookOn-- ToDo
+  , _lookOn' = const (print ("plant pot gets special lookon" :: Text)) -- ToDo
   }
 orientation :: Orientation 
 orientation = ContainedBy' $ ContainedBy {

@@ -12,21 +12,11 @@ import HauntedHouse.Tokenizer (Lexeme(ON, IN, AT))
 -- (_lookIn' _standardActions') _shortName'
 doLookTwoPrepM :: (PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 doLookTwoPrepM (PrepPhrase1 prep np,pp) = do
-  gsub@(gid,entity@(Object {..})) <- verifySensibilityNPPP clarifying np pp
-  let container = containerTest =<< _mNexus'
-      noLookInMsg = "You can't look in a " <> _shortName' <> " ."
-      noLookOnMsg = "You can look on things that you can put other things on"
-                      <> "and you can't anything on the " 
-                      <> _shortName' <> " ."
-   -- updateContainerDescriptionM prep gsub
-  _ <- throwMaybeM noLookInMsg container
+  (_,entity@(Object {..})) <- verifySensibilityNPPP clarifying np pp
   void $ case prep of
-    IN -> _lookIn' _standardActions' _shortName'
-            =<< throwMaybeM noLookInMsg container
-    ON -> _lookOn' _standardActions' _shortName'
-            =<< throwMaybeM noLookOnMsg container
-    AT -> updatePlayerActionM ("You look at the " <> _shortName')
-            >> _lookAt' _standardActions' entity
+    IN -> _lookIn' _standardActions' entity
+    ON -> _lookOn' _standardActions' entity
+    AT -> _lookAt' _standardActions' entity
     _ -> throwError "Think hard about what you just tried to do."
   -- maybeDescribeNexusM _mNexus'
   updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
@@ -35,5 +25,3 @@ doLookTwoPrepM (PrepPhrase1 prep np,pp) = do
 doLookTwoPrepM _ = throwError "doLookTwoPrep implementation unfinished"
 
 -- FIXME . change data Object to data Entity everywhere
--- FIXME set player action
--- FIXME what about entities that aren't a nexus?

@@ -16,7 +16,8 @@ import HauntedHouse.Tokenizer (Lexeme(PLANT, POT, CABINET))
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Get (noGetM)
-import HauntedHouse.Game.Actions.Look (lookIn, lookAt)
+import HauntedHouse.Game.Actions.Look (lookIn, lookAt, lookWrapper)
+import Control.Monad.Except (MonadError(..))
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
 buildKitchenCabinetBelowShelf = do
@@ -48,9 +49,11 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = const pass --  noGetM
   , _put' = const pass 
-  , _lookIn' = lookIn
+  , _lookIn' = lookWrapper lookIn
   , _lookAt' = lookAt -- ToDo
-  , _lookOn' = const . const (print ("You can't look on this cabinet. Try looking in it." :: Text))
+  , _lookOn' = const $ throwError ("This cabinet is flush with the shelf."
+                              <> "There's no way to put anything on it."
+                              <> " Try looking in it." :: Text)
   }
 
 orientation :: Orientation 

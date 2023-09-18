@@ -12,7 +12,17 @@ import qualified Data.List
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Condition (Perceptibility(Perceptible))
 import Control.Monad.Except (MonadError(..))
+import HauntedHouse.Game.Engine.Verification (containerTest)
 
+lookWrapper :: (Text -> Containment  -> GameStateExceptT ())
+                -> Object
+                -> GameStateExceptT ()
+lookWrapper lookFunction (Object{..}) = do
+  container <-  throwMaybeM wrongFunction $ containerTest =<< _mNexus'
+  lookFunction _shortName' container
+  where
+    wrongFunction = "lookWrapper: This object has the wrong look function"
+                      <> _shortName'
 lookIn :: Text -> Containment  -> GameStateExceptT ()
 lookIn shortName containment = do
   (openState, cIn) <- throwMaybeM notMsg (caseContainmentIn containment)
@@ -32,12 +42,20 @@ lookOn shortname containment = do
 lookAt :: Object -> GameStateExceptT ()
 lookAt (Object{..}) = do
   case _mNexus' of
-    (Just (Containment' containment)) -> displayPossibleContained _shortName'
-                                          $ caseContainmentAt containment
+    (Just (Containment' containment)) -> do
+                                          updatePlayerActionM lookMsg
+                                            >> mapM_ updateEnvironmentM _odescription'
+                                            >> displayPossibleContained _shortName' (caseContainmentAt containment)
 
-    _ -> unless (_perceptability' == Perceptible) $ throwError "You don't see that."
-          >> updatePlayerActionM ("You look at the " <> _shortName')
-          >> mapM_ updateEnvironmentM _odescription'
+    _ -> do
+          if _perceptability' == Perceptible
+            then success
+            else throwError "You don't see that."
+  where
+    lookMsg = "You look at the " <> _shortName'
+    success = updatePlayerActionM ("You look at the " <> _shortName')
+                >> mapM_ updateEnvironmentM _odescription'
+
 
 data AllObjects = AllObjects
   { _objectsIn' :: (OpenState, ContainerMap Object)
@@ -56,15 +74,15 @@ newtype ContainerMap a = ContainerMap
 displayPossibleContained :: Text -> PossibleContained -> GameStateExceptT ()
 displayPossibleContained shortname (AllObjects' AllObjects{..}) = do
   closedCheckM (fst _objectsIn') shortname (snd _objectsIn') openSeeShallow
-  res <- concatMap (Data.List.NonEmpty.toList . snd) 
+  res <- concatMap (Data.List.NonEmpty.toList . snd)
           <$> filterPerceptiblesM _objectsOn'
   updateEnvironmentM ("You see the following on the " <> shortname)
   mapM_ updateEnvironmentM =<< mapM getShortNameM res
 
 displayPossibleContained shortname (ObjectsIn (openState, cmap)) = do
   closedCheckM openState shortname cmap openSeeShallow
-displayPossibleContained shortname (ObjectsOn cmap) = do 
-  res <- concatMap (Data.List.NonEmpty.toList . snd) 
+displayPossibleContained shortname (ObjectsOn cmap) = do
+  res <- concatMap (Data.List.NonEmpty.toList . snd)
           <$> filterPerceptiblesM cmap
   updateEnvironmentM ("You see the following on the " <> shortname)
   mapM_ updateEnvironmentM =<< mapM getShortNameM res

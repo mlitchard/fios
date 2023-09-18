@@ -11,7 +11,7 @@ import HauntedHouse.Game.Model.Condition
         (Perceptibility(Perceptible), Moveability (..))
 import HauntedHouse.Game.Actions.Get
 import HauntedHouse.Tokenizer (Lexeme (SINK)) 
-import HauntedHouse.Game.Actions.Look (lookIn, lookAt, lookOn)
+import HauntedHouse.Game.Actions.Look (lookIn, lookAt, lookOn, lookWrapper)
 
 buildKitchenSink :: GameStateExceptT ()
 buildKitchenSink = do
@@ -41,9 +41,9 @@ standardActions :: StandardActions
 standardActions = StandardActions
   { _get' = const pass
   , _put' = const pass
-  , _lookIn' = lookOn 
+  , _lookIn' = lookWrapper lookOn -- Sink is actually a shelf internally 
   , _lookAt' = lookAt 
-  , _lookOn' = const . const (print ("Try looking in the sink instead" :: Text)) -- ToDo
+  , _lookOn' = const (print ("Try looking in the sink instead" :: Text)) -- ToDo
   }
 
 orientation :: Orientation

@@ -5,7 +5,7 @@ import Control.Monad.Except (throwError, MonadError (..))
 import HauntedHouse.Game.Model.Mapping
     ( LabelToGIDListMapping(..), Label (..) )
 import qualified Data.Map.Strict (lookup)
-import HauntedHouse.Game.Model.World 
+import HauntedHouse.Game.Model.World
 import qualified Data.List.NonEmpty
 import HauntedHouse.Game.Model.Display
         (describeObjectM, showPlayerActionM, showEnvironmentM
@@ -14,7 +14,7 @@ import qualified Relude.List.NonEmpty as NonEmpty
 import HauntedHouse.Recognizer (Imperative)
 import HauntedHouse.Clarifier (clarifyingLookDirectObjectM)
 import HauntedHouse.Tokenizer.Data (Lexeme(..))
-import HauntedHouse.Game.Engine.Verification (verifyAccessabilityPP)
+import HauntedHouse.Game.Engine.Verification (verifyAccessabilityPP, verifyAccessabilityAPNP)
 
 {-
 (ImperativeClause (VerbPhrase2 LOOK (PrepPhrase2 IN THE (Adjective POT) (Noun PLANT))))
@@ -26,18 +26,23 @@ doLookObjectM _                     = throwError "doLookObject implementation in
 -}
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
 doLookObjectM pp@(PrepPhrase1 prep _) = do
-  res <- verifyAccessabilityPP (clarifyingLookDirectObjectM prep) pp 
-  case res of 
+  res <- verifyAccessabilityPP (clarifyingLookDirectObjectM prep) pp
+  case res of
     (Left clarifyM) -> clarifyM
     (Right (_, Object{..})) -> maybeDescribeNexusM _mNexus'
- 
+
  -- evaluateNounPhrase (clarifyingLookDirectObjectM prep) np 
  -- (clarifyingLookDirectObjectM prep)
-doLookObjectM (PrepPhrase2 prep _ ap np) = throwError "doLookOject unfinished"
-
-
+doLookObjectM (PrepPhrase2 prep _ ap np) = do
+  (_,entity@(Object {..})) <- verifyAccessabilityAPNP ap np
+  case prep of 
+    AT -> _lookAt' _standardActions' entity
+    IN -> _lookIn' _standardActions' entity
+    ON -> _lookOn' _standardActions' entity
+    _ -> throwError "Think hard about what you just tried to do."
+  updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
 errorSee :: Text -> GameStateExceptT ()
-errorSee = print 
+errorSee = print
 {-
 describeObjectM (snd . NonEmpty.head $ objects) 
           >> updateDisplayActionM displayActionM

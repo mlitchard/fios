@@ -56,10 +56,10 @@ standardActions :: StandardActions
 standardActions = StandardActions
   { _get' = const pass -- noGetM
   , _put' = const pass
-  , _lookIn' = const . const (throwError doorLookInErr)
-  , _lookAt' = lookAt -- ToDo
-  , _lookOn' = const . const 
-                $ updateEnvironmentM ("There's nothing of importance on the door" :: Text)
+  , _lookIn' = const (throwError doorLookInErr)
+  , _lookAt' = lookAt
+  , _lookOn' = const 
+                $ throwError ("There's nothing of importance on the door" :: Text)
   }
   where
     doorLookInErr = "you can't see inside the door"

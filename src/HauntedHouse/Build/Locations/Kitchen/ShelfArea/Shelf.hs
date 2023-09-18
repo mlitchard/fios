@@ -17,7 +17,7 @@ import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import HauntedHouse.Game.Actions.Get 
 import HauntedHouse.Tokenizer (Lexeme (SHELF))
 import Control.Monad.Except (MonadError(..))
-import HauntedHouse.Game.Actions.Look (lookAt,lookOn)
+import HauntedHouse.Game.Actions.Look (lookAt,lookOn,lookWrapper)
 
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf = do
@@ -47,9 +47,9 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = const pass -- noGetM
   , _put' = const pass
-  , _lookIn' = const . const (throwError shelfLookInErr) 
+  , _lookIn' = const (throwError shelfLookInErr) 
   , _lookAt' = lookAt  -- ToDo
-  , _lookOn' = lookOn 
+  , _lookOn' = lookWrapper lookOn 
   }
   where
     shelfLookInErr = "You summon unearlthy concentration, "

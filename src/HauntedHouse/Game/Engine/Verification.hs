@@ -48,7 +48,7 @@ verifyAccessabilityNP (NounPhrase1 _ (NounPhrase2 (Adjective adj) (Noun n))) =
 verifyAccessabilityNP (NounPhrase2 (Adjective adj) (Noun n)) =
   verifySimple (descriptiveLabel adj) (directObjectLabel n)
 verifyAccessabilityNP _ = throwError "verifyAccessabilityAP unfinished"
-  
+
 
 descriptiveLabel :: Lexeme -> Label Adjective
 descriptiveLabel = Label
@@ -81,11 +81,19 @@ tryGetFromGIDM
 type ResultAccessabilityNP =
   (Either (Label Object, NonEmpty GIDObjectPair) GIDObjectPair)
 
-type ResultAccessabilityPP = 
+type ResultAccessabilityPP =
       GameStateExceptT (Either (GameStateExceptT ()) (GID Object, Object))
 
-verifyAccessabilityPP :: (Imperative -> GameStateExceptT ()) 
-                          -> PrepPhrase 
+verifyAccessabilityAPNP :: AdjPhrase
+                            -> NounPhrase
+                            -> GameStateExceptT (GID Object, Object)
+verifyAccessabilityAPNP (Adjective adj) (Noun noun) = do
+  print ("DEBUG verifyAccessabilityAPNP " :: Text)
+  verifySimple (Label adj) (Label noun)
+verifyAccessabilityAPNP _ _ = throwError "verifyAccessabilityAPNP unfinished"
+
+verifyAccessabilityPP :: (Imperative -> GameStateExceptT ())
+                          -> PrepPhrase
                           -> ResultAccessabilityPP
 verifyAccessabilityPP clarifierM (PrepPhrase1 _ (Noun noun)) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
@@ -137,7 +145,7 @@ verifySensibilityNPPP clarifyingM np pp = do
 containerTest :: Nexus -> Maybe Containment
 containerTest nexus= do
   case nexus of
-    (Containment' containment) -> Just containment                    
+    (Containment' containment) -> Just containment
     _ -> Nothing
 
 

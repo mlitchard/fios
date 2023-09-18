@@ -12,7 +12,8 @@ import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Get (noGetM)
 import HauntedHouse.Tokenizer (Lexeme (CABINET))
-import HauntedHouse.Game.Actions.Look (lookIn, lookAt)
+import HauntedHouse.Game.Actions.Look (lookIn, lookAt, lookWrapper)
+import Control.Monad.Except (MonadError(..))
 
 buildKitchenCabinetAboveSink :: GameStateExceptT ()
 buildKitchenCabinetAboveSink = do
@@ -44,9 +45,9 @@ standardActions :: StandardActions
 standardActions = StandardActions 
   { _get' = const pass -- noGetM
   , _put' = const pass 
-  , _lookIn' = lookIn
-  , _lookAt' = lookAt -- ToDo
-  , _lookOn' = const . const (print ("There's nothing on this cabinet. Try looking in it." :: Text))
+  , _lookIn' = lookWrapper lookIn
+  , _lookAt' = lookAt
+  , _lookOn' = const $ throwError ("There's nothing of interest" :: Text)
   }
 
 orientation :: Orientation 
