@@ -7,12 +7,16 @@ import Prelude hiding (fromLabel)
 import HauntedHouse.Game.Engine.Utilities
 import Data.These
 import HauntedHouse.Game.Player (setPlayerInventoryM)
+import HauntedHouse.Game.Model.Display (updatePlayerActionM)
 
 noGetM :: GameStateExceptT ()
 noGetM = throwError "Are you serious?"
 
-tryGetM :: GID Object -> Object -> GameStateExceptT ()
-tryGetM gid entity@(Object{..}) = do 
+tryGetM :: GID Object 
+            -> (GetInput -> GameStateExceptT ()) 
+            -> Object 
+            -> GameStateExceptT ()
+tryGetM gid getFunction entity@(Object{..}) = do 
   let getInput onOrIn = 
         GetInput { 
           _removedEntityGID' = gid
@@ -21,10 +25,10 @@ tryGetM gid entity@(Object{..}) = do
           ,_entityOnOrIn' = onOrIn 
         }  
   case _orientation' of
-    ContainedBy' (ContainedBy cBy _) -> standardGetM (getInput cBy)
+    ContainedBy' (ContainedBy cBy _) -> getFunction (getInput cBy)
     Inventory -> throwError alreadyHaveMSG
-    Floor fromGid -> standardGetM (getInput (On fromGid))
-    AnchoredTo' (fromGid, _) -> standardGetM (getInput (On fromGid))
+    Floor fromGid -> getFunction (getInput (On fromGid))
+    AnchoredTo' (fromGid, _) -> getFunction (getInput (On fromGid))
     Anchoring _ -> throwError sillyMSG
   where
     alreadyHaveMSG = "Neat trick, trying tp get something you already have."
@@ -33,6 +37,7 @@ tryGetM gid entity@(Object{..}) = do
 standardGetM :: GetInput
                   -> GameStateExceptT ()
 standardGetM (GetInput rGid removedEntity rLabel (On fromGid)) = do
+  let rShortName = _shortName' removedEntity
   fromEntity@(Object {..}) <- getObjectM fromGid
   nexus <- throwMaybeM notContainerMSG _mNexus'
   containment <- throwMaybeM notContainerMSG (maybeContainment nexus)
@@ -45,6 +50,7 @@ standardGetM (GetInput rGid removedEntity rLabel (On fromGid)) = do
                        updatedCon <- removeFromContainedOnM rGid rLabel con
                        pure (These cin updatedCon)
   setPlayerInventoryM rGid removedEntity fromGid fromEntity updatedNexus
+  updatePlayerActionM ("You get the " <> rShortName)
   where
     conConstructor = Containment' . Containment
     notContainerMSG = "standardGetM' error: fromObject not a container"

@@ -5,7 +5,7 @@ import HauntedHouse.Game.Model.Mapping (GIDToDataMapping (..), ContainerMap (..)
 import qualified Data.Map.Strict
 import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import Data.These (These(..))
-import HauntedHouse.Game.Actions.Get (tryGetM)
+import HauntedHouse.Game.Actions.Get (tryGetM, standardGetM)
 import HauntedHouse.Tokenizer (Lexeme(PLANT, SMALL, POT))
 import HauntedHouse.Game.Actions.Look
 
@@ -35,7 +35,7 @@ plantPot = Object {
 
 standardActions :: StandardActions
 standardActions = StandardActions 
-  { _get' = tryGetM plantPotGID
+  { _get' = tryGetM plantPotGID standardGetM
   , _put' = const pass 
   , _lookIn' = const (print ("plant pot gets special lookin" :: Text))
   , _lookAt' = lookAt

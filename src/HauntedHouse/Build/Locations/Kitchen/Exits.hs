@@ -79,6 +79,7 @@ eastDoorNexus = Door' eastDoor
 kitchenEastPortalObject :: Object
 kitchenEastPortalObject = Object
   { _shortName' = "The way through the east door"
+  , _entityLabel' = Label DOOR
   , _odescription' = ["Walking through would lead you to the hall"]
   , _descriptives' = mempty
   , _moveability' = NotMoveable
