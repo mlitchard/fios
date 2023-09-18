@@ -49,7 +49,7 @@ imperative = mdo
     rule $
       Noun <$> noun
         <|> NounPhrase1 <$> determiner <*> nounPhrase
-        <|> NounPhrase2 <$> adjPhrase <*> nounPhrase 
+        <|> NounPhrase2 <$> adjective <*> nounPhrase 
         <|> NounPhrase3 <$> number <*> nounPhrase
         <?> toText ("noun phrase" :: String)
 {-

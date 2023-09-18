@@ -78,7 +78,6 @@ showPlayerActionM = do
 
 updateDisplayActionM :: GameStateExceptT () -> GameStateExceptT ()
 updateDisplayActionM displayAction = do
-  print ("DEBUG updatedDisplayActionM" :: Text)
   modify' (\gs -> gs{_displayAction'  = displayAction})
 
 updateContainerDescriptionM :: Preposition
