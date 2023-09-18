@@ -56,7 +56,6 @@ lookAt (Object{..}) = do
     success = updatePlayerActionM ("You look at the " <> _shortName')
                 >> mapM_ updateEnvironmentM _odescription'
 
-
 data AllObjects = AllObjects
   { _objectsIn' :: (OpenState, ContainerMap Object)
   , _objectsOn' :: ContainerMap Object
