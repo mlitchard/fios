@@ -17,7 +17,7 @@ import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import HauntedHouse.Game.Actions.Get 
 import HauntedHouse.Tokenizer (Lexeme (SHELF))
 import Control.Monad.Except (MonadError(..))
-import HauntedHouse.Game.Actions.Look (lookAt,lookOn,lookWrapper)
+import HauntedHouse.Game.Actions.Look.StandardLook (lookAt,lookOn,lookWrapper)
 
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf = do

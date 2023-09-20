@@ -16,7 +16,7 @@ import HauntedHouse.Tokenizer (Lexeme(PLANT, POT, CABINET))
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Get (noGetM)
-import HauntedHouse.Game.Actions.Look (lookIn, lookAt, lookWrapper)
+import HauntedHouse.Game.Actions.Look.StandardLook (lookIn, lookAt, lookWrapper)
 import Control.Monad.Except (MonadError(..))
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()

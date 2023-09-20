@@ -11,7 +11,7 @@ import HauntedHouse.Game.Model.Condition
         (Perceptibility(Perceptible), Moveability (..))
 import HauntedHouse.Game.Actions.Get
 import HauntedHouse.Tokenizer (Lexeme (SINK)) 
-import HauntedHouse.Game.Actions.Look (lookIn, lookAt, lookOn, lookWrapper)
+import HauntedHouse.Game.Actions.Look.StandardLook (lookIn, lookAt, lookOn, lookWrapper)
 
 buildKitchenSink :: GameStateExceptT ()
 buildKitchenSink = do

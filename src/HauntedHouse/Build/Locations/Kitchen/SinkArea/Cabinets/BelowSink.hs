@@ -13,7 +13,7 @@ import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Game.Actions.Get (noGetM)
 import HauntedHouse.Game.Model.Mapping (Label (..))
 import HauntedHouse.Tokenizer (Lexeme (CABINET))
-import HauntedHouse.Game.Actions.Look (lookIn, lookAt, lookWrapper)
+import HauntedHouse.Game.Actions.Look.StandardLook (lookIn, lookAt, lookWrapper)
 import Control.Monad.Except (MonadError(..))
 
 buildKitchenCabinetBelowSink :: GameStateExceptT ()

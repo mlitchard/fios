@@ -12,7 +12,7 @@ import HauntedHouse.Game.Model.Condition
 import HauntedHouse.Game.Actions.Close (standardCloseM)
 import HauntedHouse.Game.Actions.Open (standardOpenM)
 import HauntedHouse.Tokenizer (Lexeme(SINK))
-import HauntedHouse.Game.Actions.Look (lookIn, lookWrapper)
+import HauntedHouse.Game.Actions.Look.StandardLook (lookIn, lookWrapper)
 
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do

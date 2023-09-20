@@ -1,4 +1,4 @@
-module HauntedHouse.Game.Actions.Look where
+module HauntedHouse.Game.Actions.Look.StandardLook where
 
 import HauntedHouse.Game.Model.World
 import HauntedHouse.Game.World

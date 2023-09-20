@@ -25,8 +25,9 @@ import qualified Data.Either.Combinators
 
 updatePlayerActionM :: Text -> GameStateExceptT ()
 updatePlayerActionM action = do
-  narration@(Narration playerAction _ _ _) <- _narration' <$> get
-  let updatedAction = action <| playerAction
+  print ("Player action " <> action)
+  narration@(Narration {..}) <- _narration' <$> get
+  let updatedAction = action <| _playerAction'
   modify' (\gs -> gs{_narration' = narration{_playerAction' = updatedAction}})
 
 finalizePlayerActionM :: GameStateExceptT ()

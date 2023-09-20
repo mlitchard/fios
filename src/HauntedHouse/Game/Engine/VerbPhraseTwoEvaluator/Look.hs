@@ -36,7 +36,9 @@ doLookObjectM pp@(PrepPhrase1 prep _) = do
 doLookObjectM (PrepPhrase2 prep _ ap np) = do
   (_,entity@(Object {..})) <- verifyAccessabilityAPNP ap np
   case prep of 
-    AT -> _lookAt' _standardActions' entity
+    AT -> do
+            print ("doing look at" :: Text) 
+            _lookAt' _standardActions' entity
     IN -> _lookIn' _standardActions' entity
     ON -> _lookOn' _standardActions' entity
     _ -> throwError "Think hard about what you just tried to do."

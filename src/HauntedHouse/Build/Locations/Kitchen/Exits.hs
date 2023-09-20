@@ -12,7 +12,7 @@ import HauntedHouse.Build.LocationTemplate
 import HauntedHouse.Build.DirectionTemplate (eastLabel)
 import HauntedHouse.Game.Actions.Get (noGetM)
 import Control.Monad.Except (MonadError(..))
-import HauntedHouse.Game.Actions.Look (lookAt)
+import HauntedHouse.Game.Actions.Look.StandardLook (lookAt)
 import HauntedHouse.Game.Model.Display (updateEnvironmentM)
 import HauntedHouse.Tokenizer (Lexeme(DOOR))
 import HauntedHouse.Game.Model.Mapping (Label(..))

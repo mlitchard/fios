@@ -12,7 +12,7 @@ import HauntedHouse.Game.Model.Condition (Moveability(..), Perceptibility (..))
 import HauntedHouse.Build.ObjectLabels (plantPotLabel)
 import HauntedHouse.Tokenizer (Lexeme(..))
 import Control.Monad.Except (MonadError(..))
-import HauntedHouse.Game.Actions.Look (lookOn, lookAt, lookWrapper)
+import HauntedHouse.Game.Actions.Look.StandardLook (lookOn, lookAt, lookWrapper)
 
 -- Anchoring RoomAnchor
 
