@@ -120,8 +120,10 @@ library
     HauntedHouse.Build.Locations.BuildFrame
     HauntedHouse.Build.Locations.Hall
     HauntedHouse.Build.Locations.Kitchen
+    HauntedHouse.Build.Locations.Kitchen.Bag
     HauntedHouse.Build.Locations.Kitchen.Exits
     HauntedHouse.Build.Locations.Kitchen.Floor
+    HauntedHouse.Build.Locations.Kitchen.PlantPot
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
     HauntedHouse.Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
@@ -151,7 +153,6 @@ library
     HauntedHouse.Game.Actions.Look.StandardLook
     HauntedHouse.Game.Actions.Look.PlantPot
     HauntedHouse.Game.Actions.Open
-    HauntedHouse.Build.Locations.Kitchen.PlantPot
     HauntedHouse.Game.Engine.OnlyVerb
     HauntedHouse.Game.Engine.OnlyVerb.DoLook
     HauntedHouse.Game.Engine.OnlyVerb.DoGo

@@ -7,8 +7,8 @@ module HauntedHouse.Build.Locations.Kitchen.ShelfArea.Shelf
 import HauntedHouse.Game.Model.Mapping
         (GIDToDataMapping (..), ContainerMap (..), Label (..))
 import HauntedHouse.Game.Model.World
-    ( World(_objectMap'), Object(..), ContainedOn (..), Containment (..)
-    , GameStateExceptT, GameState (..), Nexus (..), RoomAnchor (EastAnchor), Orientation (Anchoring), StandardActions (..))
+    ( World(_objectMap'), Object(..), Shelf (..), Containment (..)
+    , GameStateExceptT, GameState (..), Nexus (..), RoomAnchor (EastAnchor), Orientation (Anchoring), StandardActions (..), ShelfActions (..))
 import qualified Data.Map.Strict (insert, empty)
 import HauntedHouse.Build.ObjectTemplate
     ( kitchenShelfGID )
@@ -59,8 +59,17 @@ orientation :: Orientation
 orientation = Anchoring EastAnchor
 
 shelfContainer :: Containment
-shelfContainer = (Containment . That) containedOn
-  where
-    containedOn :: ContainedOn
-    containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty
+shelfContainer = (Containment . That) shelf
 
+shelf :: Shelf
+shelf = Shelf 
+  { _shelfActions' = shelfActions 
+  , _shelf' = ContainerMap Data.Map.Strict.empty
+
+  }
+
+shelfActions :: ShelfActions
+shelfActions = ShelfActions 
+  { _putOn' = const pass
+  , _getFrom' = const pass
+  }

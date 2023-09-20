@@ -36,18 +36,18 @@ removeFromContainedInM gid label containedIn@(ContainedIn {..}) = do
   where
     noExist = "removeFromContainedIn: Doesn't exist " <> show label
 
-removeFromContainedOnM :: GID Object 
+removeFromShelfM :: GID Object 
                           -> Label Object 
-                          -> ContainedOn
-                          -> GameStateExceptT ContainedOn
-removeFromContainedOnM gid label containedOn@(ContainedOn {..}) = do 
-  let cmap = _unContainerMap' _unContainedOn'     
+                          -> Shelf
+                          -> GameStateExceptT Shelf
+removeFromShelfM gid label shelf@(Shelf {..}) = do 
+  let cmap = _unContainerMap' _shelf'     
   gidList <- throwMaybeM noExist $ Data.Map.Strict.lookup label cmap
   let updatedGIDList = nonEmpty $ Data.List.NonEmpty.filter (/= gid) gidList
       updatedMap = ContainerMap $ case updatedGIDList of 
                     Nothing -> Data.Map.Strict.delete label cmap 
                     Just xs  -> Data.Map.Strict.insert label xs cmap 
-  pure containedOn{_unContainedOn' = updatedMap}
+  pure shelf{_shelf' = updatedMap}
   where
     noExist = "removeFromContainedIn: Doesn't exist " <> show label
 toOnOrIn :: Orientation ->  Maybe OnOrIn 

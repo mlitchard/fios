@@ -42,11 +42,20 @@ buildFloor = Object
     orientation = Anchoring CenterAnchor
 
 floorContainer :: Containment
-floorContainer = (Containment . Data.These.That) containedOn
+floorContainer = (Containment . Data.These.That) shelf
 
-containedOn :: ContainedOn
-containedOn =
-  (ContainedOn . ContainerMap) $ Data.Map.Strict.singleton plantPotLabel floorInv
+shelf :: Shelf
+shelf = Shelf 
+  { _shelfActions' = shelfActions 
+  , _shelf' = ContainerMap $ Data.Map.Strict.singleton plantPotLabel floorInv
+
+  }
+
+shelfActions :: ShelfActions
+shelfActions = ShelfActions 
+  { _putOn' = const pass
+  , _getFrom' = const pass
+  }
 
 floorInv :: GIDList Object
 floorInv = Data.List.NonEmpty.singleton plantPotGID

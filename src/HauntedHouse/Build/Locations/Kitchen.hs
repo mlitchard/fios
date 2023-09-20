@@ -17,11 +17,13 @@ import qualified Data.Map.Strict
  
 import HauntedHouse.Build.Locations.Kitchen.Exits ( buildExits )
 import HauntedHouse.Build.Locations.Kitchen.SinkArea.Sink 
-import HauntedHouse.Build.ObjectLabels (cabinet, sink, shelf, floorLabel, plantPotLabel)
+import HauntedHouse.Build.ObjectLabels 
+        (cabinetLabel, kitchenSinkLabel, kitchenShelfLabel, floorLabel
+        , plantPotLabel)
 import HauntedHouse.Build.ObjectTemplate
         (kitchenCabinetAboveSinkGID, kitchenCabinetBelowSinkGID
         , kitchenCabinetAboveShelfGID, kitchenCabinetBelowShelfGID
-        , kitchenEastDoorGID, kitchenShelfGID, kitchenSinkGID, plantPotGID, kitchenFloorGID)
+        , kitchenEastDoorGID, kitchenShelfGID, kitchenSinkGID, plantPotGID, kitchenFloorGID, bagOfSoilGID)
 import HauntedHouse.Game.Model.GID (GID)
 import HauntedHouse.Game.Model.Mapping
         (LabelToGIDMapping (LabelToGIDMapping), Label (..)
@@ -85,14 +87,19 @@ objectList =
   , kitchenCabinetBelowShelfGID
   , kitchenSinkGID
   , plantPotGID
+  , bagOfSoilGID
   , kitchenEastDoorGID
   , kitchenCabinetAboveSinkGID
   , kitchenCabinetBelowSinkGID] 
 
 kitchenObjectLabelMap :: LabelToGIDListMapping Object Object
 kitchenObjectLabelMap = LabelToGIDListMapping $ Data.Map.Strict.fromList 
-  [(cabinet,kitchenCabinets),(sink, kitchenSink),(shelf, kitchenShelf)
-  , (plantPotLabel, kitchenPlantPot), (floorLabel,kitchenFloor )]
+  [ (HauntedHouse.Build.ObjectLabels.cabinetLabel,kitchenCabinets)
+    ,(kitchenSinkLabel, kitchenSink)
+    ,(kitchenShelfLabel, kitchenShelf)
+    , (plantPotLabel, kitchenPlantPot)
+    , (floorLabel,kitchenFloor )
+  ]
 
 kitchenPlantPot :: Data.List.NonEmpty.NonEmpty (GID Object)
 kitchenPlantPot = Data.List.NonEmpty.singleton plantPotGID

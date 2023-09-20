@@ -11,7 +11,7 @@ import HauntedHouse.Game.Model.Condition
         (Perceptibility(Perceptible), Moveability (..))
 import HauntedHouse.Game.Actions.Get
 import HauntedHouse.Tokenizer (Lexeme (SINK)) 
-import HauntedHouse.Game.Actions.Look.StandardLook (lookIn, lookAt, lookOn, lookWrapper)
+import HauntedHouse.Game.Actions.Look.StandardLook (lookAt, lookOn, lookWrapper)
 
 buildKitchenSink :: GameStateExceptT ()
 buildKitchenSink = do
@@ -50,7 +50,17 @@ orientation :: Orientation
 orientation = Anchoring EastAnchor
 
 sinkContainer :: Containment
-sinkContainer = (Containment . Data.These.That) containedOn
+sinkContainer = (Containment . Data.These.That) shelf
 
-containedOn :: ContainedOn
-containedOn = (ContainedOn . ContainerMap) Data.Map.Strict.empty
+shelf :: Shelf
+shelf = Shelf 
+  { _shelfActions' = shelfActions 
+  , _shelf' = ContainerMap Data.Map.Strict.empty
+
+  }
+
+shelfActions :: ShelfActions
+shelfActions = ShelfActions 
+  { _putOn' = const pass
+  , _getFrom' = const pass
+  }

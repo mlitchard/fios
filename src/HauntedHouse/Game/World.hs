@@ -149,6 +149,8 @@ removeEntityLabelMapM entityLabel gid = do
         $ LabelToGIDListMapping
         $ Data.Map.Strict.insert entityLabel filteredList labelMap
 
+
+-- FIXME What even is this?
 removeFromContainmentM :: GID Object
                           -> OnOrIn
                           -> Containment
@@ -157,8 +159,8 @@ removeFromContainmentM gid _ (Containment containment) = do
   entityLabel <- _entityLabel' <$> getObjectM gid
   case containment of
     This containedIn -> throwError "removeFromContainmentM: contradiction cIn"
-    That containedOn -> pass
-    These _ containedOn -> pass
+    That (Shelf _ _) -> pass
+    These _ (Shelf _ _) -> pass
   where
     cinMSG = "removeFromContainmentM: contradiction cIn"
 

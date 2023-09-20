@@ -8,17 +8,17 @@ import HauntedHouse.Tokenizer         (Lexeme(..))
 The following are the keys for "Map (Label Object) 
                                   Data.List.NonEmpty (GID Object)""
 -}
-sink :: Label Object
-sink = Label SINK 
+kitchenSinkLabel :: Label Object
+kitchenSinkLabel = Label SINK 
 
-shelf :: Label Object 
-shelf = Label SHELF 
+kitchenShelfLabel :: Label Object 
+kitchenShelfLabel = Label SHELF 
 
-cabinet :: Label Object 
-cabinet = Label CABINET
+cabinetLabel :: Label Object 
+cabinetLabel = Label CABINET
 
-door :: Label Object 
-door = Label DOOR 
+doorLabel :: Label Object 
+doorLabel = Label DOOR 
 
 plantPotLabel :: Label Object 
 plantPotLabel = Label POT 
@@ -39,7 +39,8 @@ objectNames =
   , "kitchenEastDoor"
   , "kitchenEastPortal"
   , "kitchenFloor"
-  , "plantPot"]
+  , "plantPot"
+  , "bagOfSoil"]
 
 numberOfObjects :: [Integer]
 numberOfObjects = [1 .. (toInteger $ length objectNames)]

@@ -38,12 +38,11 @@ data Config = Config {
   , _evalVerbPhraseSeven'    :: EvalVerbSeven
 }
 
-newtype Containment = Containment
-  { _unContainment' :: These ContainedIn ContainedOn } deriving stock Show
+newtype Containment = Containment { _unContainment' :: These ContainedIn Shelf }
 
 data ContainedBy = ContainedBy
   { _containedBy' :: OnOrIn
-  , _self :: GID Object
+  , _self' :: GID Object
   } deriving stock Show
 
 data OnOrIn
@@ -56,8 +55,15 @@ data ContainedIn = ContainedIn
   , _containedIn'         :: ContainerMap Object
   }
 
-newtype ContainedOn = ContainedOn {_unContainedOn' :: ContainerMap Object}
-  deriving stock (Eq,Ord,Show)
+data Shelf = Shelf 
+  { _shelfActions' :: ShelfActions
+    , _shelf' :: ContainerMap Object
+  }
+
+data ShelfActions = ShelfActions 
+  { _putOn' :: GID Object -> GameStateExceptT () 
+  , _getFrom' :: GID Object -> GameStateExceptT () 
+  }  
 
 data ContainerInterface = ContainerInterface {
       _openState'    :: OpenState

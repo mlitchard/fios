@@ -33,7 +33,7 @@ kitchenEastDoor :: GameStateExceptT ()
 kitchenEastDoor = do
   setObjectMapM kitchenEastDoorGID kitchenEastDoorObject
   setObjectMapM kitchenEastPortalGID kitchenEastDoorObject
-  setObjectLabelMapM kitchenGID door kitchenEastDoorGID
+  setObjectLabelMapM kitchenGID doorLabel kitchenEastDoorGID
   setLocationDirectionM  kitchenGID eastLabel kitchenEastDoorGID
 
 kitchenEastDoorObject :: Object

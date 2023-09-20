@@ -44,10 +44,10 @@ standardGetM (GetInput rGid removedEntity rLabel (On fromGid)) = do
   updatedNexus <- conConstructor <$> case _unContainment' containment of
     This _ -> throwError impassMSG
     That con -> do
-                  updatedCon <- removeFromContainedOnM rGid rLabel con
+                  updatedCon <- removeFromShelfM rGid rLabel con
                   pure (That updatedCon)
     These cin con -> do
-                       updatedCon <- removeFromContainedOnM rGid rLabel con
+                       updatedCon <- removeFromShelfM rGid rLabel con
                        pure (These cin updatedCon)
   setPlayerInventoryM rGid removedEntity fromGid fromEntity updatedNexus
   updatePlayerActionM ("You get the " <> rShortName)

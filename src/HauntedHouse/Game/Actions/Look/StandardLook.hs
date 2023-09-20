@@ -91,18 +91,18 @@ displayPossibleContained shortname (ObjectsOn cmap) = do
 caseContainmentAt :: Containment -> PossibleContained
 caseContainmentAt (Containment container) = case container of
   (This (ContainedIn (ContainerInterface{..}) inv)) -> ObjectsIn (_openState',inv)
-  (That (ContainedOn cmap)) -> ObjectsOn cmap
+  (That (Shelf _ cmap)) -> ObjectsOn cmap
   (These cin cmap) -> AllObjects' (makeAllObjects cin cmap)
 
 caseContainmentOn :: Containment -> Maybe (ContainerMap Object)
 caseContainmentOn (Containment containment) = do
   case containment of
-    (That (ContainedOn con)) -> Just con
-    (These _ (ContainedOn con)) -> Just con
+    (That (Shelf _ con)) -> Just con
+    (These _ (Shelf _ con)) -> Just con
     _                        -> Nothing
 
-makeAllObjects :: ContainedIn -> ContainedOn -> AllObjects
-makeAllObjects (ContainedIn (ContainerInterface{..}) cIn') (ContainedOn cm) =
+makeAllObjects :: ContainedIn -> Shelf -> AllObjects
+makeAllObjects (ContainedIn (ContainerInterface{..}) cIn') (Shelf _ cm) =
   AllObjects {
       _objectsIn' = (_openState',cIn')
     , _objectsOn' = cm

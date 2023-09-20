@@ -213,17 +213,17 @@ describePortalM (Portal _ gid) = do
 describeContainmentM :: Containment -> GameStateExceptT ()
 describeContainmentM (Containment (This containedIn)) =
   describeContainedInM containedIn
-describeContainmentM (Containment (That containedOn)) =
-  describeContainedOnM containedOn
-describeContainmentM (Containment (These containedIn containedOn)) =
-  describeContainedInM containedIn >> describeContainedOnM containedOn
+describeContainmentM (Containment (That shelf)) =
+  describeShelfM shelf
+describeContainmentM (Containment (These containedIn shelf)) =
+  describeContainedInM containedIn >> describeShelfM shelf
 
 describeContainedInM :: ContainedIn -> GameStateExceptT ()
 describeContainedInM (ContainedIn interface _) = do
   describeOpenStateM (_openState' interface) (_describe' interface)
 
-describeContainedOnM :: ContainedOn -> GameStateExceptT ()
-describeContainedOnM (ContainedOn (ContainerMap cmap)) = do
+describeShelfM :: Shelf -> GameStateExceptT ()
+describeShelfM (Shelf _ (ContainerMap cmap)) = do
   shortNames <- mapM getShortNameM
                   $ concatMap Data.List.NonEmpty.toList
                   $ Data.Map.Strict.elems cmap

@@ -44,7 +44,7 @@ standardActions = StandardActions
 orientation :: Orientation
 orientation = ContainedBy' $ ContainedBy {
     _containedBy' = On kitchenShelfGID
-  , _self = plantPotGID
+  , _self' = plantPotGID
 }
 
 floorOrientation :: Orientation
