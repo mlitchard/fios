@@ -1,0 +1,33 @@
+module Game.Engine.Utilities where
+import Game.Model.Condition (Proximity (..))
+import Tokenizer (Lexeme (..))
+import Recognizer
+import Game.Model.World
+import qualified Data.Map.Strict
+import Game.Model.GID (GID)
+import Game.Model.Mapping
+import qualified Data.List.NonEmpty
+import Data.Map.Strict (delete)
+
+prepToProximity :: Lexeme -> Maybe Proximity 
+prepToProximity ON = Just PlacedOn
+prepToProximity UNDER = Just PlacedUnder
+prepToProximity ABOVE = Just PlacedAbove
+prepToProximity LEFT = Just PlacedLeft 
+prepToProximity RIGHT = Just PlacedRight
+prepToProximity FRONT = Just PlacedFront 
+prepToProximity BEHIND = Just PlacedBehind 
+prepToProximity _ = Nothing   
+
+
+{-
+data PrepPhrase
+  = PrepPhrase1 Preposition NounPhrase
+  | PrepPhrase2 Preposition  Determiner AdjPhrase NounPhrase
+  -- | Preposition Preposition
+  deriving stock (Show, Eq, Ord)
+-}
+prepositionFromPhrase :: PrepPhrase -> Preposition 
+prepositionFromPhrase (PrepPhrase1 prep _)      = prep 
+prepositionFromPhrase (PrepPhrase2 prep _ _ _)  = prep
+
