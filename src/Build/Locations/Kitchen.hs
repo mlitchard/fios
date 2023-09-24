@@ -3,8 +3,6 @@
 module Build.Locations.Kitchen (buildKitchen) where
 
 import Build.DescriptiveTemplate
-import Build.ExitTemplate (kitchenEastExitGID)
-import Build.LocationLabels (kitchenLocationLabel)
 import Build.LocationTemplate
 import Build.Locations.BuildFrame
 import Recognizer (Adjective)
@@ -30,16 +28,13 @@ import Game.Model.Mapping
         , NeighborMap (..), LabelToGIDListMapping (..), GIDList)
 import Tokenizer ( Lexeme(..) )
 import Build.Locations.Kitchen.ShelfArea.Shelf (buildKitchenShelf)
-import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf
-    ( buildKitchenCabinetAboveShelf )
-import Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf
-    ( buildKitchenCabinetBelowShelf )
-import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink
-    ( buildKitchenCabinetAboveSink )
-import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink
 import Game.Model.Condition (Proximity (..))
-import Build.Locations.Kitchen.PlantPot (buildPlantPot)
-import Build.Locations.Kitchen.Floor (buildKitchenFloor)
+import Build.Locations.Kitchen.FloorArea.Floor (buildKitchenFloor)
+import Build.Locations.Kitchen.FloorArea.PlantPot (buildPlantPot)
+import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Cabinet (buildKitchenCabinetAboveShelf)
+import Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Cabinet (buildKitchenCabinetBelowShelf)
+import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Cabinet (buildKitchenCabinetAboveSink)
+import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Cabinet (buildKitchenCabinetBelowSink)
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do

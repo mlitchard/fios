@@ -131,8 +131,16 @@ library
     Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.Go
     Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.Look
     Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.NoCanDo
-    Build.Locations.Kitchen.Floor
-    Build.Locations.Kitchen.PlantPot
+    Build.Locations.Kitchen.FloorArea.Actions.Floor.Get
+    Build.Locations.Kitchen.FloorArea.Actions.Floor.Look
+    Build.Locations.Kitchen.FloorArea.Actions.Floor.NoCanDo
+    Build.Locations.Kitchen.FloorArea.Actions.Floor.Put
+    Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Get
+    Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Look
+    Build.Locations.Kitchen.FloorArea.Actions.PlantPot.NoCanDo
+    Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Put
+    Build.Locations.Kitchen.FloorArea.Floor 
+    Build.Locations.Kitchen.FloorArea.PlantPot
     Build.Locations.Kitchen.ShelfArea.Shelf
     Build.Locations.Kitchen.ShelfArea.Actions.Look
     Build.Locations.Kitchen.ShelfArea.Actions.NoCanDo

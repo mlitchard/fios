@@ -25,9 +25,3 @@ lookShelf :: Object
               -> Map (GID Object) Container
               -> GameStateExceptT ()
 lookShelf = lookInOpenBoxM kitchenShelfGID
-
-noLookIn :: GameStateExceptT ()
-noLookIn = updateEnvironmentM msg 
-  where 
-    msg = "You can look on a shelf, or at it. "
-            <> "But you can't look in it. It's a shelf"

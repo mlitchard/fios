@@ -31,7 +31,7 @@ look lookAtF lookOnF lookInF lookPrep entity@(Object {..}) = do
                       Perceptible -> selectFunction
                       Imperceptible -> const (updateEnvironmentM noSee)
   lookFunction worldCMap
-  where
+  where -- selectFunction needs to be passed in. Eliminate LookPrep
     selectFunction = case lookPrep of
       LookAt -> _unLookAt' lookAtF entity
       LookOn -> _unLookOn' lookOnF entity
