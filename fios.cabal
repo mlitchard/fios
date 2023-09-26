@@ -195,7 +195,6 @@ library
     Game.Actions.Close
     Game.Actions.Get
     Game.Actions.Look.StandardLook
-    Game.Actions.Look.PlantPot
     Game.Actions.Open
     Game.Engine.OnlyVerb
     Game.Engine.OnlyVerb.DoLook
