@@ -7,7 +7,6 @@ import Game.Actions.Look.StandardLook (makeLookAction, changeLookAction)
 import Build.ObjectTemplate (plantPotGID)
 import Game.Object (setObjectMapM)
 
-
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM plantPotGID
 

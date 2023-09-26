@@ -3,12 +3,9 @@ module Game.Engine where
 
 import Game.Model.World
 import Game.Engine.OnlyVerb ( evalOnlyVerb )
-
 import Recognizer.WordClasses
-        ( Imperative(..), VerbPhrase(..), NounPhrase (..), AdjPhrase (..))
-
+        ( Imperative(..), VerbPhrase(..), AdjPhrase (..))
 import Control.Monad.Except (MonadError(..))
-
 import Prelude hiding (show)
 import Clarifier (doReportM)
 import Relude

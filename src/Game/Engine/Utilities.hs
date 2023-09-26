@@ -3,11 +3,13 @@ import Game.Model.Condition (Proximity (..))
 import Tokenizer (Lexeme (..))
 import Recognizer
 import Game.Model.World
-import qualified Data.Map.Strict
-import Game.Model.GID (GID)
 import Game.Model.Mapping
-import qualified Data.List.NonEmpty
-import Data.Map.Strict (delete)
+
+descriptiveLabel :: Lexeme -> Label Adjective
+descriptiveLabel = Label
+
+directObjectLabel :: Lexeme -> Label Object
+directObjectLabel = Label
 
 prepToProximity :: Lexeme -> Maybe Proximity 
 prepToProximity ON = Just PlacedOn

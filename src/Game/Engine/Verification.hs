@@ -14,13 +14,11 @@ import Clarifier
     ( subObjectAgreement,
       checkProximity,
       findInDirectObject,
-      findNoun, clarifyWhich)
+      findNoun)
 import Game.Model.Mapping (Label(..), LabelToGIDListMapping (..))
 import Control.Monad.Except (MonadError(..))
 import qualified Data.Map.Strict
-import Data.These (These(..))
-import Tokenizer (Lexeme)
-
+import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
 
 verifySimple :: Label Adjective
                               -> Label Object
@@ -28,7 +26,7 @@ verifySimple :: Label Adjective
 verifySimple descriptiveLabel' directObjectLabel' = do
   possibleDirectObjects <- getObjectsFromLabelM directObjectLabel'
   testableEntity <- if length possibleDirectObjects > 1
-    then throwError "verifyExistenceAP can't differentiate yet"
+    then throwError "verifySimple can't differentiate yet"
     else pure (head possibleDirectObjects)
   let descriptives = _descriptives' (snd testableEntity)
   -- does it match description?
@@ -51,11 +49,6 @@ verifyAccessabilityNP (NounPhrase2 adj (Noun n)) =
 verifyAccessabilityNP _ = throwError "verifyAccessabilityAP unfinished"
 
 
-descriptiveLabel :: Lexeme -> Label Adjective
-descriptiveLabel = Label
-
-directObjectLabel :: Lexeme -> Label Object
-directObjectLabel = Label
 -- verifyAccessabilityAP _ = throwError "verifyExistenceAP unfinished"
 
 matchDescriptive :: Label Adjective -> [Label Adjective] -> Bool

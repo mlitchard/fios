@@ -10,36 +10,28 @@ import qualified Data.Text
 import Game.Model.Condition (Perceptibility(..))
 
 makeLookAction :: (Object -> GameStateExceptT ())
-                -> LookAtF 
+                -> LookAtF
                 -> LookOnF
                 -> LookInF
                 -> LookAction
 makeLookAction changeFunction lookAt lookOn lookIn = LookAction {
-    _updateLook' = changeFunction 
-  , _look' = look lookAt lookOn lookIn 
+    _updateLook' = changeFunction
+  , _lookAt' = lookAt
+  , _lookIn' = lookIn
+  , _lookOn' = lookOn
 }
 
-look :: LookAtF
-          -> LookOnF
-          -> LookInF
-          -> LookPrep
-          -> Object
+look :: Object
+          -> LookF
           -> GameStateExceptT ()
-look lookAtF lookOnF lookInF lookPrep entity@(Object {..}) = do
+look entity@(Object {..}) lookFunction = do
   worldCMap <- _unGIDToDataMapping' . _containerMap' . _world' <$> get
-  let lookFunction = case _perceptability' of
-                      Perceptible -> selectFunction
-                      Imperceptible -> const (updateEnvironmentM noSee)
-  lookFunction worldCMap
-  where -- selectFunction needs to be passed in. Eliminate LookPrep
-    selectFunction = case lookPrep of
-      LookAt -> _unLookAt' lookAtF entity
-      LookOn -> _unLookOn' lookOnF entity
-      LookIn -> _unLookIn' lookInF entity
-      LookThrough -> const (updateEnvironmentM lookThroughError)
+  let lookFunction' = case _perceptability' of
+                      Perceptible -> lookFunction
+                      Imperceptible -> const (const (updateEnvironmentM noSee))
+  lookFunction' entity worldCMap 
+  where
     noSee = "You don't see a " <> _shortName' <> " here."
-    lookThroughError = "Haven't implemented look through yet,"
-                        <> " but you probably can't do what you are trying to do."
 
 lookDescriptionM :: Object -> GameStateExceptT ()
 lookDescriptionM (Object {..}) =
@@ -105,7 +97,7 @@ deepLookInContainerM cMap = do
   updateEnvironmentM "Inside you see:"
   mapM_ updateEnvironmentM shortNames
 
-changeLookAction :: LookAction -> Object -> Object 
-changeLookAction lookAction' entity@(Object {..}) = 
+changeLookAction :: LookAction -> Object -> Object
+changeLookAction lookAction' entity@(Object {..}) =
   let standardActions' = _standardActions'
   in entity{_standardActions' = standardActions' {_lookAction' = lookAction'}}

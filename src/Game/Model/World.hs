@@ -184,9 +184,11 @@ newtype LookAtF = LookAtF {_unLookAt' :: LookF}
 newtype LookOnF = LookOnF {_unLookOn' :: LookF}
 newtype LookInF = LookInF {_unLookIn' :: LookF}
 
-data LookAction = LookAction
-  { _updateLook' :: Object -> GameStateExceptT ()
-  , _look' :: LookPrep -> Object -> GameStateExceptT ()
+data LookAction = LookAction { 
+      _updateLook' :: Object -> GameStateExceptT ()
+    , _lookAt' :: LookAtF
+    , _lookIn' :: LookInF 
+    , _lookOn' :: LookOnF
   }
 
 data OpenAction = OpenAction 

@@ -11,17 +11,11 @@ import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Get (getAction)
 import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.NoCanDo
         (unlockAction, goAction, openAction, closeAction, lockAction)
 import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Put (putAction)
-import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Look (emptyPlantPotLookAction)
+import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Look (emptyPlantPotLookAction, hasPlantLookAction, hasSoilLookAction)
+import Game.Object (setObjectMapM)
 
 buildPlantPot :: GameStateExceptT ()
-buildPlantPot = do
-  world <- _world' <$> get
-  let objectMap' :: GIDToDataMapping Object Object
-      objectMap' =
-        GIDToDataMapping $ Data.Map.Strict.insert plantPotGID plantPot
-          $ (_unGIDToDataMapping' . _objectMap') world
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
-
+buildPlantPot =  setObjectMapM plantPotGID plantPot
 
 plantPot :: Object
 plantPot = Object {

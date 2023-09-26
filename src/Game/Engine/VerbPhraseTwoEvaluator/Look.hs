@@ -1,7 +1,6 @@
 module Game.Engine.VerbPhraseTwoEvaluator.Look where
 import Recognizer.WordClasses
         (PrepPhrase (..), NounPhrase (..), Preposition)
-import Control.Monad.Except (throwError, MonadError (..))
 import Game.Model.Mapping
     ( LabelToGIDListMapping(..), Label (..) )
 import qualified Data.Map.Strict (lookup)
@@ -11,10 +10,13 @@ import Game.Model.Display
         (describeObjectM, showPlayerActionM, showEnvironmentM
         , updateDisplayActionM)
 import qualified Relude.List.NonEmpty as NonEmpty
-import Recognizer (Imperative)
+import Recognizer (Imperative, AdjPhrase (..))
 import Clarifier (clarifyingLookDirectObjectM)
 import Tokenizer.Data (Lexeme(..))
-import Game.Engine.Verification (verifyAccessabilityPP, verifyAccessabilityAPNP)
+import Game.Engine.Verification (verifyAccessabilityPP, verifyAccessabilityAPNP, verifySimple)
+import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
+import Game.Actions.Look.StandardLook (look)
+import Control.Monad.Except (MonadError(..))
 
 {-
 (ImperativeClause (VerbPhrase2 LOOK (PrepPhrase2 IN THE (Adjective POT) (Noun PLANT))))
@@ -25,7 +27,33 @@ doLookObjectM (PrepPhrase1 prep np) =
 doLookObjectM _                     = throwError "doLookObject implementation incomplete"
 -}
 doLookObjectM :: PrepPhrase -> GameStateExceptT ()
-doLookObjectM pp@(PrepPhrase1 prep _) = pass {- do
+doLookObjectM (PrepPhrase2 prep _ (Adjective adj) (Noun noun)) = do
+  (_, entity) <- verifySimple descriptiveLabel' directObjectLabel'
+  print ("doLookObjectM" <> _shortName' entity :: Text)
+  
+  let res = case prep of
+              AT -> Right (lookAt entity)
+              IN -> Right (lookIn entity)
+              ON -> Right (lookOn entity)
+              THROUGH -> Left lookThroughMsg
+              _ -> Left nonsenseMsg
+  either throwError (look entity) res
+  
+  
+  updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
+  where
+    lookAt = _unLookAt' . _lookAt' . _lookAction' . _standardActions'
+    lookIn = _unLookIn' . _lookIn' . _lookAction' . _standardActions'
+    lookOn = _unLookOn' . _lookOn' . _lookAction' . _standardActions'
+    lookThroughMsg = "Look through not implemented" :: Text
+    nonsenseMsg = "Arble and garble, I say to you." :: Text
+    directObjectLabel' = directObjectLabel noun
+    descriptiveLabel' = descriptiveLabel adj
+
+doLookObjectM pp@(PrepPhrase1 prep (Noun noun)) = pass
+doLookObjectM pp@(PrepPhrase1 prep (NounPhrase1 _ (Noun noun))) = pass
+doLookObjectM pp@(PrepPhrase1 prep (NounPhrase2 adj (Noun noun))) = pass
+doLookObjectM _  = throwError ("doLookObjectM not finished" :: Text) {- do
   res <- verifyAccessabilityPP (clarifyingLookDirectObjectM prep) pp
   case res of
     (Left clarifyM) -> clarifyM
