@@ -166,17 +166,6 @@ data PutAction = PutAction
   {   _updatePut' :: GameStateExceptT ()
     , _put' :: GID Object -> PutPrep -> GameStateExceptT ()
   }
-data LookPrep 
-  = LookAt 
-  | LookIn 
-  | LookOn
-  | LookThrough 
-
-toLookPrep :: Lexeme -> Maybe LookPrep 
-toLookPrep AT = Just LookAt
-toLookPrep IN = Just LookIn 
-toLookPrep THROUGH = Just LookThrough
-toLookPrep _ = Nothing 
 
 type LookF = (Object -> Map (GID Object) Container -> GameStateExceptT ())
                                                                                 
