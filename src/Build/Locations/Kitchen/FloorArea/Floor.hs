@@ -16,19 +16,14 @@ import Build.Locations.Kitchen.FloorArea.Actions.Floor.Put (putAction)
 import Build.Locations.Kitchen.FloorArea.Actions.Floor.NoCanDo 
         (openAction, closeAction, lockAction, unlockAction, goAction)
 import Build.Locations.Kitchen.ShelfArea.Actions.Look (lookAction)
+import Game.Object (setObjectMapM)
 
 -- Anchoring RoomAnchor
 
 buildKitchenFloor :: GameStateExceptT ()
 buildKitchenFloor = do
-  world <- _world' <$> get
- -- world <- _world' <$> get
-  let objectMap' :: GIDToDataMapping Object Object
-      objectMap' =
-        GIDToDataMapping $ Data.Map.Strict.insert kitchenFloorGID buildFloor
-          $ (_unGIDToDataMapping' . _objectMap') world
+  setObjectMapM kitchenFloorGID buildFloor 
   initContainerMapM kitchenFloorGID floorContainer
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
 buildFloor :: Object
 buildFloor = Object { 

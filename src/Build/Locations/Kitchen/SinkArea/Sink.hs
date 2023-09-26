@@ -1,7 +1,6 @@
 module Build.Locations.Kitchen.SinkArea.Sink where
 
 import Data.Map.Strict qualified
-
 import Build.ObjectTemplate
 import Game.Model.Mapping
 import Game.Model.World
@@ -14,16 +13,12 @@ import Build.Locations.Kitchen.SinkArea.Actions.Look
 import Build.Locations.Kitchen.SinkArea.Actions.Open (openAction)
 import Build.Locations.Kitchen.SinkArea.Actions.Close (closeAction)
 import Build.Locations.Kitchen.SinkArea.Actions.NoCanDo
+import Game.Object (setObjectMapM)
 
 buildKitchenSink :: GameStateExceptT ()
 buildKitchenSink = do
-  world <- _world' <$> get
-  let objectMap' :: GIDToDataMapping Object Object
-      objectMap' =
-        GIDToDataMapping $ Data.Map.Strict.insert kitchenSinkGID buildSink
-          $ (_unGIDToDataMapping' . _objectMap') world
+  setObjectMapM kitchenSinkGID buildSink
   initContainerMapM kitchenSinkGID sinkContainer
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
 buildSink :: Object
 buildSink = Object {

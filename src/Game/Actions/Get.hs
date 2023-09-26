@@ -27,7 +27,6 @@ tryGetM gid getFunction entity@(Object{..}) = do
   case _orientation' of
     ContainedBy' (ContainedBy cBy _) -> getFunction (getInput cBy)
     Inventory -> throwError alreadyHaveMSG
-    Floor fromGid -> getFunction (getInput (On fromGid))
     AnchoredTo' (fromGid, _) -> getFunction (getInput (On fromGid))
     Anchored _ -> throwError sillyMSG
   where

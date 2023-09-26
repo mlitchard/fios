@@ -2,15 +2,13 @@ module Game.Scene where
 import Game.Model.World
         (GameStateExceptT, RoomAnchors (..), RoomAnchor (..), ObjectAnchors (..)
         , directionFromRoomAnchor, Neighbors (..), Object (..)
-        , SceneAnchored (..), Container (..), Shelf (..), Orientation (..))
+        , SceneAnchored (..), Orientation (..))
 import qualified Data.Map.Strict
 import Game.Model.GID (GID)
-import Game.Model.Mapping (NeighborMap(..), GIDList, ContainerMap (..))
-import Game.Object (getObjectM, getShortNameM)
+import Game.Model.Mapping (NeighborMap(..), GIDList)
+import Game.Object (getObjectM, getObjectGIDPairM)
 import Game.Model.Condition (Proximity (..), Perceptibility (..))
 import qualified Data.List.NonEmpty
-import Data.These (These(..))
-import qualified Data.Text
 import Game.World (findShelfM)
 
 -- text builder for Scene
@@ -40,8 +38,8 @@ instance ScenePart (RoomAnchor, ObjectAnchors) where
     where
       preamble = case roomAnchor of
                   CenterAnchor -> mempty
-                  _ -> "In the " 
-                          <> directionFromRoomAnchor  roomAnchor 
+                  _ -> "In the "
+                          <> directionFromRoomAnchor  roomAnchor
                           <> "you see"
 
 
@@ -59,7 +57,7 @@ instance ScenePart (GID Object, Neighbors) where
     case _perceptability' object of
       Perceptible -> do
                         neighborPart <- makeScenePart neighbors
-                        inventory <- findShelfM gid 
+                        inventory <- findShelfM gid
                         pure . Just
                           $ SceneAnchored (_shortName' object) inventory neighborPart
       Imperceptible -> pure Nothing
@@ -77,30 +75,35 @@ instance ScenePart (Proximity, GIDList Object) where
   makeScenePart (proximity, gidList) = do
     let x :: [GID Object]
         x = Data.List.NonEmpty.toList gidList
-    objects <- filter (not . isRoomAnchor) <$> mapM getObjectM x 
-    res <- catMaybes <$> mapM makeScenePart objects
+    entities <- filter (\(_,e) -> (not . isRoomAnchor) e) <$> mapM getObjectGIDPairM x
+    res <- catMaybes <$> mapM makeScenePart entities
     pure $ if null res
       then Nothing
       else Just (displayProximity proximity <> unlines res)
 
 -- Entity can't be a RoomAnchor
-instance ScenePart Object where
+instance ScenePart (GID Object, Object) where
 
-  type RenderAs Object = Maybe Text
-  makeScenePart entity = do
-    case _perceptability' entity of
+  type RenderAs (GID Object, Object) = Maybe Text
+  makeScenePart (gid,Object {..}) = do
+    case _perceptability' of
       Perceptible   -> do
-                        let prelude = _shortName' entity <> "\n"
-                        pure (Just prelude)
+                          mShelf <- presentShelfContents gid _shortName'
+                          pure (mShelf <|> Just _shortName')
       Imperceptible -> pure Nothing
 
+presentShelfContents :: GID Object -> Text -> GameStateExceptT (Maybe Text)
+presentShelfContents gid shortName = do
+  mEntities <- findShelfM gid
+  case mEntities of
+    (Just entities) -> do
+                          let prelude = "On the " <> shortName <> "you see:"
+                          pure (Just (prelude <> entities))
+    Nothing -> pure Nothing
 
--- newtype Container = Container
---  { _unContainer' :: These ContainedIn Shelf } deriving stock Show
-
-isRoomAnchor :: Object -> Bool 
-isRoomAnchor (Object {..}) = case _orientation' of 
-  (Anchored _) -> True 
+isRoomAnchor :: Object -> Bool
+isRoomAnchor (Object {..}) = case _orientation' of
+  (Anchored _) -> True
   _             -> False
 
 displayProximity :: Proximity -> Text

@@ -2,9 +2,9 @@ module Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Cabinet
   where
   
 import Game.Model.Mapping 
-        (GIDToDataMapping (..), ContainerMap (..), Label (..))
+        (ContainerMap (..), Label (..))
 import Game.Model.World
-import qualified Data.Map.Strict (insert, empty)
+import qualified Data.Map.Strict (empty)
 import Build.ObjectTemplate (kitchenCabinetBelowShelfGID, kitchenShelfGID)
 import Game.Model.Condition 
         (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
@@ -13,18 +13,12 @@ import Game.World (initContainerMapM)
 import Build.Locations.Kitchen.ShelfArea.Actions.NoCanDo
 import Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Actions.Put (putAction)
 import Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Actions.Look (initialLookAction)
+import Game.Object (setObjectMapM)
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
 buildKitchenCabinetBelowShelf = do
-  world <- _world' <$> get 
-  let objectMap' :: GIDToDataMapping Object Object
-      objectMap' = 
-        GIDToDataMapping 
-          $ Data.Map.Strict.insert 
-              kitchenCabinetBelowShelfGID buildCabinet 
-                $ (_unGIDToDataMapping' . _objectMap') world
+  setObjectMapM kitchenCabinetBelowShelfGID buildCabinet
   initContainerMapM kitchenCabinetBelowShelfGID cabinetContainer
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
 buildCabinet :: Object 
 buildCabinet = Object { 

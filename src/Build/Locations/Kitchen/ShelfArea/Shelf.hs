@@ -15,16 +15,12 @@ import Build.Locations.Kitchen.ShelfArea.Actions.NoCanDo
 import Build.Locations.Kitchen.ShelfArea.Actions.Put
 import Game.World (initContainerMapM)
 import Build.Locations.Kitchen.ShelfArea.Actions.Look (lookAction)
+import Game.Object (setObjectMapM)
 
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf = do
-  world <- _world' <$> get
-  let objectMap' :: GIDToDataMapping Object Object
-      objectMap' =
-        GIDToDataMapping $ Data.Map.Strict.insert kitchenShelfGID buildShelf
-          $ (_unGIDToDataMapping' . _objectMap') world
+  setObjectMapM kitchenShelfGID buildShelf
   initContainerMapM kitchenShelfGID shelfContainer
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
 buildShelf :: Object
 buildShelf= Object {

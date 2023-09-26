@@ -15,18 +15,12 @@ import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Put
 import Game.Model.Condition
   (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
 import Tokenizer (Lexeme (CABINET))
+import Game.Object (setObjectMapM)
 
 buildKitchenCabinetBelowSink :: GameStateExceptT ()
 buildKitchenCabinetBelowSink = do
-  world <- _world' <$> get
-  let objectMap' :: GIDToDataMapping Object Object
-      objectMap' =
-        GIDToDataMapping
-          $ Data.Map.Strict.insert
-              kitchenCabinetBelowSinkGID buildCabinet
-                $ (_unGIDToDataMapping' . _objectMap') world
+  setObjectMapM kitchenCabinetBelowSinkGID buildCabinet
   initContainerMapM kitchenCabinetBelowSinkGID cabinetContainer
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
 buildCabinet :: Object
 buildCabinet = Object {

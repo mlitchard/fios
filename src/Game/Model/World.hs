@@ -227,7 +227,6 @@ data OpenState = Open | Closed deriving stock Show
 data Orientation
   = ContainedBy' ContainedBy
   | Inventory
-  | Floor (GID Object)
   | AnchoredTo' (GID Object, Proximity)
   | Anchored RoomAnchor
     deriving stock Show

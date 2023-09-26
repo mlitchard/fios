@@ -2,26 +2,21 @@
 {-# OPTIONS_GHC -Wno-type-defaults #-}
 module Game.Model.Display where
 
-import Data.Map.Strict qualified (elems, toList, size, null, member, lookup)
+import Data.Map.Strict qualified (toList, null, member, lookup)
 
 import Game.Model.World
 
-import Game.Model.Mapping (ContainerMap(..), Label (..))
-import Game.Object (getShortNameM, setObjectMapM, getObjectM)
+import Game.Object (getShortNameM, getObjectM)
 
 import Data.List.NonEmpty ( (<|), reverse, toList, singleton )
 
 import Game.Model.GID (GID)
 import Game.Model.Condition (Proximity (..), Perceptibility (..))
 import Control.Monad.Except (MonadError(..))
-import Data.These (These(..))
 import qualified Data.Text
 import qualified Data.List
 import Game.Model.Mapping
 import Data.Text (toLower)
-import Tokenizer.Data (Lexeme(..))
-import Recognizer (Preposition)
-import qualified Data.Either.Combinators
 
 updatePlayerActionM :: Text -> GameStateExceptT ()
 updatePlayerActionM action = do
@@ -127,7 +122,6 @@ describeOrientationM preamble orientation = do
   desc <- case orientation of
             ContainedBy' containedBy -> describeContainedByM containedBy
             Inventory -> pure "in your inventory."
-            (Floor _) -> pure "on the floor."
             (AnchoredTo' anchoredTo) -> describeAnchoredToM anchoredTo
             Anchored roomAnchor -> pure $ describeAnchoring roomAnchor
   updateEnvironmentM (preamble <> desc)
@@ -137,10 +131,10 @@ describeContainedByM (ContainedBy onOrIn _) = do
   (prep,shortName) <- case onOrIn of
                         (On gid) -> do
                                        shortName <- getShortNameM gid
-                                       pure ("on", shortName)
+                                       pure ("on the", shortName)
                         (In gid) -> do
                                        shortName <- getShortNameM gid
-                                       pure ("in", shortName)
+                                       pure ("in the", shortName)
   pure (prep <> " the " <> shortName)
 
 describeAnchoredToM :: (GID Object, Proximity) -> GameStateExceptT Text
@@ -167,14 +161,6 @@ describeAnchoring roomAnchor = "In the " <> anchor
               $ Data.List.head
               $ Data.Text.splitOn "Anchor"
               $ toText roomAnchor
-
-{-
-describePortalM :: Portal -> GameStateExceptT ()
-describePortalM (Portal _ gid) = do
-  exit <- _title' <$> (getLocationM . _toDestination' =<< getExitM gid)
-  updateEnvironmentM ("an exit leading to " <> exit)
--}
---  either describeContainerM describePortalM nexus
 
 describeOpenStateM :: OpenState -> ContainerMap  Object -> GameStateExceptT ()
 describeOpenStateM openState (ContainerMap cmap) = do
@@ -235,4 +221,3 @@ makeDescriptionListM (ContainerMap cmap) = do
 openSeeShallow :: Maybe (NonEmpty (Label Object, NonEmpty Text)) -> Text
 openSeeShallow (Just _) = "you see something inside"
 openSeeShallow Nothing  = "You don't see anything inside"
-

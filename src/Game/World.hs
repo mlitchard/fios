@@ -8,9 +8,7 @@ import qualified Data.Map.Strict
 import Game.Model.Mapping
 import Game.Model.GID (GID)
 import Game.Model.World
-
 import Recognizer (NounPhrase, PrepPhrase)
-import qualified Data.List.NonEmpty
 import qualified Data.List
 import qualified Data.Text
 import Data.List.NonEmpty
@@ -44,19 +42,21 @@ setContainerMap withContainerGid addedGid = do
   containment <- throwMaybeM errMsg
                   $ Data.Map.Strict.lookup withContainerGid containerMap
   let updatedContainer = updateContainer addedGid label containment
-      updatedContainerMap = GIDToDataMapping 
-                              $ Data.Map.Strict.insert 
-                                  withContainerGid 
-                                  updatedContainer 
+      updatedContainerMap = GIDToDataMapping
+                              $ Data.Map.Strict.insert
+                                  withContainerGid
+                                  updatedContainer
                                   containerMap
   modify' (\gs -> gs{_world' = world{_containerMap' = updatedContainerMap}})
   where
     errMsg = "setContainerMap: not a container " <> show withContainerGid
+
 updateContainer :: GID Object -> Label Object -> Container -> Container
 updateContainer addedGid label (Container (ContainerMap cmap)) =
   let singleList = Data.List.NonEmpty.singleton addedGid
       updated = Data.Map.Strict.insertWith (<>) label singleList cmap
   in Container (ContainerMap updated)
+
 getGIDListM :: GID Location
                 -> Label Object
                 -> GameStateExceptT (NonEmpty (GID Object))
@@ -115,6 +115,7 @@ makeErrorReport _np _pp = "You don't see that here"
 
 findShelfM :: GID Object -> GameStateExceptT (Maybe Text)
 findShelfM gid = do
+  (Object {..}) <- getObjectM gid
   mContainer <- Data.Map.Strict.lookup gid
         . _unGIDToDataMapping'
         . _containerMap'

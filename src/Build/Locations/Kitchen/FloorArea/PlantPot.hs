@@ -50,4 +50,10 @@ standardActions = StandardActions {
 }
 
 floorOrientation :: Orientation
-floorOrientation = Floor kitchenFloorGID
+floorOrientation = ContainedBy' containedBy
+
+containedBy :: ContainedBy 
+containedBy = ContainedBy {
+    _containedBy' = On kitchenFloorGID
+  , _self' = plantPotGID
+}

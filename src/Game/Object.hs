@@ -8,8 +8,6 @@ import Game.Model.GID (GID (GID))
 import Game.Model.World
 import Game.Model.Condition
 import qualified Data.List.NonEmpty
-import Data.These
-import Control.Monad.Except (MonadError(..))
 
 getObjectM :: GID Object -> GameStateExceptT Object
 getObjectM gid@(GID gid') = do

@@ -19,18 +19,12 @@ import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Actions.Open
         (openAction)
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Close 
         (closeAction)
+import Game.Object (setObjectMapM)
 
 buildKitchenCabinetAboveSink :: GameStateExceptT ()
 buildKitchenCabinetAboveSink = do
-  world <- _world' <$> get 
-  let objectMap' :: GIDToDataMapping Object Object
-      objectMap' = 
-        GIDToDataMapping 
-          $ Data.Map.Strict.insert 
-              kitchenCabinetAboveSinkGID buildCabinet 
-                $ (_unGIDToDataMapping' . _objectMap') world
+  setObjectMapM kitchenCabinetAboveSinkGID buildCabinet
   initContainerMapM kitchenCabinetAboveSinkGID cabinetContainer
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
 buildCabinet :: Object 
 buildCabinet = Object { 

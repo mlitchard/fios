@@ -18,18 +18,17 @@ import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.Open
         (openAction)
 import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.Close 
         (closeAction)
+import Game.Object (setObjectMapM)
 
+
+{-
+  setObjectMapM kitchenFloorGID buildFloor 
+  initContainerMapM kitchenFloorGID floorContainer
+-}
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do
-  world <- _world' <$> get 
-  let objectMap' :: GIDToDataMapping Object Object 
-      objectMap' = 
-        GIDToDataMapping 
-          $ Data.Map.Strict.insert 
-              kitchenCabinetAboveShelfGID buildCabinet 
-                $ (_unGIDToDataMapping' . _objectMap') world
+  setObjectMapM kitchenCabinetAboveShelfGID buildCabinet     
   initContainerMapM kitchenCabinetAboveShelfGID cabinetContainer
-  modify' (\gs -> gs{_world' = world{_objectMap' = objectMap'}})
 
 buildCabinet :: Object 
 buildCabinet = Object {
