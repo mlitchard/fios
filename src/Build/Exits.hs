@@ -23,7 +23,7 @@ exitNames :: [String]
 exitNames = kitchenExits <> hallExits
 
 exitRange :: [Integer]
-exitRange = [1 .. (toInteger .length $ exitNames)]
+exitRange = [1 .. (toInteger . length $ exitNames)]
 
 exitIntPairs :: [(String, Integer)]
 exitIntPairs = zip exitNames exitRange

@@ -1,14 +1,40 @@
 module Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.Look where
-import Game.Model.World (LookAction (..), GameStateExceptT, LookAtF (..), LookInF (..), LookOnF (..))
-import Control.Monad.Except (MonadError(throwError))
+import Game.Model.World
+        (LookAction (..), UpdatePerceptionFunctions (..)
+        , PerceptionFunctions (..), LookFunctions (..), LookAtF (..)
+        , LookInF (..), LookOnF (..))
 
-lookAction :: LookAction 
-lookAction = LookAction {
-    _updateLook' = const pass
-  , _lookAt' = LookAtF (const (const look))
-  , _lookIn' = LookInF (const (const pass))
-  , _lookOn' = LookOnF (const (const pass)) 
+defaultLookAction :: LookAction
+defaultLookAction = LookAction {
+    _updatePerception' = defaultUpdatePerceptions
+  , _perception' = defaultPerception
+  , _lookFunctions' = defaultLookFunctions
 }
 
-look :: GameStateExceptT () 
-look = throwError "look through not implemented"
+defaultUpdatePerceptions :: UpdatePerceptionFunctions
+defaultUpdatePerceptions = UpdatePerceptionFunctions {
+    _updateOpenReport' = const pass
+  , _updateVisibility' = const pass
+}
+
+defaultPerception :: PerceptionFunctions
+defaultPerception = PerceptionFunctions {
+    _lookPerceptionF' = id
+  , _displayPerceptionF' = id
+}
+
+defaultLookFunctions :: LookFunctions
+defaultLookFunctions = LookFunctions {
+    _lookAt' = lookAtClosedF
+  , _lookIn' = lookInClosedF
+  , _lookOn' = lookOnF
+}
+
+lookOnF :: LookOnF
+lookOnF = LookOnF $ const (const pass)
+
+lookAtClosedF :: LookAtF
+lookAtClosedF = LookAtF (const (const pass))
+
+lookInClosedF :: LookInF
+lookInClosedF = LookInF (const (const pass))
