@@ -1,22 +1,19 @@
 module Game.Engine.VerbPhraseTwoEvaluator.Look where
 import Recognizer.WordClasses
-        (PrepPhrase (..), NounPhrase (..), Preposition)
-import Game.Model.Mapping
-    ( LabelToGIDListMapping(..), Label (..) )
-import qualified Data.Map.Strict (lookup)
+        (PrepPhrase (..), NounPhrase (..))
 import Game.Model.World
-import qualified Data.List.NonEmpty
+    ( LookAction(..), LookInF(..), LookOnF(..), LookAtF (..)
+      ,Object(_shortName', _standardActions'),StandardActions (..)
+      ,LookFunctions (..),GameStateExceptT ())
 import Game.Model.Display
-        (describeObjectM, showPlayerActionM, showEnvironmentM
+        (showPlayerActionM, showEnvironmentM
         , updateDisplayActionM)
-import qualified Relude.List.NonEmpty as NonEmpty
-import Recognizer (Imperative, AdjPhrase (..))
-import Clarifier (clarifyingLookDirectObjectM)
+import Recognizer (AdjPhrase (..))
 import Tokenizer.Data (Lexeme(..))
-import Game.Engine.Verification (verifyAccessabilityPP, verifyAccessabilityAPNP, verifySimple)
+import Game.Engine.Verification (verifySimple)
 import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
-import Game.Actions.Look.StandardLook (look)
 import Control.Monad.Except (MonadError(..))
+import Game.Actions.Look.StandardLook (look)
 
 {-
 (ImperativeClause (VerbPhrase2 LOOK (PrepPhrase2 IN THE (Adjective POT) (Noun PLANT))))
@@ -38,13 +35,13 @@ doLookObjectM (PrepPhrase2 prep _ (Adjective adj) (Noun noun)) = do
               THROUGH -> Left lookThroughMsg
               _ -> Left nonsenseMsg
   _ <- error ("DEBUG" :: Text)
- -- either throwError (look entity) res
+  either throwError (look entity) res
   
   updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   where
-    lookAt = _unLookAt' . _lookAt' . _lookAction' . _standardActions'
-    lookIn = _unLookIn' . _lookIn' . _lookAction' . _standardActions'
-    lookOn = _unLookOn' . _lookOn' . _lookAction' . _standardActions'
+    lookAt =  _unLookAt' . _lookAt' . _lookFunctions' . _lookAction' . _standardActions'
+    lookIn = _unLookIn' . _lookIn' . _lookFunctions' . _lookAction' . _standardActions'
+    lookOn = _unLookOn' . _lookOn' . _lookFunctions' . _lookAction' . _standardActions'
     lookThroughMsg = "Look through not implemented" :: Text
     nonsenseMsg = "Arble and garble, I say to you." :: Text
     directObjectLabel' = directObjectLabel noun
