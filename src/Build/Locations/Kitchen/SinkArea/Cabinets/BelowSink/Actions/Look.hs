@@ -1,9 +1,9 @@
 module Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Look 
   where
 
-import Game.Model.World 
+import Game.Model.World
         (GameStateExceptT, Object (..), LookAction (..), LookAtF (..)
-        , LookOnF (..), LookInF (..))
+        , LookOnF (..), LookInF (..), LookF)
 import Game.Actions.Look.StandardLook
         (makeLookAction, lookAtOpenBoxM, lookInClosedBoxM, lookInOpenBoxM, changeLookAction)
 import Build.ObjectTemplate (kitchenCabinetBelowSinkGID)
@@ -16,6 +16,20 @@ initialLookAction = closedCabinetLookAction
 openCabinetLookAction :: LookAction 
 openCabinetLookAction = 
   makeLookAction changeToCloseLook lookAtOpenF lookOnF lookInOpenF 
+
+canDoLook :: LookF -> LookF 
+canDoLook lookF = lookF 
+
+cannotDoLook :: LookF -> LookF 
+cannotDoLook _ = const (const (updateEnvironmentM noSeeMsg)) 
+  where 
+    noSeeMsg = "You can't see that cabinet."
+
+canDisplayCabinet :: LookAtF -> LookAtF 
+canDisplayCabinet lookAtF = lookAtF 
+
+cannotDisplayCabinet :: LookAtF -> LookAtF 
+cannotDisplayCabinet _ = LookAtF (const (const pass))
 
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM kitchenCabinetBelowSinkGID

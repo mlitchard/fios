@@ -78,7 +78,7 @@ updateDisplayActionM displayAction = do
 
 -- FIXME perception test should happen seperately
 describeObjectM :: GID Object -> GameStateExceptT ()
-describeObjectM gid = do
+describeObjectM gid = error "undefined" {- do
   (Object {..}) <- getObjectM gid
   let success = "You look at the " <> _shortName'
       preamble = "The " <> _shortName' <> " is "
@@ -89,7 +89,7 @@ describeObjectM gid = do
                     >> describeOrientationM preamble _orientation'
                     >> mapM_ updateEnvironmentM _odescription'
                     >> maybeDescribeContainerShallowM gid
-
+-}
 isContainerM :: GID Object -> GameStateExceptT Bool
 isContainerM gid = do
   res <- _unGIDToDataMapping' . _containerMap' . _world' <$> get

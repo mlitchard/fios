@@ -128,7 +128,6 @@ data Object = Object {
   , _odescription'    :: [Text]
   , _descriptives'    :: [Label Adjective]
   , _moveability'     :: Moveability
-  , _perceptability'  :: Perceptibility
   , _orientation'     :: Orientation
   , _standardActions'  :: StandardActions
 }
@@ -174,11 +173,19 @@ newtype LookOnF = LookOnF {_unLookOn' :: LookF}
 newtype LookInF = LookInF {_unLookIn' :: LookF}
 
 data LookAction = LookAction { 
-      _updateLook' :: Object -> GameStateExceptT ()
+      _updateOpenReport' :: Object -> GameStateExceptT () 
+    , _updateVisibility' :: Object -> GameStateExceptT () 
     , _lookAt' :: LookAtF
     , _lookIn' :: LookInF 
     , _lookOn' :: LookOnF
+    , _lookPerception' :: LookF -> LookF
+    , _displayPerception' :: LookAtF -> LookAtF
   }
+
+data LookUpdates = LookUpdates {
+    _updateOpenReport' :: Object -> GameStateExceptT () 
+  , _updateVisibility' :: Object -> GameStateExceptT ()
+}
 
 data OpenAction = OpenAction 
   { _updateOpen' :: GameStateExceptT ()

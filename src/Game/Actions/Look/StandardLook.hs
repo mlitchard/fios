@@ -7,31 +7,47 @@ import Game.Model.Display (updateEnvironmentM, updatePlayerActionM)
 import Game.Object (getShortNameM)
 import qualified Data.List.NonEmpty
 import qualified Data.Text
-import Game.Model.Condition (Perceptibility(..))
 
+{-
+_updateOpenReport' :: Object -> GameStateExceptT () 
+    , _updateVisibility' :: Object -> GameStateExceptT () 
+-}
 makeLookAction :: (Object -> GameStateExceptT ())
+                -> (Object -> GameStateExceptT ())
                 -> LookAtF
                 -> LookOnF
                 -> LookInF
+                -> (LookF -> LookF)
+                -> (LookAtF -> LookAtF)
                 -> LookAction
-makeLookAction changeFunction lookAt lookOn lookIn = LookAction {
-    _updateLook' = changeFunction
+makeLookAction openReport visibility lookAt lookOn lookIn perception displayAction =
+  LookAction {
+    _
   , _lookAt' = lookAt
   , _lookIn' = lookIn
   , _lookOn' = lookOn
+  , _lookPerception' = perception
+  , _displayPerception' = displayAction
 }
 
+updateOpenReport :: (Object -> GameStateExceptT ()) -> LookAction -> LookAction 
+updateOpenReport openReport lookAction = 
+  let currentUpdates = _updateLookAction' lookAction
+      newUpdates = currentUpdates {_updateOpenReport' = openReport}
+  in lookAction {_updateLookAction' = newUpdates}
+
+updateVisibility :: (Object -> GameStateExceptT ()) -> LookAction -> LookAction
+updateVisibility visibility lookAction = 
+  let currentUpdates = _updateLookAction' lookAction
+      newUpdates = currentUpdates {_updateVisibility' = visibility}
+  in lookAction {_updateLookAction' = newUpdates}
+  
 look :: Object
           -> LookF
           -> GameStateExceptT ()
-look entity@(Object {..}) lookFunction = do
+look entity lookFunction = do
   worldCMap <- _unGIDToDataMapping' . _containerMap' . _world' <$> get
-  let lookFunction' = case _perceptability' of
-                      Perceptible -> lookFunction
-                      Imperceptible -> const (const (updateEnvironmentM noSee))
-  lookFunction' entity worldCMap 
-  where
-    noSee = "You don't see a " <> _shortName' <> " here."
+  lookFunction entity worldCMap
 
 lookDescriptionM :: Object -> GameStateExceptT ()
 lookDescriptionM (Object {..}) =
@@ -46,20 +62,19 @@ lookInImpossibleM = updateEnvironmentM msg
     msg = "X-ray vision would be cool, but you don't have that"
 
 lookAtOpenBoxM :: GID Object
+                    -> Text
                     -> Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
-lookAtOpenBoxM gid (Object {..}) = \cmap ->
+lookAtOpenBoxM gid msg (Object {..}) cmap = 
   updatePlayerActionM msg >> lookContainerM gid shallowLookInContainerM cmap
-  where
-    msg = "You look at the " <> _shortName'
 
 lookInOpenBoxM :: GID Object
+                    -> Text
                     -> Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
-lookInOpenBoxM gid (Object {..}) = \cmap ->
+lookInOpenBoxM gid msg (Object {..}) cmap = 
   updatePlayerActionM msg >> lookContainerM gid deepLookInContainerM cmap
-  where
-    msg = "You look in the " <> _shortName'
+
 
 lookAtClosedBoxM :: Object -> GameStateExceptT ()
 lookAtClosedBoxM entity = do
@@ -87,8 +102,12 @@ lookContainerM gid lookFunction worldCMap = do
 
 shallowLookInContainerM :: Map (Label Object) (GIDList Object)
                             -> GameStateExceptT ()
-shallowLookInContainerM _ = updateEnvironmentM "You see something inside."
-
+shallowLookInContainerM container
+  | Data.Map.Strict.null container = updateEnvironmentM emptyMsg
+  | otherwise                      = updateEnvironmentM somethingMsg
+  where
+    emptyMsg = "it's empty."
+    somethingMsg = "You see something inside."
 deepLookInContainerM :: Map (Label Object) (GIDList Object) -> GameStateExceptT ()
 deepLookInContainerM cMap = do
   shortNames <- mapM getShortNameM

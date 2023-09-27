@@ -1,7 +1,7 @@
 module Game.Actions.Close where 
 import Game.Model.World 
 import Game.Model.GID (GID)
-import Game.Object (getObjectM, setObjectMapM, togglePerceptabilityM)
+import Game.Object (getObjectM, setObjectMapM)
 import Control.Monad.Except (MonadError(..))
 import Game.Model.Display (updateDisplayActionM, showPlayerActionM, showEnvironmentM)
 import Data.These

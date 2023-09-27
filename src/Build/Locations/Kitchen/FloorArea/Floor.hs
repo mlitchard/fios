@@ -32,7 +32,6 @@ buildFloor = Object {
   , _odescription'    = [desc]
   , _descriptives'     = []
   , _moveability'     = NotMoveable
-  , _perceptability'  = Perceptible
   , _orientation'     = orientation
   , _standardActions' = standardActions
 }
@@ -44,10 +43,10 @@ floorContainer :: Container
 floorContainer = 
   Container
     $ ContainerMap $ Data.Map.Strict.singleton plantPotLabel floorInv
-
+{-
 floorInv :: GIDList Object
 floorInv = Data.List.NonEmpty.singleton plantPotGID
-
+-}
 standardActions :: StandardActions
 standardActions = StandardActions { 
     _getAction' = getAction

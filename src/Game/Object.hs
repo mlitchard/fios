@@ -67,38 +67,3 @@ namedDirectionM (label, gid) = do
 getShortNameM :: GID Object -> GameStateExceptT Text
 getShortNameM gid = _shortName' <$> getObjectM gid
 
-capturePerceptiblesM :: GIDList Object
-                         -> GameStateExceptT (Maybe (NonEmpty (GID Object,Object)))
-capturePerceptiblesM objectList = do
-  nonEmpty . mfilter testPerceptability 
-    <$> mapM getObjectGIDPairM (Data.List.NonEmpty.toList objectList)
-
-captureInPerceptiblesM :: GIDList Object
-                           -> GameStateExceptT (Maybe (NonEmpty (GID Object,Object))) 
-captureInPerceptiblesM objectList = do 
-  nonEmpty . mfilter (not . testPerceptability) 
-    <$> mapM getObjectGIDPairM (Data.List.NonEmpty.toList objectList)
-
-togglePerceptabilityM :: OpenState -> Container -> GameStateExceptT ()
-togglePerceptabilityM openState (Container (ContainerMap contents)) = do
-  let gidList = concatMap Data.List.NonEmpty.toList 
-            $ Data.Map.Strict.elems contents 
-  mapM_ togglePerceptabilityM' gidList 
-    where
-      toggledPerceptibility = togglePerceptability openState
-      togglePerceptabilityM' :: GID Object -> GameStateExceptT () 
-      togglePerceptabilityM' gid = do 
-        entity <- getObjectM gid
-        let updatedEntity = entity {_perceptability' = toggledPerceptibility }
-        setObjectMapM gid updatedEntity
-
-togglePerceptability :: OpenState -> Perceptibility 
-togglePerceptability Open = Perceptible 
-togglePerceptability Closed = Imperceptible 
-
--- changePerceptabilityM :: GIDList Object 
-testPerceptability :: (GID Object, Object) -> Bool 
-testPerceptability (_,obj) = isPercieved obj
-
-isPercieved :: Object -> Bool 
-isPercieved (Object {..}) = _perceptability' == Perceptible 

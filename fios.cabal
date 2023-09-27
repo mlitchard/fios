@@ -214,7 +214,6 @@ library
     Game.Model.Condition
     Game.Model.Display
     Game.Model.Mapping
-    Game.Model.Object.Relation
     Game.Model.World
     Recognizer.WordClasses
     Tokenizer.Data

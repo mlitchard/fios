@@ -10,6 +10,7 @@ import Game.Object (setObjectMapM)
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM plantPotGID
 
+
 hasPlantLookAction :: LookAction
 hasPlantLookAction =
   makeLookAction (const pass) lookAtHasPlantF lookOnF lookInHasPlantF
@@ -56,6 +57,8 @@ hasSoilLookAction :: LookAction
 hasSoilLookAction =
   makeLookAction changeToPlantedLook lookAtHasSoilF lookOnF lookInHasSoilF
 
+canDisplay :: LookF 
+canDisplay = 
 lookAtHasSoilF :: LookAtF 
 lookAtHasSoilF = LookAtF lookHasSoil 
 

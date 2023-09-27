@@ -52,7 +52,7 @@ instance ScenePart ObjectAnchors where
 instance ScenePart (GID Object, Neighbors) where
 
   type RenderAs (GID Object, Neighbors) = Maybe SceneAnchored
-  makeScenePart (gid, neighbors) = do
+  makeScenePart (gid, neighbors) = error "undefined" {- do
     object <- getObjectM gid
     case _perceptability' object of
       Perceptible -> do
@@ -61,7 +61,7 @@ instance ScenePart (GID Object, Neighbors) where
                         pure . Just
                           $ SceneAnchored (_shortName' object) inventory neighborPart
       Imperceptible -> pure Nothing
-
+-}
 instance ScenePart Neighbors where
 
   type RenderAs Neighbors = [Text]
@@ -85,13 +85,14 @@ instance ScenePart (Proximity, GIDList Object) where
 instance ScenePart (GID Object, Object) where
 
   type RenderAs (GID Object, Object) = Maybe Text
-  makeScenePart (gid,Object {..}) = do
+  makeScenePart (gid,Object {..}) = error ("undefined")
+    {-
     case _perceptability' of
       Perceptible   -> do
                           mShelf <- presentShelfContents gid _shortName'
                           pure (mShelf <|> Just _shortName')
       Imperceptible -> pure Nothing
-
+-}
 presentShelfContents :: GID Object -> Text -> GameStateExceptT (Maybe Text)
 presentShelfContents gid shortName = do
   mEntities <- findShelfM gid

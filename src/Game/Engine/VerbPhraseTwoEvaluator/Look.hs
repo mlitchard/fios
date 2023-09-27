@@ -37,8 +37,8 @@ doLookObjectM (PrepPhrase2 prep _ (Adjective adj) (Noun noun)) = do
               ON -> Right (lookOn entity)
               THROUGH -> Left lookThroughMsg
               _ -> Left nonsenseMsg
-  either throwError (look entity) res
-  
+  _ <- error ("DEBUG" :: Text)
+ -- either throwError (look entity) res
   
   updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   where

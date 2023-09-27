@@ -3,7 +3,7 @@ module Game.Actions.Open where
 import Game.Model.Display
 import Game.Model.World
 import Game.Model.GID (GID)
-import Game.Object (getObjectM, setObjectMapM, togglePerceptabilityM)
+import Game.Object (getObjectM, setObjectMapM)
 import Control.Monad.Except (MonadError(..))
 import Data.These (These(..))
 

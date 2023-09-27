@@ -142,8 +142,8 @@ findContainedOnShortName (Object {..}) = case _orientation' of
 
 findAnchoredTo :: (GID Object, Object) -> Maybe FoundAnchoredTo
 findAnchoredTo object = case object of
-  (gid,obj@(Object _ _ _ _ _ _ (AnchoredTo' gp) _)) -> Just $ FoundAnchoredTo
-                                                                (gid, obj) gp
+  (gid,obj@(Object _ _ _ _ _ (AnchoredTo' gp) _)) -> Just $ FoundAnchoredTo
+                                                              (gid, obj) gp
   _ -> Nothing
 
 -- assumes if the Label exists, the gid is in it's list

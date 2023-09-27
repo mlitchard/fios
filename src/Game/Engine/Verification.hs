@@ -7,7 +7,7 @@ import Recognizer.WordClasses
       PrepPhrase(PrepPhrase1) )
 import Game.Model.GID (GID)
 import qualified Data.List.NonEmpty
-import Game.Object (getObjectsFromLabelM, testPerceptability, capturePerceptiblesM)
+import Game.Object (getObjectsFromLabelM)
 import Game.World (makeErrorReport, findAnchoredTo)
 import Game.Model.World
 import Clarifier
@@ -32,9 +32,12 @@ verifySimple descriptiveLabel' directObjectLabel' = do
   -- does it match description?
   unless (matchDescriptive descriptiveLabel' descriptives)
     $ throwError noSeeMSG
+    {-
+    We do not test perceptibility here, just existence
   -- can player see it?
   unless (testPerceptability testableEntity)
     $ throwError noSeeMSG
+    -}
   -- tests pass
   pure testableEntity
   where
@@ -89,11 +92,11 @@ verifyAccessabilityAPNP _ _ = throwError "verifyAccessabilityAPNP unfinished"
 verifyAccessabilityPP :: (Imperative -> GameStateExceptT ())
                           -> PrepPhrase
                           -> ResultAccessabilityPP
-verifyAccessabilityPP clarifierM (PrepPhrase1 _ (Noun noun)) = do
+verifyAccessabilityPP clarifierM (PrepPhrase1 _ (Noun noun)) = pure (Left pass) {- do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   entities <- throwMaybeM nopeErr
-              =<< capturePerceptiblesM
+            --  =<< capturePerceptiblesM
               =<< throwMaybeM nopeErr (Data.Map.Strict.lookup (Label noun) m)
   if Data.List.NonEmpty.length entities == 1
     then pure (Right (head entities))
@@ -105,11 +108,12 @@ verifyAccessabilityPP clarifierM (PrepPhrase1 _ (Noun noun)) = do
   where
   --  displayActionM = showPlayerActionM >> showEnvironmentM
     nopeErr = "You don't see a " <> toText noun <> " here."
-verifyAccessabilityPP clarifierM (PrepPhrase1 _ (NounPhrase2 adj (Noun noun))) = do
+    -}
+verifyAccessabilityPP clarifierM (PrepPhrase1 _ (NounPhrase2 adj (Noun noun))) = pure $ Left pass {- do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   entities <- throwMaybeM nopeErr
-              =<< capturePerceptiblesM
+            --  =<< capturePerceptiblesM
               =<< throwMaybeM nopeErr (Data.Map.Strict.lookup (Label noun) m)
   let mres :: Maybe (NonEmpty (GID Object, Object))
       mres = nonEmpty $ Data.List.NonEmpty.filter
@@ -121,6 +125,7 @@ verifyAccessabilityPP clarifierM (PrepPhrase1 _ (NounPhrase2 adj (Noun noun))) =
     else Right (head res)
   where
     nopeErr = "You don't see a " <> toText noun <> " here."
+    -}
 verifyAccessabilityPP _ _ = throwError "verifyAccessabilityPP: evaluate not completed"
 
 matchAdjective :: Label Adjective -> Object -> Bool
