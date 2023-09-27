@@ -27,7 +27,6 @@ buildCabinet = Object {
     , _odescription' = [desc]
     , _descriptives' = [] 
     , _moveability' = NotMoveable
-    , _perceptability' = Perceptible
     , _orientation' = orientation
     , _standardActions' = standardActions 
   }
@@ -52,6 +51,3 @@ orientation = AnchoredTo' (kitchenShelfGID,PlacedUnder)
 cabinetContainer :: Container
 cabinetContainer = Container 
   $ ContainerMap Data.Map.Strict.empty
-
-
-  

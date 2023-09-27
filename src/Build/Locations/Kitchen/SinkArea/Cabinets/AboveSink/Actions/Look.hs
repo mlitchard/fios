@@ -2,29 +2,71 @@ module Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Actions.Look
   where
 import Game.Model.World 
 import Build.ObjectTemplate (kitchenCabinetAboveSinkGID)
-import Game.Actions.Look.StandardLook (makeLookAction, lookAtOpenBoxM, lookInOpenBoxM, lookInClosedBoxM, lookAtClosedBoxM)
+import Game.Actions.Look.StandardLook 
+        (lookAtOpenBoxM, lookInOpenBoxM, lookInClosedBoxM, lookAtClosedBoxM)
 import Game.Model.Display (updateEnvironmentM)
 import Game.Object (setObjectMapM)
+import Game.Actions.Look.Update
 
+initialLookAction :: LookAction
+initialLookAction = closedCabinetLookAction defaultLookAction
 
-openCabinetLookAction :: LookAction 
-openCabinetLookAction = 
-  makeLookAction changeToCloseLook lookAtOpenF lookOnF lookInOpenF
+defaultLookAction :: LookAction
+defaultLookAction = LookAction {
+    _updatePerception' = defaultUpdatePerceptions
+  , _perception' = defaultPerception
+  , _lookFunctions' = defaultLookFunctions
+}
+
+defaultUpdatePerceptions :: UpdatePerceptionFunctions
+defaultUpdatePerceptions = UpdatePerceptionFunctions {
+    _updateOpenReport' = const pass
+  , _updateVisibility' = const pass
+}
+
+defaultPerception :: PerceptionFunctions
+defaultPerception = PerceptionFunctions {
+    _lookPerceptionF' = id
+  , _displayPerceptionF' = id
+}
+
+defaultLookFunctions :: LookFunctions
+defaultLookFunctions = LookFunctions {
+    _lookAt' = lookAtClosedF
+  , _lookIn' = lookInClosedF
+  , _lookOn' = lookOnF
+}
+
+openCabinetLookAction :: LookAction -> LookAction
+openCabinetLookAction =
+  updateOpenReport changeToCloseLook
+    . updateLookAtF lookAtOpenF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInOpenF
 
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM kitchenCabinetAboveSinkGID
 
 changeToCloseLook :: Object -> GameStateExceptT ()
-changeToCloseLook entity = 
-  updateLookActionObject $ changeLookAction closedCabinetLookAction entity
+changeToCloseLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction closedCabinetLookAction' entity
+  where
+    closedCabinetLookAction' =
+      closedCabinetLookAction (_standardActions'._lookAction')
 
-changeToOpenLook :: Object -> GameStateExceptT () 
-changeToOpenLook entity = 
-  updateLookActionObject $ changeLookAction openCabinetLookAction entity
+changeToOpenLook :: Object -> GameStateExceptT ()
+changeToOpenLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction openCabinetLookAction' entity
+  where
+    openCabinetLookAction' =
+      openCabinetLookAction (_standardActions'._lookAction')
   
-closedCabinetLookAction :: LookAction 
-closedCabinetLookAction = 
-  makeLookAction changeToOpenLook lookAtClosedF lookOnF lookInClosedF 
+closedCabinetLookAction :: LookAction -> LookAction
+closedCabinetLookAction =
+    updateOpenReport changeToOpenLook
+    . updateLookAtF lookAtClosedF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInClosedF
 
 changeLookAction :: LookAction -> Object -> Object 
 changeLookAction lookAction entity@(Object {..}) = 

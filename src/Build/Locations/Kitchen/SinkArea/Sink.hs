@@ -5,7 +5,7 @@ import Build.ObjectTemplate
 import Game.Model.Mapping
 import Game.Model.World
 import Game.Model.Condition
-        (Perceptibility(Perceptible), Moveability (..))
+        (Moveability (..))
 import Game.World 
 import Tokenizer (Lexeme (SINK)) 
 import Build.Locations.Kitchen.SinkArea.Actions.Put
@@ -27,9 +27,7 @@ buildSink = Object {
   , _odescription'  = [desc]
   , _descriptives' = []
   , _moveability'   = NotMoveable
-  , _perceptability' = Perceptible
   , _orientation' = orientation
-
   , _standardActions' = standardActions
   }
   where
@@ -39,7 +37,7 @@ standardActions :: StandardActions
 standardActions = StandardActions { 
     _getAction' = getAction
   , _putAction' = putAction 
-  , _lookAction' = lookAction
+  , _lookAction' = initialLookAction
   , _openAction' = openAction
   , _closeAction' = closeAction 
   , _lockAction' = lockAction

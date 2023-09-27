@@ -4,30 +4,71 @@ module Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Actions.Look
 import Game.Model.World
 import Build.ObjectTemplate (kitchenCabinetBelowShelfGID)
 import Game.Object (setObjectMapM)
-import Game.Actions.Look.StandardLook (makeLookAction, changeLookAction, lookAtOpenBoxM, lookInOpenBoxM, lookInClosedBoxM, lookAtClosedBoxM)
+import Game.Actions.Look.StandardLook 
+        (changeLookAction, lookAtOpenBoxM, lookInOpenBoxM
+        , lookInClosedBoxM, lookAtClosedBoxM)
 import Game.Model.Display (updateEnvironmentM)
+import Game.Actions.Look.Update
 
-initialLookAction :: LookAction 
-initialLookAction = closedCabinetLookAction
+initialLookAction :: LookAction
+initialLookAction = closedCabinetLookAction defaultLookAction
+
+defaultLookAction :: LookAction
+defaultLookAction = LookAction {
+    _updatePerception' = defaultUpdatePerceptions
+  , _perception' = defaultPerception
+  , _lookFunctions' = defaultLookFunctions
+}
+
+defaultUpdatePerceptions :: UpdatePerceptionFunctions
+defaultUpdatePerceptions = UpdatePerceptionFunctions {
+    _updateOpenReport' = const pass
+  , _updateVisibility' = const pass
+}
+
+defaultPerception :: PerceptionFunctions
+defaultPerception = PerceptionFunctions {
+    _lookPerceptionF' = id
+  , _displayPerceptionF' = id
+}
+
+defaultLookFunctions :: LookFunctions
+defaultLookFunctions = LookFunctions {
+    _lookAt' = lookAtClosedF
+  , _lookIn' = lookInClosedF
+  , _lookOn' = lookOnF
+}
 
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM kitchenCabinetBelowShelfGID
 
-openCabinetLookAction :: LookAction 
-openCabinetLookAction = 
-  makeLookAction changeToCloseLook lookAtOpenF lookOnF lookInOpenF
-
-closedCabinetLookAction :: LookAction 
-closedCabinetLookAction = 
-  makeLookAction changeToOpenLook lookAtClosedF lookOnF lookInClosedF
+openCabinetLookAction :: LookAction -> LookAction
+openCabinetLookAction =
+  updateOpenReport changeToCloseLook
+    . updateLookAtF lookAtOpenF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInOpenF
+    
+closedCabinetLookAction :: LookAction -> LookAction
+closedCabinetLookAction =
+    updateOpenReport changeToOpenLook
+    . updateLookAtF lookAtClosedF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInClosedF
 
 changeToCloseLook :: Object -> GameStateExceptT ()
-changeToCloseLook entity = 
-  updateLookActionObject $ changeLookAction closedCabinetLookAction entity
+changeToCloseLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction closedCabinetLookAction' entity
+  where
+    closedCabinetLookAction' =
+      closedCabinetLookAction (_standardActions'._lookAction')
 
-changeToOpenLook :: Object -> GameStateExceptT () 
-changeToOpenLook entity = 
-  updateLookActionObject $ changeLookAction openCabinetLookAction entity
+changeToOpenLook :: Object -> GameStateExceptT ()
+changeToOpenLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction openCabinetLookAction' entity
+  where
+    openCabinetLookAction' =
+      openCabinetLookAction (_standardActions'._lookAction')
 
 lookAtClosedF :: LookAtF
 lookAtClosedF = LookAtF $ flip (const lookAtClosedBoxM) 
@@ -46,38 +87,6 @@ lookOnF = LookOnF $ const (const (updateEnvironmentM msg))
   where
     msg = "This cabinet is flush with the shelf. "
             <> "There's no way to have anything on it." 
-{-
-lookAction :: (GID Object -> GameStateExceptT ()) 
-                -> Object -> (Map (GID Object) Container -> GameStateExceptT ())
-                -> Object -> (Map (GID Object) Container -> GameStateExceptT ())
-                -> LookAction 
-lookAction changeFunction lookAt lookIn = LookAction {
-    _updateLook' = changeFunction 
-  , _look' = look lookAt lookOn lookIn 
-}
-
-openCabinetLookAction :: LookAction 
-openCabinetLookAction = lookAction changeToCloseLook' lookAtOpen lookInOpen
-  where
-    changeToCloseLook' = changeToCloseLook kitchenCabinetBelowShelfGID
-
-
-changeToCloseLook :: GID Object -> Object -> GameStateExceptT ()
-changeToCloseLook gid entity = do 
-  updatedEntity <- changeLookAction closedCabinetLookAction entity
-  setObjectMapM gid updatedEntity
-
-changeToOpenLook :: GID Object -> Object -> GameStateExceptT () 
-changeToOpenLook gid entity = do 
-  updatedEntity <- changeLookAction openCabinetLookAction entity
-  setObjectMapM gid updatedEntity
-  
-closedCabinetLookAction :: LookAction 
-closedCabinetLookAction = 
-  lookAction changeToOpenLook lookAtClosed' lookInClosed' 
-  where 
-    lookAtClosed' = const (const lookAtClosed)
-    lookInClosed' = const (const lookInClosed)
 
 cabinetOpen :: GameStateExceptT () 
 cabinetOpen = updateEnvironmentM msg 
@@ -89,19 +98,7 @@ cabinetClosed = updateEnvironmentM msg
   where 
     msg = "The door is closed"
 
-lookAtOpen :: Object -> GameStateExceptT ()
-lookAtOpen = lookAtOpenBoxM kitchenCabinetBelowShelfGID
-
-lookAtClosed :: Object -> GameStateExceptT () 
-lookAtClosed = lookAtClosed 
 lookOn :: GameStateExceptT ()
-lookOn = updateEnvironment msg 
+lookOn = updateEnvironmentM msg 
   where
     msg = "The cabinet is flush with the shelf, there can't be anything on it."
-
-lookInClosed :: GameStateExceptT ()
-lookInClosed = lookInClosedBoxM
-
-lookInOpen :: Object -> (Map (GID Object) Container -> GameStateExceptT ())
-lookInOpen = lookInOpenBoxM kitchenCabinetBelowShelfGID
--}
