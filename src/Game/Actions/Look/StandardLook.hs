@@ -7,40 +7,6 @@ import Game.Model.Display (updateEnvironmentM, updatePlayerActionM)
 import Game.Object (getShortNameM)
 import qualified Data.List.NonEmpty
 import qualified Data.Text
-
-{-
-_updateOpenReport' :: Object -> GameStateExceptT () 
-    , _updateVisibility' :: Object -> GameStateExceptT () 
--}
-makeLookAction :: (Object -> GameStateExceptT ())
-                -> (Object -> GameStateExceptT ())
-                -> LookAtF
-                -> LookOnF
-                -> LookInF
-                -> (LookF -> LookF)
-                -> (LookAtF -> LookAtF)
-                -> LookAction
-makeLookAction openReport visibility lookAt lookOn lookIn perception displayAction =
-  LookAction {
-    _
-  , _lookAt' = lookAt
-  , _lookIn' = lookIn
-  , _lookOn' = lookOn
-  , _lookPerception' = perception
-  , _displayPerception' = displayAction
-}
-
-updateOpenReport :: (Object -> GameStateExceptT ()) -> LookAction -> LookAction 
-updateOpenReport openReport lookAction = 
-  let currentUpdates = _updateLookAction' lookAction
-      newUpdates = currentUpdates {_updateOpenReport' = openReport}
-  in lookAction {_updateLookAction' = newUpdates}
-
-updateVisibility :: (Object -> GameStateExceptT ()) -> LookAction -> LookAction
-updateVisibility visibility lookAction = 
-  let currentUpdates = _updateLookAction' lookAction
-      newUpdates = currentUpdates {_updateVisibility' = visibility}
-  in lookAction {_updateLookAction' = newUpdates}
   
 look :: Object
           -> LookF
@@ -62,18 +28,16 @@ lookInImpossibleM = updateEnvironmentM msg
     msg = "X-ray vision would be cool, but you don't have that"
 
 lookAtOpenBoxM :: GID Object
-                    -> Text
                     -> Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
-lookAtOpenBoxM gid msg (Object {..}) cmap = 
-  updatePlayerActionM msg >> lookContainerM gid shallowLookInContainerM cmap
+lookAtOpenBoxM gid (Object {..}) cmap = 
+ {- updatePlayerActionM msg >> -} lookContainerM gid shallowLookInContainerM cmap
 
 lookInOpenBoxM :: GID Object
-                    -> Text
                     -> Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
-lookInOpenBoxM gid msg (Object {..}) cmap = 
-  updatePlayerActionM msg >> lookContainerM gid deepLookInContainerM cmap
+lookInOpenBoxM gid (Object {..}) cmap = 
+  {- updatePlayerActionM msg >> -} lookContainerM gid deepLookInContainerM cmap
 
 
 lookAtClosedBoxM :: Object -> GameStateExceptT ()
@@ -108,7 +72,9 @@ shallowLookInContainerM container
   where
     emptyMsg = "it's empty."
     somethingMsg = "You see something inside."
-deepLookInContainerM :: Map (Label Object) (GIDList Object) -> GameStateExceptT ()
+
+deepLookInContainerM :: Map (Label Object) (GIDList Object)
+                          -> GameStateExceptT ()
 deepLookInContainerM cMap = do
   shortNames <- mapM getShortNameM
                   $ concatMap Data.List.NonEmpty.toList

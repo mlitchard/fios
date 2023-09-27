@@ -46,6 +46,7 @@ common shared
     DeriveTraversable
     DerivingStrategies
     DerivingVia
+    DuplicateRecordFields
     EmptyCase
     EmptyDataDecls
     EmptyDataDeriving
@@ -64,6 +65,7 @@ common shared
     RecordWildCards
     MultiWayIf
     NumericUnderscores
+    OverloadedRecordDot
     OverloadedStrings
     PolyKinds
     PostfixOperators
@@ -195,6 +197,7 @@ library
     Game.Actions.Close
     Game.Actions.Get
     Game.Actions.Look.StandardLook
+    Game.Actions.Look.Update
     Game.Actions.Open
     Game.Engine.OnlyVerb
     Game.Engine.OnlyVerb.DoLook

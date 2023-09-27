@@ -12,6 +12,7 @@ import qualified Data.Map.Strict
 import qualified Data.Text
 import Control.Monad.Except (MonadError(throwError))
 import Tokenizer (Lexeme (..))
+import GHC.Records (HasField)
 -- import qualified Control.Monad.Reader (ReaderT)
 --type ConfigT a = Control.Monad.Reader.ReaderT Parsers a 
 
@@ -144,6 +145,7 @@ data StandardActions = StandardActions
     , _unlockAction' :: UnlockAction
     , _goAction' :: GoAction
   }
+
 data GetAction = GetAction 
   { _updateGet' :: GameStateExceptT ()
   -- object taken from    -- object taken
@@ -173,18 +175,31 @@ newtype LookOnF = LookOnF {_unLookOn' :: LookF}
 newtype LookInF = LookInF {_unLookIn' :: LookF}
 
 data LookAction = LookAction { 
-      _updateOpenReport' :: Object -> GameStateExceptT () 
-    , _updateVisibility' :: Object -> GameStateExceptT () 
-    , _lookAt' :: LookAtF
-    , _lookIn' :: LookInF 
-    , _lookOn' :: LookOnF
-    , _lookPerception' :: LookF -> LookF
-    , _displayPerception' :: LookAtF -> LookAtF
-  }
+      _updatePerception'  :: UpdatePerceptionFunctions
+    , _perception'        :: PerceptionFunctions 
+    , _lookFunctions'     :: LookFunctions  
+  } 
+{-
+data Person = Person { name :: String } deriving Show
+instance HasField "name" Person String where
+    hasField r = (\x -> case r of Person { .. } -> Person { name = x, .. }, name r)
+    -}
 
-data LookUpdates = LookUpdates {
+
+data LookFunctions = LookFunctions {
+    _lookAt'          :: LookAtF
+  , _lookIn'          :: LookInF 
+  , _lookOn'          :: LookOnF
+}
+
+data PerceptionFunctions = PerceptionFunctions {
+    _lookPerceptionF'     :: LookF -> LookF
+  , _displayPerceptionF'  :: LookAtF -> LookAtF
+}
+
+data UpdatePerceptionFunctions = UpdatePerceptionFunctions {
     _updateOpenReport' :: Object -> GameStateExceptT () 
-  , _updateVisibility' :: Object -> GameStateExceptT ()
+  , _updateVisibility' :: Object -> GameStateExceptT () 
 }
 
 data OpenAction = OpenAction 

@@ -1,59 +1,100 @@
-module Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Look 
+module Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Look
   where
 
 import Game.Model.World
         (GameStateExceptT, Object (..), LookAction (..), LookAtF (..)
-        , LookOnF (..), LookInF (..), LookF)
+        , LookOnF (..), LookInF (..), LookF, UpdatePerceptionFunctions (..)
+        , PerceptionFunctions (..), LookFunctions (..), StandardActions (..))
+
 import Game.Actions.Look.StandardLook
-        (makeLookAction, lookAtOpenBoxM, lookInClosedBoxM, lookInOpenBoxM, changeLookAction)
+        (lookAtOpenBoxM, lookInClosedBoxM, lookInOpenBoxM, changeLookAction)
 import Build.ObjectTemplate (kitchenCabinetBelowSinkGID)
 import Game.Model.Display (updateEnvironmentM)
 import Game.Object (setObjectMapM)
+import Game.Actions.Look.Update (updateOpenReport, updateLookAtF, updateLookOnF, updateLookInF)
 
-initialLookAction :: LookAction 
-initialLookAction = closedCabinetLookAction
+initialLookAction :: LookAction
+initialLookAction = closedCabinetLookAction defaultLookAction
 
-openCabinetLookAction :: LookAction 
-openCabinetLookAction = 
-  makeLookAction changeToCloseLook lookAtOpenF lookOnF lookInOpenF 
+defaultLookAction :: LookAction
+defaultLookAction = LookAction {
+    _updatePerception' = defaultUpdatePerceptions
+  , _perception' = defaultPerception
+  , _lookFunctions' = defaultLookFunctions
+}
 
-canDoLook :: LookF -> LookF 
-canDoLook lookF = lookF 
+defaultUpdatePerceptions :: UpdatePerceptionFunctions
+defaultUpdatePerceptions = UpdatePerceptionFunctions {
+    _updateOpenReport' = const pass
+  , _updateVisibility' = const pass
+}
 
-cannotDoLook :: LookF -> LookF 
-cannotDoLook _ = const (const (updateEnvironmentM noSeeMsg)) 
-  where 
+defaultPerception :: PerceptionFunctions
+defaultPerception = PerceptionFunctions {
+    _lookPerceptionF' = id
+  , _displayPerceptionF' = id
+}
+
+defaultLookFunctions :: LookFunctions
+defaultLookFunctions = LookFunctions {
+    _lookAt' = lookAtClosedF
+  , _lookIn' = lookInClosedF
+  , _lookOn' = lookOnF
+}
+
+openCabinetLookAction :: LookAction -> LookAction
+openCabinetLookAction =
+  updateOpenReport changeToCloseLook
+    . updateLookAtF lookAtOpenF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInOpenF
+
+canDoLook :: LookF -> LookF
+canDoLook lookF = lookF
+
+cannotDoLook :: LookF -> LookF
+cannotDoLook _ = const (const (updateEnvironmentM noSeeMsg))
+  where
     noSeeMsg = "You can't see that cabinet."
 
-canDisplayCabinet :: LookAtF -> LookAtF 
-canDisplayCabinet lookAtF = lookAtF 
+canDisplayCabinet :: LookAtF -> LookAtF
+canDisplayCabinet lookAtF = lookAtF
 
-cannotDisplayCabinet :: LookAtF -> LookAtF 
+cannotDisplayCabinet :: LookAtF -> LookAtF
 cannotDisplayCabinet _ = LookAtF (const (const pass))
 
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM kitchenCabinetBelowSinkGID
 
 changeToCloseLook :: Object -> GameStateExceptT ()
-changeToCloseLook entity = 
-  updateLookActionObject $ changeLookAction closedCabinetLookAction entity
-  
-changeToOpenLook :: Object -> GameStateExceptT () 
-changeToOpenLook entity = 
-  updateLookActionObject $ changeLookAction openCabinetLookAction entity
-  
-closedCabinetLookAction :: LookAction 
-closedCabinetLookAction = 
-  makeLookAction changeToOpenLook lookAtClosedF lookOnF lookInClosedF 
+changeToCloseLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction closedCabinetLookAction' entity
+  where
+    closedCabinetLookAction' =
+      closedCabinetLookAction (_standardActions'._lookAction')
 
-cabinetOpen :: GameStateExceptT () 
-cabinetOpen = updateEnvironmentM msg 
-  where 
+changeToOpenLook :: Object -> GameStateExceptT ()
+changeToOpenLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction openCabinetLookAction' entity
+  where
+    openCabinetLookAction' =
+      openCabinetLookAction (_standardActions'._lookAction')
+
+closedCabinetLookAction :: LookAction -> LookAction
+closedCabinetLookAction =
+    updateOpenReport changeToOpenLook
+    . updateLookAtF lookAtClosedF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInClosedF
+
+cabinetOpen :: GameStateExceptT ()
+cabinetOpen = updateEnvironmentM msg
+  where
     msg = "The door is open"
-    
-cabinetClosed :: GameStateExceptT () 
-cabinetClosed = updateEnvironmentM msg 
-  where 
+
+cabinetClosed :: GameStateExceptT ()
+cabinetClosed = updateEnvironmentM msg
+  where
     msg = "The door is closed"
 
 lookAtOpenF :: LookAtF
@@ -63,7 +104,7 @@ lookAtClosedF :: LookAtF
 lookAtClosedF = LookAtF (const (const lookInClosedBoxM))
 
 lookOnF :: LookOnF
-lookOnF = LookOnF $ const (const (updateEnvironmentM msg)) 
+lookOnF = LookOnF $ const (const (updateEnvironmentM msg))
   where
     msg = "The cabinet is flush with the shelf, there can't be anything on it."
 
