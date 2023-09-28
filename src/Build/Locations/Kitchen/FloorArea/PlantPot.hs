@@ -24,7 +24,6 @@ plantPot = Object {
     , _odescription'   = [desc]
     , _descriptives'   = [Label PLANT, Label SMALL]
     , _moveability'    = NotMoveable
-    , _perceptability' = Perceptible
     , _orientation'    = floorOrientation -- orientation 
     , _standardActions' = standardActions
   }

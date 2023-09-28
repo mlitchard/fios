@@ -29,7 +29,6 @@ kitchenEastDoorObject = Object {
     , _odescription'   = [kitchenEastDoorDesc]
     , _descriptives'   = []
     , _moveability'    = NotMoveable
-    , _perceptability' = Perceptible
     , _orientation'    = orientation
     , _standardActions' = doorActions
   }

@@ -25,8 +25,7 @@ kitchenEastPortalEntity = Object {
   , _entityLabel' = Label PORTAL 
   , _odescription' = mempty 
   , _descriptives' = mempty 
-  , _moveability' = NotMoveable 
-  , _perceptability' = Imperceptible 
+  , _moveability' = NotMoveable
   , _orientation' = orientation
   , _standardActions' = actions  
 }

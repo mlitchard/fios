@@ -1,29 +1,56 @@
 module Build.Locations.Kitchen.FloorArea.Actions.Floor.Look where
 import Game.Model.World
-        (LookAction, LookAtF (..), LookOnF (..)
-        , LookInF (..), LookF, GameStateExceptT, GameState)
-import Game.Actions.Look.StandardLook (makeLookAction, lookInOpenBoxM)
+        (LookAction (..), LookAtF (..), LookOnF (..)
+        , LookInF (..), GameStateExceptT, Object
+        , UpdatePerceptionFunctions (..), PerceptionFunctions (..)
+        , LookFunctions (..), Container)
+import Game.Actions.Look.StandardLook (lookInOpenBoxM)
 import Build.ObjectTemplate (kitchenFloorGID)
 import Game.Model.Display (updateEnvironmentM)
+import Game.Object (setObjectMapM)
+import Game.Model.GID (GID)
 
-lookAction :: LookAction
-lookAction =
-  makeLookAction (const pass) lookAtF lookOnF lookInF canPercieveF canDisplayF
+updateLookActionObject :: Object -> GameStateExceptT ()
+updateLookActionObject = setObjectMapM kitchenFloorGID
 
--- canDisplayF :: LookF -> GameStateExceptT () 
-canPercieveF :: GameStateExceptT () -> GameStateExceptT ()
-canPercieveF lookAction = lookAction
+initialLookAction :: LookAction
+initialLookAction = defaultLookAction
 
--- canDisplayF :: GameStateExceptT () -> GameStateExceptT ()
-canDisplayF _ = lookFloor "On the floor you see"
+defaultLookAction :: LookAction
+defaultLookAction = LookAction {
+    _updatePerception' = defaultUpdatePerceptions
+  , _perception' = defaultPerception
+  , _lookFunctions' = defaultLookFunctions
+}
+
+defaultUpdatePerceptions :: UpdatePerceptionFunctions
+defaultUpdatePerceptions = UpdatePerceptionFunctions {
+    _updateOpenReport' = const pass
+  , _updateVisibility' = const pass
+}
+
+defaultPerception :: PerceptionFunctions
+defaultPerception = PerceptionFunctions {
+    _lookPerceptionF' = id
+  , _displayPerceptionF' = id
+}
+
+defaultLookFunctions :: LookFunctions
+defaultLookFunctions = LookFunctions {
+    _lookAt' = lookAtF
+  , _lookIn' = lookInF
+  , _lookOn' = lookOnF
+}
 
 lookAtF :: LookAtF
-lookAtF = LookAtF (lookFloor "You look at the floor.")
+lookAtF = LookAtF lookFloor
 
 lookOnF :: LookOnF
-lookOnF = LookOnF (lookFloor "you look on the floor.")
+lookOnF = LookOnF lookFloor
 
-lookFloor :: Text -> LookF
+lookFloor :: Object 
+              -> Map (GID Object) Container
+              -> GameStateExceptT ()
 lookFloor = lookInOpenBoxM kitchenFloorGID
 
 lookInF :: LookInF

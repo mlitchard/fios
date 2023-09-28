@@ -1,34 +1,72 @@
 module Build.Locations.Kitchen.Exits.EastExit.Door.Actions.Look where
 import Game.Model.World
-import Game.Actions.Look.StandardLook (makeLookAction, changeLookAction)
+import Game.Actions.Look.StandardLook (changeLookAction)
 import Build.ObjectTemplate (kitchenEastDoorGID)
 import Game.Object (setObjectMapM, getObjectM)
 import Game.Model.Display (updatePlayerActionM, updateEnvironmentM)
 import qualified Data.Text
-
-openDoorLookAction :: LookAction 
-openDoorLookAction = 
-  makeLookAction changeToCloseLook lookAtOpenF lookOnF lookInF
-
-changeToCloseLook :: Object -> GameStateExceptT ()
-changeToCloseLook entity = 
-  updateLookActionObject $ changeLookAction closedDoorLookAction entity
+import Game.Actions.Look.Update 
 
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM kitchenEastDoorGID
 
-changeToOpenLook :: Object -> GameStateExceptT () 
-changeToOpenLook entity = 
-  updateLookActionObject $ changeLookAction openDoorLookAction entity
+defaultLookAction :: LookAction
+defaultLookAction = LookAction {
+    _updatePerception' = defaultUpdatePerceptions
+  , _perception' = defaultPerception
+  , _lookFunctions' = defaultLookFunctions
+}
+
+defaultUpdatePerceptions :: UpdatePerceptionFunctions
+defaultUpdatePerceptions = UpdatePerceptionFunctions {
+    _updateOpenReport' = const pass
+  , _updateVisibility' = const pass
+}
+
+defaultPerception :: PerceptionFunctions
+defaultPerception = PerceptionFunctions {
+    _lookPerceptionF' = id
+  , _displayPerceptionF' = id
+}
+
+defaultLookFunctions :: LookFunctions
+defaultLookFunctions = LookFunctions {
+    _lookAt' = lookAtClosedF
+  , _lookIn' = lookInF
+  , _lookOn' = lookOnF
+}
+
+changeToCloseLook :: Object -> GameStateExceptT ()
+changeToCloseLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction closedDoorLookAction' entity
+  where
+    closedDoorLookAction' =
+      closedDoorLookAction (_standardActions'._lookAction')
+
+changeToOpenLook :: Object -> GameStateExceptT ()
+changeToOpenLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction openDoorLookAction' entity
+  where
+    openDoorLookAction' =
+      openDoorLookAction (_standardActions'._lookAction')
+
+openDoorLookAction :: LookAction -> LookAction
+openDoorLookAction =
+  updateOpenReport changeToCloseLook
+    . updateLookAtF lookAtOpenF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInF
 
 initialLookAction :: LookAction 
-initialLookAction = closedDoorLookAction
+initialLookAction = closedDoorLookAction defaultLookAction
 
-closedDoorLookAction :: LookAction 
-closedDoorLookAction = 
-  makeLookAction changeToOpenLook lookAtClosedF lookOnF lookInF
+closedDoorLookAction :: LookAction -> LookAction
+closedDoorLookAction =
+    updateOpenReport changeToOpenLook
+    . updateLookAtF lookAtClosedF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInF
 
---lookAtOpenF :: LookAtF
 lookAtOpenF :: LookAtF
 lookAtOpenF = LookAtF $ const (const (lookAt openMsg))
   where 

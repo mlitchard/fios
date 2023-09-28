@@ -1,21 +1,55 @@
 module Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Look where
+
 import Game.Model.World
-        (LookAction (..), GameStateExceptT, Object, LookAtF (..)
-        , LookInF (..), LookOnF (..))
+    ( LookOnF(LookOnF),
+      LookInF(LookInF),
+      LookAtF(LookAtF),
+      LookFunctions(..),
+      PerceptionFunctions(..),
+      UpdatePerceptionFunctions(..),
+      LookAction(..),
+      GameStateExceptT,
+      StandardActions (_lookAction'),
+      Object(..) )
 import Game.Model.Display (updateEnvironmentM)
-import Game.Actions.Look.StandardLook (makeLookAction, changeLookAction)
+import Game.Actions.Look.StandardLook (changeLookAction)
 import Build.ObjectTemplate (plantPotGID)
 import Game.Object (setObjectMapM)
+import Game.Actions.Look.Update
+        ( updateLookAtF, updateLookInF, updateLookOnF, updateOpenReport )
 
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM plantPotGID
 
+initialLookAction :: LookAction
+initialLookAction = defaultLookAction
 
-hasPlantLookAction :: LookAction
-hasPlantLookAction =
-  makeLookAction (const pass) lookAtHasPlantF lookOnF lookInHasPlantF
+defaultLookAction :: LookAction
+defaultLookAction = LookAction {
+    _updatePerception' = defaultUpdatePerceptions
+  , _perception' = defaultPerception
+  , _lookFunctions' = defaultLookFunctions
+}
 
--- lookAtHasPlantF :: LookAtF 
+defaultUpdatePerceptions :: UpdatePerceptionFunctions
+defaultUpdatePerceptions = UpdatePerceptionFunctions {
+    _updateOpenReport' = const pass
+  , _updateVisibility' = const pass
+}
+
+defaultPerception :: PerceptionFunctions
+defaultPerception = PerceptionFunctions {
+    _lookPerceptionF' = id
+  , _displayPerceptionF' = id
+}
+
+defaultLookFunctions :: LookFunctions
+defaultLookFunctions = LookFunctions {
+    _lookAt' = lookAtEmptyF
+  , _lookIn' = lookInEmptyF
+  , _lookOn' = lookOnF
+}
+
 lookAtHasPlantF :: LookAtF
 lookAtHasPlantF = LookAtF lookHasPlant
 
@@ -37,10 +71,6 @@ lookHasPlant = const (const (updateEnvironmentM msg))
             <> "You've completed this demo."
             <> "Magnetic Scrolls did it first."
 
-emptyPlantPotLookAction :: LookAction
-emptyPlantPotLookAction =
-  makeLookAction changeToHasSoilLook lookAtEmptyF lookOnF lookInEmptyF
-
 lookInEmptyF :: LookInF 
 lookInEmptyF = LookInF lookEmpty 
 
@@ -53,12 +83,6 @@ lookEmpty = const (const (updateEnvironmentM msg))
     msg = "This empty pot plant could use some soil in it. "
             <> "To plant a plant,perhaps."
 
-hasSoilLookAction :: LookAction
-hasSoilLookAction =
-  makeLookAction changeToPlantedLook lookAtHasSoilF lookOnF lookInHasSoilF
-
-canDisplay :: LookF 
-canDisplay = 
 lookAtHasSoilF :: LookAtF 
 lookAtHasSoilF = LookAtF lookHasSoil 
 
@@ -72,9 +96,32 @@ lookHasSoil = const (const (updateEnvironmentM msg))
             <> "kind to be planted in it."
 
 changeToHasSoilLook :: Object -> GameStateExceptT ()
-changeToHasSoilLook entity =
-  updateLookActionObject $ changeLookAction hasSoilLookAction entity
+changeToHasSoilLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction hasSoilLookAction' entity
+  where
+    hasSoilLookAction' =
+      hasSoilLookAction (_standardActions'._lookAction')
+
+emptyPlantPotLookAction :: LookAction 
+emptyPlantPotLookAction = defaultLookAction 
+
+hasSoilLookAction :: LookAction -> LookAction
+hasSoilLookAction =
+  updateOpenReport changeToPlantedLook
+    . updateLookAtF lookAtHasSoilF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInHasSoilF
+
+hasPlantLookAction :: LookAction -> LookAction
+hasPlantLookAction =
+  updateOpenReport (const pass)
+    . updateLookAtF lookAtHasPlantF
+    . updateLookOnF lookOnF
+    . updateLookInF lookInHasPlantF
 
 changeToPlantedLook :: Object -> GameStateExceptT ()
-changeToPlantedLook entity =
-  updateLookActionObject $ changeLookAction hasPlantLookAction entity
+changeToPlantedLook entity@(Object {..}) =
+  updateLookActionObject $ changeLookAction hasPlantLookAction' entity
+  where
+    hasPlantLookAction' =
+      hasPlantLookAction (_standardActions'._lookAction')
