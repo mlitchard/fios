@@ -9,7 +9,7 @@ lookPerceptionF f lookAction =
   let perception = _perception' lookAction 
   in lookAction {_perception' = perception{_lookPerceptionF' = f}}
 
-updateDisplayPerceptionF :: (LookAtF -> LookAtF) -> LookAction -> LookAction 
+updateDisplayPerceptionF :: (LookF -> LookF) -> LookAction -> LookAction 
 updateDisplayPerceptionF f lookAction = 
   let perception = _perception' lookAction 
   in lookAction {_perception' = perception{_displayPerceptionF' = f}}
@@ -17,7 +17,7 @@ updateDisplayPerceptionF f lookAction =
 updateOpenReport :: (Object -> GameStateExceptT ()) -> LookAction -> LookAction
 updateOpenReport f lookAction = 
   let updatePerceptionFunctions = _updatePerception' lookAction
-      updatePerception = updatePerceptionFunctions{_updateOpenReport'= f}
+      updatePerception = updatePerceptionFunctions{_updateBlockReport'= f}
   in lookAction {_updatePerception' = updatePerception}
 
 updateVisibility :: (Object -> GameStateExceptT ()) 
@@ -25,7 +25,7 @@ updateVisibility :: (Object -> GameStateExceptT ())
                       -> LookAction
 updateVisibility f lookAction = 
   let updatePerceptionFunctions = _updatePerception' lookAction
-      updatePerception = updatePerceptionFunctions {_updateVisibility' = f}
+      updatePerception = updatePerceptionFunctions {_updateDisplay' = f}
   in lookAction {_updatePerception' = updatePerception}
 
 updateLookAtF :: LookAtF -> LookAction -> LookAction 

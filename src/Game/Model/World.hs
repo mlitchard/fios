@@ -179,12 +179,6 @@ data LookAction = LookAction {
     , _perception'        :: PerceptionFunctions 
     , _lookFunctions'     :: LookFunctions  
   } 
-{-
-data Person = Person { name :: String } deriving Show
-instance HasField "name" Person String where
-    hasField r = (\x -> case r of Person { .. } -> Person { name = x, .. }, name r)
-    -}
-
 
 data LookFunctions = LookFunctions {
     _lookAt'          :: LookAtF
@@ -194,12 +188,12 @@ data LookFunctions = LookFunctions {
 
 data PerceptionFunctions = PerceptionFunctions {
     _lookPerceptionF'     :: LookF -> LookF
-  , _displayPerceptionF'  :: LookAtF -> LookAtF
+  , _displayPerceptionF'  :: LookF -> LookF
 }
 
 data UpdatePerceptionFunctions = UpdatePerceptionFunctions {
-    _updateOpenReport' :: Object -> GameStateExceptT () 
-  , _updateVisibility' :: Object -> GameStateExceptT () 
+    _updateBlockReport' :: Object -> GameStateExceptT () 
+  , _updateDisplay' :: Object -> GameStateExceptT () 
 }
 
 data OpenAction = OpenAction 

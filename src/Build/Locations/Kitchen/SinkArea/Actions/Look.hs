@@ -24,8 +24,8 @@ defaultLookAction = LookAction {
 
 defaultUpdatePerceptions :: UpdatePerceptionFunctions
 defaultUpdatePerceptions = UpdatePerceptionFunctions {
-    _updateOpenReport' = const pass
-  , _updateVisibility' = const pass
+    _updateBlockReport' = const pass
+  , _updateDisplay' = const pass
 }
 
 defaultPerception :: PerceptionFunctions

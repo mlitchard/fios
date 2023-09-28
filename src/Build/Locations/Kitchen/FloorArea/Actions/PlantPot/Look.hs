@@ -10,7 +10,7 @@ import Game.Model.World
       LookAction(..),
       GameStateExceptT,
       StandardActions (_lookAction'),
-      Object(..) )
+      Object(..), LookF )
 import Game.Model.Display (updateEnvironmentM)
 import Game.Actions.Look.StandardLook (changeLookAction)
 import Build.ObjectTemplate (plantPotGID)
@@ -33,15 +33,98 @@ defaultLookAction = LookAction {
 
 defaultUpdatePerceptions :: UpdatePerceptionFunctions
 defaultUpdatePerceptions = UpdatePerceptionFunctions {
-    _updateOpenReport' = const pass
-  , _updateVisibility' = const pass
+    _updateBlockReport' = changeToNoSee
+  , _updateDisplay' = changeToNoDisplay
 }
 
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
-    _lookPerceptionF' = id
-  , _displayPerceptionF' = id
+    _lookPerceptionF' = canSeeF
+  , _displayPerceptionF' = onDisplayF
 }
+
+onDisplayF :: LookF -> LookF 
+onDisplayF f = f  
+
+noDisplayF :: LookF -> LookF
+noDisplayF _ = const (const pass)
+
+changeLookPerception :: (LookF -> LookF)
+                          -> (Object -> GameStateExceptT ())
+                          -> Object 
+                          -> GameStateExceptT () 
+changeLookPerception f g entity@(Object {..}) = do 
+  updateLookActionObject entity {_standardActions' = standardActions 
+            {_lookAction' = newUpdatePerception}}
+  where 
+    standardActions = _standardActions' 
+    newUpdatePerception = 
+      updateLookPerception f 
+      $ updateBlockReport g (_standardActions'._lookAction')
+
+changeDisplayPerception :: (LookF -> LookF)
+                              -> (Object -> GameStateExceptT ())
+                              -> Object 
+                              -> GameStateExceptT ()
+changeDisplayPerception f g  entity@(Object {..}) = do 
+  updateLookActionObject entity {_standardActions' = standardActions 
+            {_lookAction' = newUpdatePerception}}
+   where 
+    standardActions = _standardActions' 
+    newUpdatePerception = 
+      updateDisplayPerception f 
+      $ updateDisplay g (_standardActions'._lookAction')
+
+changeToLookSee :: Object -> GameStateExceptT ()
+changeToLookSee = changeLookPerception canSeeF changeToNoSee
+   
+changeToNoSee :: Object -> GameStateExceptT ()
+changeToNoSee = changeLookPerception noSeeF changeToLookSee 
+ 
+changeToCanDisplay :: Object -> GameStateExceptT ()
+changeToCanDisplay = changeDisplayPerception onDisplayF changeToNoDisplay 
+
+changeToNoDisplay :: Object -> GameStateExceptT () 
+changeToNoDisplay = changeDisplayPerception noDisplayF changeToCanDisplay
+
+updateDisplay :: (Object -> GameStateExceptT ()) 
+                    -> LookAction
+                    -> LookAction 
+updateDisplay f lookAction@(LookAction {..}) =
+  lookAction {_updatePerception' = updatePerception {_updateDisplay' = f}}
+  where 
+    updatePerception = _updatePerception'
+
+updateBlockReport :: (Object -> GameStateExceptT ()) 
+                      -> LookAction 
+                      -> LookAction
+updateBlockReport f lookAction@(LookAction {..}) =  
+  lookAction {_updatePerception' = updatePerception {_updateBlockReport' = f}}
+  where
+    updatePerception = _updatePerception' 
+    
+updateLookPerception :: (LookF -> LookF) -> LookAction -> LookAction 
+updateLookPerception f lookAction@(LookAction {..}) = 
+  lookAction {_perception' = perception {_lookPerceptionF' = f}}
+  where 
+    perception = _perception'
+
+updateDisplayPerception :: (LookF -> LookF) -> LookAction -> LookAction 
+updateDisplayPerception f lookAction@(LookAction {..}) = 
+  lookAction {_perception' = perception {_displayPerceptionF' = f}}
+  where 
+    perception = _perception'
+
+canSeeF :: LookF -> LookF 
+canSeeF lookF = lookF 
+
+noSeeF :: LookF -> LookF 
+noSeeF _ = const (const noSee) 
+
+noSee :: GameStateExceptT ()
+noSee = updateEnvironmentM msg 
+  where
+    msg = "You don't see that here."
 
 defaultLookFunctions :: LookFunctions
 defaultLookFunctions = LookFunctions {

@@ -22,6 +22,10 @@ lookDescriptionM (Object {..}) =
 -- updateEnvironmentM (Data.Text.concat _odescription') 
 --                >> lookContainerM gid worldCMap shallowLookInContainerM
 
+display :: Object -> GameStateExceptT ()
+display (Object {..}) = updateEnvironmentM ("a " <> _shortName')
+
+
 lookInImpossibleM :: GameStateExceptT ()
 lookInImpossibleM = updateEnvironmentM msg
   where
