@@ -62,7 +62,7 @@ changeLookPerception f g entity@(Object {..}) = do
       updateLookPerception f 
       $ updateBlockReport g (_standardActions'._lookAction')
 
-changeDisplayPerception :: (DisplayF -> DisplayF)
+changeDisplayPerception :: DisplayF
                               -> (Object -> GameStateExceptT ())
                               -> Object 
                               -> GameStateExceptT ()
@@ -109,7 +109,7 @@ updateLookPerception f lookAction@(LookAction {..}) =
   where 
     perception = _perception'
 
-updateDisplayPerception :: (LookF -> LookF) -> LookAction -> LookAction 
+updateDisplayPerception :: (Text -> Maybe Text) -> LookAction -> LookAction 
 updateDisplayPerception f lookAction@(LookAction {..}) = 
   lookAction {_perception' = perception {_displayPerceptionF' = f}}
   where 

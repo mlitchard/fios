@@ -121,8 +121,9 @@ describeOrientationM preamble orientation = do
   desc <- case orientation of
             ContainedBy' containedBy -> describeContainedByM containedBy
             Inventory -> pure "in your inventory."
+            Floor -> pure "on the floor."
             (AnchoredTo' anchoredTo) -> describeAnchoredToM anchoredTo
-            Anchored roomAnchor -> pure $ describeAnchoring roomAnchor
+            Anchor roomAnchor -> pure $ describeAnchoring (snd roomAnchor)
   updateEnvironmentM (preamble <> desc)
 
 describeContainedByM :: ContainedBy -> GameStateExceptT Text

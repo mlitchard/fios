@@ -30,7 +30,7 @@ setObjectLabelMapM :: GID Location
                         -> GID Object
                         -> GameStateExceptT ()
 setObjectLabelMapM locationGID objectLabel objectGID = do
-  location@(Location _ _ _ _ (LabelToGIDListMapping objectLabelMap) _)
+  location@(Location _ _ _ (LabelToGIDListMapping objectLabelMap) _)
     <- getLocationM locationGID
   let updatedMap = LabelToGIDListMapping $ insertGID objectLabelMap
       updatedLocation = location{_objectLabelMap' = updatedMap}

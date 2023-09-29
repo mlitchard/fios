@@ -14,6 +14,7 @@ import Build.Locations.Kitchen.SinkArea.Actions.Open (openAction)
 import Build.Locations.Kitchen.SinkArea.Actions.Close (closeAction)
 import Build.Locations.Kitchen.SinkArea.Actions.NoCanDo
 import Game.Object (setObjectMapM)
+import Build.LocationTemplate (kitchenGID)
 
 buildKitchenSink :: GameStateExceptT ()
 buildKitchenSink = do

@@ -2,7 +2,7 @@ module Game.Scene where
 import Game.Model.World
 import qualified Data.Map.Strict
 import Game.Model.GID (GID (..))
-import Game.Model.Mapping (GIDList, GIDToDataMap (..), ContainerMap (..))
+import Game.Model.Mapping
 import Game.Object (getObjectM, getObjectGIDPairM)
 import Game.Model.Condition (Proximity (..))
 import qualified Data.List.NonEmpty
@@ -12,62 +12,55 @@ import Control.Monad.Except (MonadError(..))
 display :: Text -> Text
 display shortName = "a " <> shortName
 
-makeScene :: RoomAnchors -> GameStateExceptT [DescribeRoomAnchor]
-makeScene  (RoomAnchors roomAnchorMap)
+-- This module assumes all objects are perceivable 
+
+makeRoomAnchorDescriptions :: RoomAnchors
+                                -> GameStateExceptT [DescribeRoomAnchor]
+makeRoomAnchorDescriptions (RoomAnchors roomAnchorMap)
   | Data.Map.Strict.null roomAnchorMap = pure mempty
   | otherwise = mapM describeRoomAnchor (Data.Map.Strict.toList roomAnchorMap)
 
-data DescribeRoomAnchor = DescribeRoomAnchor
-  {   _preamble' :: Text
-    , describeAnchoredObjects :: [DescribeAnchor]
-  }
 describeRoomAnchor :: (RoomAnchor, ObjectAnchors)
                     -> GameStateExceptT DescribeRoomAnchor
 describeRoomAnchor (roomAnchor,objectAnchors) = do
   describedEntityAnchors <- describeAnchors objectAnchors
-  pure $ DescribeRoomAnchor preamble describedEntityAnchors 
+  pure $ DescribeRoomAnchor preamble describedEntityAnchors
   where
     preamble = "In the "
                   <> directionFromRoomAnchor  roomAnchor
                   <> "you see"
 
-data DescribeAnchor = DescribeAnchor 
-  { _anchorDesc'    :: Text
-  , _maybeShelf'    :: Maybe [Text]  
-  , _anchoredDesc'  :: [DescribeAnchored]
-  }
 describeAnchors :: ObjectAnchors
                     -> GameStateExceptT [DescribeAnchor]
 describeAnchors (ObjectAnchors (_,objectAnchors)) = do
-  mapM describeAnchor (Data.List.NonEmpty.toList objectAnchors)
+  mapM describeAnchor (Data.Map.Strict.toList objectAnchors)
 
+--- You don't need RoomAnchor data in two places
+describeAnchor :: (GID Object, Maybe (NonEmpty (GID Object)))
+                    -> GameStateExceptT DescribeAnchor
 describeAnchor gid = do
-  entity@(Object {..}) <- getObjectM gid
+  (Object {..}) <- getObjectM gid
   describedAnchoreds <- describeAnchoreds gid _orientation' _shortName'
   shelfObjects :: Maybe [Text] <- tryDescribeShelf gid
   pure $ DescribeAnchor ("a " <> _shortName') shelfObjects describedAnchoreds
-  
-describeAnchoreds :: GID Object 
-                      -> Orientation 
-                      -> Text 
+
+describeAnchoreds :: GID Object
+                      -> Orientation
+                      -> Text
                       -> GameStateExceptT [DescribeAnchored]
 describeAnchoreds gid (Anchor (lid, _)) shortName = do
   (Location {..}) <- getLocationM lid
-  locationObjectGids <- fmap Data.List.NonEmpty.toList
-                          <$> mapM getObjectGIDPairM
-                          $ _objectLabelMap'._unLabelToGIDListMapping'
-  let anchored = mapMaybe (\(gid',e) -> (,) gid' <$> findAnchored gid e) locationObjectGids
-  res <- mapM (describeAnchored shortName) anchored
-  pure mempty
-
+  let gids = concatMap Data.List.NonEmpty.toList
+              (Data.Map.Strict.elems $ _objectLabelMap'._unLabelToGIDListMapping')
+  locationObjectGids <- mapM getObjectGIDPairM gids
+  let anchored = mapMaybe
+                  (\(gid',e) -> (,) gid' <$> findAnchored gid e)
+                  locationObjectGids
+  mapM (describeAnchored shortName) anchored
 
 describeAnchoreds _ _ shortName =
   throwError ("describeAnchored being used on a non-anchor" <> shortName)
 
-data DescribeAnchored = DescribeAnchored
-  {_prelude' :: (Text, Text)
-  , _maybeShelf' :: Maybe (Text, [Text])
-  }
 describeAnchored :: Text
                       -> (GID Object, (Object, Proximity))
                       -> GameStateExceptT DescribeAnchored
@@ -104,10 +97,9 @@ tryDescribeShelfContents :: GIDList Object
                               -> GameStateExceptT [Text]
 tryDescribeShelfContents xs = do
   entities <- mapM getObjectM xs
-  pure $ map ("a " <> _shortName')
+  pure $ map (\(Object {..}) -> "a " <> _shortName')
         $ Data.List.NonEmpty.filter
             (\(Object {..}) -> isShelfInventory _orientation') entities
-
 
 isShelfInventory :: Orientation -> Bool
 isShelfInventory (ContainedBy' (ContainedBy (On _) _)) = True

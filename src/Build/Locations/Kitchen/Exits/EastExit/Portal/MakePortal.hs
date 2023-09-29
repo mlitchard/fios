@@ -8,7 +8,7 @@ import Build.LocationTemplate (hallGID)
 import Game.Object (setObjectMapM)
 import Game.Model.Mapping (Label(..))
 import Tokenizer.Data (Lexeme(PORTAL))
-import Game.Model.Condition (Moveability(..), Perceptibility (..))
+import Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedBehind))
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.Look 
         (defaultLookAction)
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.NoCanDo

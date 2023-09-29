@@ -16,6 +16,7 @@ import Build.Locations.Kitchen.ShelfArea.Actions.Put
 import Game.World (initContainerMapM)
 import Build.Locations.Kitchen.ShelfArea.Actions.Look (initialLookAction)
 import Game.Object (setObjectMapM)
+import Build.LocationTemplate (kitchenGID)
 
 buildKitchenShelf :: GameStateExceptT ()
 buildKitchenShelf = do

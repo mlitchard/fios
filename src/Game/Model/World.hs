@@ -104,7 +104,7 @@ data Location = Location {
   , _description'     :: Text
   , _anchoredObjects' :: RoomAnchors
  -- , _floor' :: GID Object
-  , _anchoredTo'      :: AnchoredTo
+ -- , _anchoredTo'      :: AnchoredTo
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
   , _directions'      :: Maybe ExitGIDMap
 }
@@ -224,7 +224,7 @@ data GoAction = GoAction
   }
 
 newtype ObjectAnchors = ObjectAnchors {
-  _unObjectAnchors :: (GID Object, NonEmpty (GID Object))  
+  _unObjectAnchors :: Data.Map.Strict.Map (GID Object) (Maybe (NonEmpty (GID Object)))  
   } deriving stock Show
 
 
@@ -262,16 +262,32 @@ newtype RoomAnchors
 data Scene = Scene
   {_sceneTitle'         :: Text
   , _sceneDescription'  :: Text
-  , _roomAnchored'      :: Maybe (NonEmpty (Text,[SceneAnchored])) -- text is Room area preamble
+  , _roomAnchored'      :: [DescribeRoomAnchor] -- text is Room area preamble
   , _visibleExits'      :: Maybe (NonEmpty Text)
   } deriving stock Show
 
+data DescribeRoomAnchor = DescribeRoomAnchor
+  {   _preamble' :: Text
+    , describeAnchoredObjects :: [DescribeAnchor]
+  } deriving stock Show
+
+data DescribeAnchor = DescribeAnchor 
+  { _anchorDesc'    :: Text
+  , _maybeShelf'    :: Maybe [Text]  
+  , _anchoredDesc'  :: [DescribeAnchored]
+  } deriving stock Show
+  
+data DescribeAnchored = DescribeAnchored
+  {_prelude' :: (Text, Text)
+  , _maybeShelf' :: Maybe (Text, [Text])
+  } deriving stock Show
+  {-
 data SceneAnchored = SceneAnchored {
   _sceneAnchored' :: Text
 , _anchoredInventory' :: Maybe Text
 , _sceneRelated' :: [Text]
 } deriving stock Show
-
+-}
 data World = World
   { _objectMap'         :: GIDToDataMap Object Object
   , _containerMap'      :: GIDToDataMap Object Container

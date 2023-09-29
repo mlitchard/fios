@@ -16,7 +16,7 @@ tryGetM :: GID Object
             -> (GetInput -> GameStateExceptT ()) 
             -> Object 
             -> GameStateExceptT ()
-tryGetM gid getFunction entity@(Object{..}) = do 
+tryGetM gid getFunction entity@(Object{..}) = pass {- do 
   let getInput onOrIn = 
         GetInput { 
           _removedEntityGID' = gid
@@ -28,11 +28,11 @@ tryGetM gid getFunction entity@(Object{..}) = do
     ContainedBy' (ContainedBy cBy _) -> getFunction (getInput cBy)
     Inventory -> throwError alreadyHaveMSG
     AnchoredTo' (fromGid, _) -> getFunction (getInput (On fromGid))
-    Anchored _ -> throwError sillyMSG
+    Anchor _ -> throwError sillyMSG
   where
     alreadyHaveMSG = "Neat trick, trying tp get something you already have."
     sillyMSG = "You begin to feel a little silly trying to get that."
-
+-}
 standardGetM :: GetInput
                   -> GameStateExceptT ()
 standardGetM _ = pass  

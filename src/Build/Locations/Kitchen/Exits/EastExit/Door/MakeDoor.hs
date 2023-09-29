@@ -1,5 +1,5 @@
 module Build.Locations.Kitchen.Exits.EastExit.Door.MakeDoor where 
-import Game.Model.World (GameStateExceptT, Object (..), StandardActions (..), Orientation (..))
+import Game.Model.World (GameStateExceptT, Object (..), StandardActions (..), Orientation (..), RoomAnchor (EastAnchor))
 import Build.ObjectTemplate (kitchenEastPortalGID, kitchenEastDoorGID)
 import Game.Model.Condition (Proximity(PlacedFront), Moveability (..), Perceptibility (..))
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.NoCanDo
@@ -49,4 +49,4 @@ doorActions = StandardActions {
   }
 
 orientation :: Orientation
-orientation = Anchored EastAnchor -- AnchoredTo' (kitchenEastPortalGID, PlacedFront) 
+orientation = Anchor (kitchenGID, EastAnchor) -- AnchoredTo' (kitchenEastPortalGID, PlacedFront) 

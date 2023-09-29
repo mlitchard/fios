@@ -28,7 +28,7 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = id
-  , _displayPerceptionF' = id
+  , _displayPerceptionF' = const Nothing
 }
 
 defaultLookFunctions :: LookFunctions

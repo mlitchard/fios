@@ -94,8 +94,8 @@ setLocationDirectionM :: GID Location
                           -> GID Object
                           -> GameStateExceptT ()
 setLocationDirectionM locationGID exitLabel objectGID = do
-  location@(Location _ _ _ _ _  mDirections) <- getLocationM locationGID
-  let directionMap = case mDirections of
+  location@(Location {..}) <- getLocationM locationGID
+  let directionMap = case _directions' of
         (Just (ExitGIDMap (LabelToGIDMapping directions))) -> updateDirections
                                                                directions
         Nothing -> Data.Map.Strict.singleton exitLabel objectGID

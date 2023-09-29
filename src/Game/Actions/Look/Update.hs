@@ -9,7 +9,7 @@ lookPerceptionF f lookAction =
   let perception = _perception' lookAction 
   in lookAction {_perception' = perception{_lookPerceptionF' = f}}
 
-updateDisplayPerceptionF :: (LookF -> LookF) -> LookAction -> LookAction 
+updateDisplayPerceptionF :: (Text -> Maybe Text) -> LookAction -> LookAction 
 updateDisplayPerceptionF f lookAction = 
   let perception = _perception' lookAction 
   in lookAction {_perception' = perception{_displayPerceptionF' = f}}
