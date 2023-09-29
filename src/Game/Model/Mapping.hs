@@ -8,8 +8,8 @@ newtype ContainerMap a = ContainerMap
   { _unContainerMap' :: Map (Label a) (GIDList a)} 
     deriving stock (Eq,Ord,Show)
 
-newtype GIDToDataMapping a b
-  = GIDToDataMapping {_unGIDToDataMapping' :: Data.Map.Strict.Map (GID a) b} 
+newtype GIDToDataMap a b
+  = GIDToDataMap {_unGIDToDataMap' :: Data.Map.Strict.Map (GID a) b} 
       deriving stock Show
 
 newtype GIDToGIDMapping a b 
@@ -36,6 +36,3 @@ newtype LocationObjectList a b
       {_unLocationObjectList :: Data.Map.Strict.Map a (GIDList b)}
         deriving stock Show
 
-newtype NeighborMap a b = NeighborMap {
-  _unNeighborMap :: Data.Map.Strict.Map a (GIDList b)
-} deriving stock Show 

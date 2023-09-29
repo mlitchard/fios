@@ -3,7 +3,7 @@ import Game.Model.World
         (GameStateExceptT, Object (..), Orientation (..), StandardActions (..)
         , RoomAnchor (EastAnchor))
 import Game.World (setWorldExitMapM)
-import Build.ObjectTemplate (kitchenEastPortalGID)
+import Build.ObjectTemplate (kitchenEastPortalGID, kitchenEastDoorGID)
 import Build.LocationTemplate (hallGID)
 import Game.Object (setObjectMapM)
 import Game.Model.Mapping (Label(..))
@@ -31,7 +31,7 @@ kitchenEastPortalEntity = Object {
 }
 
 orientation :: Orientation 
-orientation = Anchored EastAnchor 
+orientation = AnchoredTo' (kitchenEastDoorGID, PlacedBehind)  --Anchored EastAnchor 
 
 actions :: StandardActions
 actions = StandardActions {

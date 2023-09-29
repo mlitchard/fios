@@ -14,15 +14,15 @@ getObjectM gid@(GID gid') = do
   throwMaybeM objErr . (Data.Map.Strict.lookup gid <$> unwrappedMap) =<< get
   where
     objErr = toText $ ("Could not find object with gid " :: String) <> show gid'
-    unwrappedMap = _unGIDToDataMapping' . _objectMap' . _world'
+    unwrappedMap = _unGIDToDataMap' . _objectMap' . _world'
 
 setObjectMapM :: GID Object -> Object -> GameStateExceptT ()
 setObjectMapM gid object = do
   world <- _world' <$> get
   let objectMap = _objectMap' world
-      gidToDataMap  = GIDToDataMapping
+      gidToDataMap  = GIDToDataMap
                           . Data.Map.Strict.insert gid object
-                          $ _unGIDToDataMapping' objectMap
+                          $ _unGIDToDataMap' objectMap
   modify' (\gs -> gs {_world' = world {_objectMap' = gidToDataMap }})
 
 setObjectLabelMapM :: GID Location

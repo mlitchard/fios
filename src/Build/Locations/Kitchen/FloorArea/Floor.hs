@@ -38,7 +38,7 @@ buildFloor = Object {
 }
   where
     desc = "A non-descipt tiled kitchen floor."
-    orientation = Anchored CenterAnchor
+    orientation = Floor
 
 floorContainer :: Container
 floorContainer = 

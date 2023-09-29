@@ -10,7 +10,7 @@ import Game.Model.World
       LookAction(..),
       GameStateExceptT,
       StandardActions (_lookAction'),
-      Object(..), LookF )
+      Object(..), LookF, DisplayF )
 import Game.Model.Display (updateEnvironmentM)
 import Game.Actions.Look.StandardLook (changeLookAction)
 import Build.ObjectTemplate (plantPotGID)
@@ -43,11 +43,11 @@ defaultPerception = PerceptionFunctions {
   , _displayPerceptionF' = onDisplayF
 }
 
-onDisplayF :: LookF -> LookF 
-onDisplayF f = f  
+onDisplayF :: DisplayF
+onDisplayF = Just  
 
-noDisplayF :: LookF -> LookF
-noDisplayF _ = const (const pass)
+noDisplayF :: DisplayF
+noDisplayF _ = Nothing
 
 changeLookPerception :: (LookF -> LookF)
                           -> (Object -> GameStateExceptT ())
@@ -62,7 +62,7 @@ changeLookPerception f g entity@(Object {..}) = do
       updateLookPerception f 
       $ updateBlockReport g (_standardActions'._lookAction')
 
-changeDisplayPerception :: (LookF -> LookF)
+changeDisplayPerception :: (DisplayF -> DisplayF)
                               -> (Object -> GameStateExceptT ())
                               -> Object 
                               -> GameStateExceptT ()

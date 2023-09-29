@@ -48,7 +48,7 @@ standardActions = StandardActions {
 }
   
 orientation :: Orientation 
-orientation = Anchored EastAnchor
+orientation = Anchor (kitchenGID, EastAnchor)
 
 shelfContainer :: Container
 shelfContainer = Container 

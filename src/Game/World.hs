@@ -23,26 +23,26 @@ setWorldExitMapM oGid lGid = do
 setLocationMapM :: GID Location -> Location -> GameStateExceptT ()
 setLocationMapM gid location = do
   world <- _world' <$> get
-  let updated = GIDToDataMapping $ Data.Map.Strict.insert gid location
-                  $ (_unGIDToDataMapping' . _locationMap') world
+  let updated = GIDToDataMap $ Data.Map.Strict.insert gid location
+                  $ (_unGIDToDataMap' . _locationMap') world
   modify' (\gs -> gs {_world' = world {_locationMap' = updated}})
 
 initContainerMapM :: GID Object -> Container -> GameStateExceptT ()
 initContainerMapM gid containment = do
   world <- _world' <$> get
-  let updated = GIDToDataMapping $ Data.Map.Strict.insert gid containment
-                  $ (_unGIDToDataMapping' . _containerMap') world
+  let updated = GIDToDataMap $ Data.Map.Strict.insert gid containment
+                  $ (_unGIDToDataMap' . _containerMap') world
   modify' (\gs -> gs {_world' = world {_containerMap' = updated}})
 
 setContainerMap :: GID Object -> GID Object -> GameStateExceptT ()
 setContainerMap withContainerGid addedGid = do
   world <- _world' <$> get
-  containerMap <- _unGIDToDataMapping' . _containerMap' . _world' <$> get
+  containerMap <- _unGIDToDataMap' . _containerMap' . _world' <$> get
   label <- _entityLabel' <$> getObjectM addedGid
   containment <- throwMaybeM errMsg
                   $ Data.Map.Strict.lookup withContainerGid containerMap
   let updatedContainer = updateContainer addedGid label containment
-      updatedContainerMap = GIDToDataMapping
+      updatedContainerMap = GIDToDataMap
                               $ Data.Map.Strict.insert
                                   withContainerGid
                                   updatedContainer
@@ -69,19 +69,19 @@ getGIDListM locationGID label =
     labelErr = "Could not find that gid list based on label " <> show label
     lookupLabel = Data.Map.Strict.lookup label <$> unwrappedObjectMap
     lookupGID = Data.Map.Strict.lookup locationGID <$> unwrappedLocationMap
-    unwrappedLocationMap = _unGIDToDataMapping' . _locationMap' . _world'
+    unwrappedLocationMap = _unGIDToDataMap' . _locationMap' . _world'
     unwrappedObjectMap = _unLabelToGIDListMapping' . _objectLabelMap'
 
 setLocationM :: Location -> GameStateExceptT ()
 setLocationM location = do
   lgid <- _playerLocation' . _player' <$> get
   world <- _world' <$> get
-  locationMap <- GIDToDataMapping
+  locationMap <- GIDToDataMap
                   . Data.Map.Strict.insert lgid location
                   . unwrappedMap <$> get
   modify' (\gs -> gs{_world' = world{_locationMap' = locationMap} })
     where
-      unwrappedMap = _unGIDToDataMapping' . _locationMap' . _world'
+      unwrappedMap = _unGIDToDataMap' . _locationMap' . _world'
 
 getLocationInventoryM :: GID Location
                           -> GameStateExceptT
@@ -117,7 +117,7 @@ findShelfM :: GID Object -> GameStateExceptT (Maybe Text)
 findShelfM gid = do
   (Object {..}) <- getObjectM gid
   mContainer <- Data.Map.Strict.lookup gid
-        . _unGIDToDataMapping'
+        . _unGIDToDataMap'
         . _containerMap'
         . _world'
         <$> get

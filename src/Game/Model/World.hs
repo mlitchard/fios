@@ -2,7 +2,7 @@ module Game.Model.World where
 
 import Game.Model.Mapping
 import Recognizer (Adjective, Imperative, NounPhrase, Verb, PrepPhrase, AdjPhrase)
-import Game.Model.Condition (Proximity, Moveability, Perceptibility (..))
+import Game.Model.Condition (Proximity, Moveability)
 import System.Console.Haskeline (InputT)
 import Text.Show (Show(..))
 import Prelude hiding (show)
@@ -12,9 +12,9 @@ import qualified Data.Map.Strict
 import qualified Data.Text
 import Control.Monad.Except (MonadError(throwError))
 import Tokenizer (Lexeme (..))
-import GHC.Records (HasField)
--- import qualified Control.Monad.Reader (ReaderT)
---type ConfigT a = Control.Monad.Reader.ReaderT Parsers a 
+
+newtype ObjectAnchorMap = 
+  ObjectAnchorMap (GIDToDataMap Object (Maybe (NonEmpty (GID Object))))
 
 type GameStateExceptT = ReaderT Config (ExceptT Text (StateT GameState IO))
 
@@ -103,6 +103,7 @@ data Location = Location {
   _title'             :: Text
   , _description'     :: Text
   , _anchoredObjects' :: RoomAnchors
+ -- , _floor' :: GID Object
   , _anchoredTo'      :: AnchoredTo
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
   , _directions'      :: Maybe ExitGIDMap
@@ -116,12 +117,6 @@ data Narration = Narration {
     , _npcResponse' :: Data.List.NonEmpty.NonEmpty Text
     , _scene'       :: Scene
   } deriving stock Show
-
-newtype Neighbors = Neighbors
-  {_unNeighbors' :: NeighborMap Proximity Object} deriving stock Show
-
--- FIXME: Change Nexus to Special to accomodate all the objects with 
--- special interfaces
 
 data Object = Object {
     _shortName'       :: Text
@@ -186,9 +181,11 @@ data LookFunctions = LookFunctions {
   , _lookOn'          :: LookOnF
 }
 
+type DisplayF = Text -> Maybe Text
+
 data PerceptionFunctions = PerceptionFunctions {
     _lookPerceptionF'     :: LookF -> LookF
-  , _displayPerceptionF'  :: LookF -> LookF
+  , _displayPerceptionF'  :: DisplayF
 }
 
 data UpdatePerceptionFunctions = UpdatePerceptionFunctions {
@@ -225,17 +222,20 @@ data GoAction = GoAction
   { _updateGo' :: GameStateExceptT ()
   , _go' :: GID Object -> GoPrep -> GameStateExceptT ()
   }
+
 newtype ObjectAnchors = ObjectAnchors {
-  _unObjectAnchors :: Data.Map.Strict.Map (GID Object) Neighbors
+  _unObjectAnchors :: (GID Object, NonEmpty (GID Object))  
   } deriving stock Show
+
 
 data OpenState = Open | Closed deriving stock Show
 
 data Orientation
   = ContainedBy' ContainedBy
   | Inventory
+  | Floor
+  | Anchor (GID Location, RoomAnchor)
   | AnchoredTo' (GID Object, Proximity)
-  | Anchored RoomAnchor
     deriving stock Show
 
 data Player = Player
@@ -252,7 +252,6 @@ data RoomAnchor
   | NorthEastAnchor
   | SouthWestAnchor
   | SouthEastAnchor
-  | CenterAnchor
     deriving stock (Show,Eq,Ord)
 
 newtype RoomAnchors
@@ -274,9 +273,9 @@ data SceneAnchored = SceneAnchored {
 } deriving stock Show
 
 data World = World
-  { _objectMap'         :: GIDToDataMapping Object Object
-  , _containerMap'      :: GIDToDataMapping Object Container
-  , _locationMap'       :: GIDToDataMapping Location Location
+  { _objectMap'         :: GIDToDataMap Object Object
+  , _containerMap'      :: GIDToDataMap Object Container
+  , _locationMap'       :: GIDToDataMap Location Location
   , _descriptiveMap'    :: LabelToGIDListMapping Adjective Object
   , _exitMap'           :: GIDToGIDMapping Object Location
   }
@@ -316,14 +315,14 @@ getLocationM gid = do
   world <- _world' <$> get
   throwMaybeM errmsg $ Data.Map.Strict.lookup gid (unLocationMap world)
   where
-    unLocationMap = _unGIDToDataMapping' . _locationMap'
+    unLocationMap = _unGIDToDataMap' . _locationMap'
     errmsg = "that location wasn't found"
 
 updateLocationM :: GID Location -> Location -> GameStateExceptT ()
 updateLocationM gidLocation location = do
   world <- _world' <$> get
-  let (GIDToDataMapping locationMap) = _locationMap' world
-      updatedMap = GIDToDataMapping
+  let (GIDToDataMap locationMap) = _locationMap' world
+      updatedMap = GIDToDataMap
                     $ Data.Map.Strict.insert gidLocation location locationMap
   modify' (\gs -> gs{_world' = world{_locationMap' = updatedMap}})
 

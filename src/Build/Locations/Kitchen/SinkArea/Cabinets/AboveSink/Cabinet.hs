@@ -1,7 +1,7 @@
 module Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Cabinet where
 
 import Game.Model.Mapping 
-        (GIDToDataMapping (..), ContainerMap (..), Label (..))
+        (GIDToDataMap (..), ContainerMap (..), Label (..))
 import Game.Model.World
 import qualified Data.Map.Strict
 import Build.ObjectTemplate (kitchenCabinetAboveSinkGID, kitchenSinkGID)

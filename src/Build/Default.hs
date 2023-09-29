@@ -9,7 +9,7 @@ import Build.LocationTemplate
 import Game.Model.World
 
 import Game.Model.Mapping
-    (GIDToDataMapping (..), LabelToGIDListMapping (..), GIDToGIDMapping (..),)
+    (GIDToDataMap (..), LabelToGIDListMapping (..), GIDToGIDMapping (..),)
 import Game.Narration (displaySceneM, makeSceneM)
 import Game.Engine (primaryEvaluator)
 import Clarifier (clarifyWhich)
@@ -51,9 +51,9 @@ defaultDisplayAction =
 
 defaultWorld :: World
 defaultWorld = World
-  { _objectMap'     = GIDToDataMapping Data.Map.Strict.empty
-    , _locationMap' = GIDToDataMapping Data.Map.Strict.empty
-    , _containerMap' = GIDToDataMapping Data.Map.Strict.empty
+  { _objectMap'     = GIDToDataMap Data.Map.Strict.empty
+    , _locationMap' = GIDToDataMap Data.Map.Strict.empty
+    , _containerMap' = GIDToDataMap Data.Map.Strict.empty
     , _descriptiveMap' = LabelToGIDListMapping Data.Map.Strict.empty
     , _exitMap'     = GIDToGIDMapping Data.Map.Strict.empty
   }

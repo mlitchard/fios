@@ -1,6 +1,6 @@
 module Build.Locations.Kitchen.FloorArea.PlantPot where
 import Game.Model.Mapping
-        (GIDToDataMapping (..), Label (..))
+        (GIDToDataMap (..), Label (..))
 import qualified Data.Map.Strict
 import Game.Model.Condition (Moveability(..), Perceptibility (..))
 import Tokenizer.Data ( Lexeme(PLANT, SMALL, POT) )

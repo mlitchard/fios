@@ -7,12 +7,12 @@ import Game.Model.Display (updateEnvironmentM, updatePlayerActionM)
 import Game.Object (getShortNameM)
 import qualified Data.List.NonEmpty
 import qualified Data.Text
-  
+
 look :: Object
           -> LookF
           -> GameStateExceptT ()
 look entity lookFunction = do
-  worldCMap <- _unGIDToDataMapping' . _containerMap' . _world' <$> get
+  worldCMap <- _unGIDToDataMap' . _containerMap' . _world' <$> get
   lookFunction entity worldCMap
 
 lookDescriptionM :: Object -> GameStateExceptT ()
@@ -22,10 +22,6 @@ lookDescriptionM (Object {..}) =
 -- updateEnvironmentM (Data.Text.concat _odescription') 
 --                >> lookContainerM gid worldCMap shallowLookInContainerM
 
-display :: Object -> GameStateExceptT ()
-display (Object {..}) = updateEnvironmentM ("a " <> _shortName')
-
-
 lookInImpossibleM :: GameStateExceptT ()
 lookInImpossibleM = updateEnvironmentM msg
   where
@@ -34,13 +30,13 @@ lookInImpossibleM = updateEnvironmentM msg
 lookAtOpenBoxM :: GID Object
                     -> Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
-lookAtOpenBoxM gid (Object {..}) cmap = 
+lookAtOpenBoxM gid (Object {..}) cmap =
  {- updatePlayerActionM msg >> -} lookContainerM gid shallowLookInContainerM cmap
 
 lookInOpenBoxM :: GID Object
                     -> Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
-lookInOpenBoxM gid (Object {..}) cmap = 
+lookInOpenBoxM gid (Object {..}) cmap =
   {- updatePlayerActionM msg >> -} lookContainerM gid deepLookInContainerM cmap
 
 

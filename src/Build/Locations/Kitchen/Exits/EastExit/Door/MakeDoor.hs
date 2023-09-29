@@ -49,4 +49,4 @@ doorActions = StandardActions {
   }
 
 orientation :: Orientation
-orientation = AnchoredTo' (kitchenEastPortalGID, PlacedFront) 
+orientation = Anchored EastAnchor -- AnchoredTo' (kitchenEastPortalGID, PlacedFront) 

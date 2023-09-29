@@ -7,7 +7,7 @@ import Game.Model (GameStateExceptT)
 import Build.LocationLabels (hallLabel)
 -}
 {-
--- _locationMap'       :: GIDToDataMapping Location
+-- _locationMap'       :: GIDToDataMap Location
 buildHall :: GameStateExceptT ()
 buildHall= do
   location <- getLocation hallGID 

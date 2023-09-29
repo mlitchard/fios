@@ -3,7 +3,7 @@ module Build.Locations.BuildFrame where
 import qualified Data.Map.Strict
 
 import Game.Model.Mapping
-    ( GIDToDataMapping(GIDToDataMapping, _unGIDToDataMapping'), LabelToGIDListMapping (..), GIDList)
+    ( GIDToDataMap(GIDToDataMap, _unGIDToDataMap'), LabelToGIDListMapping (..), GIDList)
     
 import Game.Model.GID (GID)
 
@@ -16,12 +16,12 @@ buildLocationMap :: GID Location -> Location -> GameStateExceptT ()
 buildLocationMap locationGID location = do
   world :: World <- _world' <$> get
   let locationMap' = unLocationMap world  
-      updatedMap = GIDToDataMapping
+      updatedMap = GIDToDataMap
                     $ Data.Map.Strict.insert
                         locationGID location locationMap'
   modify' (\gs -> gs {_world' = world {_locationMap' = updatedMap}})
   where
-    unLocationMap = _unGIDToDataMapping' . _locationMap'
+    unLocationMap = _unGIDToDataMap' . _locationMap'
 
 buildDescriptorMap :: LabelToGIDListMapping Adjective Object 
                         -> GameStateExceptT ()

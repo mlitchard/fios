@@ -6,13 +6,12 @@ import Data.Map.Strict qualified (toList, null, member, lookup)
 
 import Game.Model.World
 
-import Game.Object (getShortNameM, getObjectM)
+import Game.Object (getShortNameM)
 
 import Data.List.NonEmpty ( (<|), reverse, toList, singleton )
 
 import Game.Model.GID (GID)
-import Game.Model.Condition (Proximity (..), Perceptibility (..))
-import Control.Monad.Except (MonadError(..))
+import Game.Model.Condition (Proximity (..))
 import qualified Data.Text
 import qualified Data.List
 import Game.Model.Mapping
@@ -92,12 +91,12 @@ describeObjectM gid = error "undefined" {- do
 -}
 isContainerM :: GID Object -> GameStateExceptT Bool
 isContainerM gid = do
-  res <- _unGIDToDataMapping' . _containerMap' . _world' <$> get
+  res <- _unGIDToDataMap' . _containerMap' . _world' <$> get
   pure $ Data.Map.Strict.member gid res
 
 maybeDescribeContainerShallowM :: GID Object -> GameStateExceptT () 
 maybeDescribeContainerShallowM gid = do 
-  res <- _unGIDToDataMapping' . _containerMap' . _world' <$> get
+  res <- _unGIDToDataMap' . _containerMap' . _world' <$> get
   case Data.Map.Strict.lookup gid res of 
     Nothing -> pass 
     Just (Container (ContainerMap container)) -> if null container 
