@@ -84,5 +84,5 @@ defaultScene = Scene
 defaultObjectLabelMap :: LabelToGIDListMapping Object Object
 defaultObjectLabelMap = LabelToGIDListMapping Data.Map.Strict.empty
 
-defaultRoomAnchors :: RoomAnchors
-defaultRoomAnchors = RoomAnchors Data.Map.Strict.empty
+defaultRoomSections :: RoomSectionMap
+defaultRoomSections = Data.Map.Strict.empty

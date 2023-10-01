@@ -1,14 +1,13 @@
 module Build.Locations.Kitchen.Exits.EastExit.Portal.MakePortal where 
-import Game.Model.World 
-        (GameStateExceptT, Object (..), Orientation (..), StandardActions (..)
-        , RoomAnchor (EastAnchor))
+import Game.Model.World
+        (GameStateExceptT, Object (..), Orientation (..), StandardActions (..), RoomSection (EastSection))
 import Game.World (setWorldExitMapM)
 import Build.ObjectTemplate (kitchenEastPortalGID, kitchenEastDoorGID)
-import Build.LocationTemplate (hallGID)
-import Game.Object (setObjectMapM)
+import Build.LocationTemplate (hallGID, kitchenGID)
+import Game.Object (setObjectMapM, getProximity)
 import Game.Model.Mapping (Label(..))
 import Tokenizer.Data (Lexeme(PORTAL))
-import Game.Model.Condition (Moveability(..), Perceptibility (..), Proximity (PlacedBehind))
+import Game.Model.Condition (Moveability(..), Proximity)
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.Look 
         (defaultLookAction)
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.NoCanDo
@@ -29,9 +28,13 @@ kitchenEastPortalEntity = Object {
   , _orientation' = orientation
   , _standardActions' = actions  
 }
+  where
+    orientation = AnchoredTo' getPortalProximity
 
-orientation :: Orientation 
-orientation = AnchoredTo' (kitchenEastDoorGID, PlacedBehind)  --Anchored EastAnchor 
+getPortalProximity :: GameStateExceptT Proximity
+getPortalProximity = 
+  getProximity kitchenGID EastSection kitchenEastDoorGID kitchenEastPortalGID 
+ -- (kitchenEastDoorGID, PlacedBehind)  --Anchored EastAnchor 
 
 actions :: StandardActions
 actions = StandardActions {

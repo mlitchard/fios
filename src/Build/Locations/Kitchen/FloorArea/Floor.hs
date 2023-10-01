@@ -16,10 +16,11 @@ import Build.Locations.Kitchen.FloorArea.Actions.Floor.NoCanDo
         (openAction, closeAction, lockAction, unlockAction, goAction)
 import Build.Locations.Kitchen.ShelfArea.Actions.Look
         ( initialLookAction ) 
-import Game.Object (setObjectMapM)
+import Game.Object (setObjectMapM, getAnchored)
 import qualified Data.List.NonEmpty
+import Build.LocationTemplate (kitchenGID)
 
--- Anchoring RoomAnchor
+-- Anchoring RoomSection
 
 buildKitchenFloor :: GameStateExceptT ()
 buildKitchenFloor = do
@@ -38,15 +39,25 @@ buildFloor = Object {
 }
   where
     desc = "A non-descipt tiled kitchen floor."
-    orientation = Floor
+    orientation = Anchor floorAnchor 
+
+floorAnchor :: GameStateExceptT (Maybe (NonEmpty Anchored))
+floorAnchor = getAnchored kitchenGID EastSection kitchenFloorGID notAnchorMsg
+  where
+    notAnchorMsg = show kitchenFloorGID <> " is not an anchor"
 
 floorContainer :: Container
 floorContainer = 
-  Container
-    $ ContainerMap $ Data.Map.Strict.singleton plantPotLabel floorInv
+  Container $ Data.Map.Strict.singleton plantPotLabel floorInv
 
-floorInv :: GIDList Object
-floorInv = Data.List.NonEmpty.singleton plantPotGID
+floorInv :: NonEmpty ContainedEntity
+floorInv = Data.List.NonEmpty.singleton plantContainer 
+
+plantContainer :: ContainedEntity
+plantContainer = ContainedEntity {
+    _containedGid' = plantPotGID
+  , _placement' = On
+}
 
 standardActions :: StandardActions
 standardActions = StandardActions { 

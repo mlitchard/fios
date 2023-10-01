@@ -1,11 +1,13 @@
 module Build.Locations.Kitchen.Exits.EastExit.Door.MakeDoor where 
-import Game.Model.World (GameStateExceptT, Object (..), StandardActions (..), Orientation (..), RoomAnchor (EastAnchor))
+import Game.Model.World
+        (GameStateExceptT, Object (..), StandardActions (..), Orientation (..)
+        , RoomSection (EastSection), Anchored)
 import Build.ObjectTemplate (kitchenEastPortalGID, kitchenEastDoorGID)
 import Game.Model.Condition (Proximity(PlacedFront), Moveability (..), Perceptibility (..))
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.NoCanDo
 import Build.Locations.Kitchen.Exits.EastExit.Door.Actions.Look 
         (initialLookAction)
-import Game.Object (setObjectMapM, setObjectLabelMapM)
+import Game.Object (setObjectMapM, setObjectLabelMapM, getAnchored)
 import Build.ObjectLabels (doorLabel)
 import Build.LocationTemplate (kitchenGID)
 import Game.World (setLocationDirectionM)
@@ -33,6 +35,7 @@ kitchenEastDoorObject = Object {
     , _standardActions' = doorActions
   }
   where
+    orientation = Anchor getDoorAnchored
     kitchenShortName    = "door to the east hall."
     kitchenEastDoorDesc = "It's a door made from some mysterious substance."
 
@@ -48,5 +51,8 @@ doorActions = StandardActions {
     , _goAction' = goAction
   }
 
-orientation :: Orientation
-orientation = Anchor (kitchenGID, EastAnchor) -- AnchoredTo' (kitchenEastPortalGID, PlacedFront) 
+getDoorAnchored :: GameStateExceptT (Maybe (NonEmpty Anchored))
+getDoorAnchored = 
+  getAnchored kitchenGID EastSection kitchenEastDoorGID notSection
+  where 
+    notSection = show kitchenEastDoorGID <> "is not in " <> show EastSection

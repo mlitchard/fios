@@ -1,8 +1,7 @@
 module Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Cabinet
   where
 
-import Game.Model.Mapping
-    ( GIDToDataMap(..), ContainerMap(..), Label(..) )
+import Game.Model.Mapping ( Label(..) )
 import Game.Model.World
 import Game.World
 import qualified Data.Map.Strict
@@ -12,10 +11,10 @@ import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Look
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.NoCanDo
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Open
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Put
-import Game.Model.Condition
-  (Moveability(..), Perceptibility (..), Proximity (PlacedUnder))
-import Tokenizer (Lexeme (CABINET))
-import Game.Object (setObjectMapM)
+import Game.Model.Condition (Moveability(..), Proximity)
+import Tokenizer.Data ( Lexeme(CABINET) )
+import Game.Object (setObjectMapM, getProximity)
+import Build.LocationTemplate (kitchenGID)
 
 buildKitchenCabinetBelowSink :: GameStateExceptT ()
 buildKitchenCabinetBelowSink = do
@@ -48,8 +47,11 @@ standardActions = StandardActions {
 }
 
 orientation :: Orientation
-orientation = AnchoredTo' (kitchenSinkGID, PlacedUnder)
+orientation = AnchoredTo' anchoredProximity
 
+anchoredProximity :: GameStateExceptT Proximity
+anchoredProximity = 
+  getProximity kitchenGID EastSection kitchenSinkGID kitchenCabinetBelowSinkGID
+  
 cabinetContainer :: Container
-cabinetContainer = Container
-  $ ContainerMap Data.Map.Strict.empty
+cabinetContainer = Container Data.Map.Strict.empty

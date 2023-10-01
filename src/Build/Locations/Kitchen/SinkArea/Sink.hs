@@ -1,7 +1,7 @@
 module Build.Locations.Kitchen.SinkArea.Sink where
 
 import Data.Map.Strict qualified
-import Build.ObjectTemplate
+import Build.ObjectTemplate ( kitchenSinkGID )
 import Game.Model.Mapping
 import Game.Model.World
 import Game.Model.Condition
@@ -13,7 +13,7 @@ import Build.Locations.Kitchen.SinkArea.Actions.Look
 import Build.Locations.Kitchen.SinkArea.Actions.Open (openAction)
 import Build.Locations.Kitchen.SinkArea.Actions.Close (closeAction)
 import Build.Locations.Kitchen.SinkArea.Actions.NoCanDo
-import Game.Object (setObjectMapM)
+import Game.Object (setObjectMapM, getAnchored)
 import Build.LocationTemplate (kitchenGID)
 
 buildKitchenSink :: GameStateExceptT ()
@@ -47,8 +47,12 @@ standardActions = StandardActions {
 }
 
 orientation :: Orientation
-orientation = Anchor (kitchenGID, EastAnchor)
+orientation = Anchor sinkAnchor
+
+sinkAnchor :: GameStateExceptT (Maybe (NonEmpty Anchored))
+sinkAnchor = getAnchored kitchenGID EastSection kitchenSinkGID notAnchorMsg
+  where
+    notAnchorMsg = show kitchenSinkGID <> " is not an anchor"
 
 sinkContainer :: Container
-sinkContainer = Container 
-  $ ContainerMap Data.Map.Strict.empty
+sinkContainer = Container Data.Map.Strict.empty

@@ -6,8 +6,8 @@ import Game.Model.GID (GID)
 import Game.Model.Mapping (Label (..))
 import Tokenizer (Lexeme)
 import Game.Model.Display
-        (describeOrientationM, updateEnvironmentM, showEnvironmentM
-        , showPlayerActionM, updateDisplayActionM, describeObjectM)
+        (updateEnvironmentM, showEnvironmentM
+        , showPlayerActionM, updateDisplayActionM)
 import Data.Text (toLower)
 import Recognizer.WordClasses
         (Imperative (..) , PrepPhrase (..), Noun, Preposition)
@@ -16,8 +16,7 @@ import Game.Model.Condition (Proximity (..))
 import Tokenizer.Data (Lexeme(..))
 import Prelude hiding (show)
 import Recognizer (NounPhrase(..))
-import Game.Object (getObjectsFromLabelM, getObjectM)
-import Game.World (findAnchoredTo)
+import Game.Object (getObjectsFromLabelM)
 
 doReportM :: Text -> GameStateExceptT ()
 doReportM report' = do
@@ -45,7 +44,8 @@ displayReport = do
   mapM_ print . _report' =<< get
 
 clarifyWhich :: ClarifyWhich
-clarifyWhich f labelObjectPair@(Label label', objects) =
+clarifyWhich f labelObjectPair@(Label label', objects) = pass 
+{-
   updateEnvironmentM preamble
     >> mapM_ (\(_,object) -> objectOrientation object) objects
     >> modify' (\gs -> gs {_clarification' = Just clarification})
@@ -57,15 +57,14 @@ clarifyWhich f labelObjectPair@(Label label', objects) =
       , _gidObjectPairs' = objects
     }
     preamble = "which " <> (toLower . toText) label' <> " do you mean?"
-
+-}
 setEvaluatorM :: (Imperative -> GameStateExceptT ()) -> GameStateExceptT ()
-setEvaluatorM engine = do
-  modify' (\gs -> gs{_evaluator' = engine})
-
+setEvaluatorM engine = modify' (\gs -> gs{_evaluator' = engine})
+{-
 objectOrientation :: Object -> GameStateExceptT ()
 objectOrientation (Object {..}) =
   describeOrientationM ("The " <> _shortName') _orientation'
-
+-}
 checkProximity :: PrepPhrase -> FoundAnchoredTo -> Bool
 checkProximity prep (FoundAnchoredTo _ (_,prox)) =
   matchesProximity (prox,prep)
@@ -74,7 +73,7 @@ clarifyNotThere :: GameStateExceptT ()
 clarifyNotThere = throwError "You don't see that here"
 
 clarifyingM :: Imperative -> GameStateExceptT () 
-clarifyingM (ClarifyingClause1 (NounPhrase1 _ (Noun sub)) prep) = do
+clarifyingM (ClarifyingClause1 (NounPhrase1 _ (Noun sub)) prep) = pass {- do
   clarified <- throwMaybeM noClarityMSG . _clarification' =<< get
   samePageCheckM (Label sub) (_clarifyingLabel' clarified)
   objectListIobj <- getObjectsFromLabelM (Label (findInDirectObject prep))
@@ -96,7 +95,7 @@ clarifyingM (ClarifyingClause1 (NounPhrase1 _ (Noun sub)) prep) = do
   where
     tryAgain = "Try that again"
     noClarityMSG = "Programmer Error: No clarifying object list"
-
+-}
 clarifyingM _ = throwError "clarifyingM implimentation not completed"
 
 clarifyingLookDirectObjectM :: Preposition -> Imperative -> GameStateExceptT ()

@@ -11,7 +11,7 @@ import Game.Model.Display (updatePlayerActionM)
 
 noGetM :: GameStateExceptT ()
 noGetM = throwError "Are you serious?"
-
+{-
 tryGetM :: GID Object 
             -> (GetInput -> GameStateExceptT ()) 
             -> Object 
@@ -36,4 +36,4 @@ tryGetM gid getFunction entity@(Object{..}) = pass {- do
 standardGetM :: GetInput
                   -> GameStateExceptT ()
 standardGetM _ = pass  
-                  
+-}                  

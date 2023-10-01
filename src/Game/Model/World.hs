@@ -39,19 +39,18 @@ data Config = Config {
   , _evalVerbPhraseSeven'    :: EvalVerbSeven
 }
 
-newtype Container = Container {_unContainer' :: ContainerMap Object} 
-  
-data ContainedBy = ContainedBy
-  { _containedBy' :: OnOrIn
-  , _self' :: GID Object
-  } deriving stock Show
+newtype Container = Container 
+  { _unContainer' :: Map (Label Object) (NonEmpty ContainedEntity)} 
 
-data OnOrIn
-  = On (GID Object)
-  | In (GID Object)
-    deriving stock Show
+data ContainedPlacement = On | In deriving stock Show
  
+data ContainedEntity = ContainedEntity {
+    _containedGid' :: GID Object
+  , _placement' :: ContainedPlacement 
+} 
+
 type EvalVerbThree = (Verb, PrepPhrase, PrepPhrase) -> GameStateExceptT ()
+
 newtype Exit = Exit { _toDestination' :: GID Location} deriving stock Show
 
 type EvalVerbSeven = (Verb, NounPhrase, PrepPhrase) -> GameStateExceptT ()
@@ -66,6 +65,7 @@ data FoundAnchoredTo = FoundAnchoredTo
   {  _anchoredObject' :: (GID Object,Object)
   ,  _proximityTo' :: (GID Object, Proximity)
   }
+
 instance Show FoundAnchoredTo where
   show (FoundAnchoredTo (gid, _) (gid',prox)) =
     show gid <> " " <> show gid' <> " " <> show prox
@@ -82,13 +82,6 @@ data GameState = GameState
   , _displayAction'         :: GameStateExceptT ()
   }
 
-data GetInput = GetInput
-  {   _removedEntityGID' :: GID Object
-    , _removedEntity' :: Object
-    , _removedEntityLabel' :: Label Object
-    , _entityOnOrIn' :: OnOrIn
-  }
-
 type GIDObjectPair = (GID Object,Object)
 data Clarification = Clarification {
     _clarifyingLabel' :: Label Object
@@ -100,11 +93,9 @@ report = do
   mapM_ print report'
 
 data Location = Location {
-  _title'             :: Text
+    _title'           :: Text
   , _description'     :: Text
-  , _anchoredObjects' :: RoomAnchors
- -- , _floor' :: GID Object
- -- , _anchoredTo'      :: AnchoredTo
+  , _anchoredObjects' :: RoomSectionMap
   , _objectLabelMap'  :: LabelToGIDListMapping Object Object
   , _directions'      :: Maybe ExitGIDMap
 }
@@ -127,8 +118,6 @@ data Object = Object {
   , _orientation'     :: Orientation
   , _standardActions'  :: StandardActions
 }
-
-newtype Shelf = Shelf {_unShelf' :: ContainerMap Object} 
 
 data StandardActions = StandardActions
   {   _getAction' :: GetAction 
@@ -223,71 +212,64 @@ data GoAction = GoAction
   , _go' :: GID Object -> GoPrep -> GameStateExceptT ()
   }
 
-newtype ObjectAnchors = ObjectAnchors {
-  _unObjectAnchors :: Data.Map.Strict.Map (GID Object) (Maybe (NonEmpty (GID Object)))  
-  } deriving stock Show
+type AnchorMap = Data.Map.Strict.Map (GID Object) (Maybe (NonEmpty Anchored))
 
+newtype ObjectAnchors = ObjectAnchors { _unObjectAnchors' :: AnchorMap } 
+
+data Anchored = Anchored 
+  { _gid' :: GID Object
+  , _proximity :: Proximity
+  }
 
 data OpenState = Open | Closed deriving stock Show
 
 data Orientation
-  = ContainedBy' ContainedBy
+  = ContainedBy' (GameStateExceptT (GID Object, ContainedPlacement))
   | Inventory
-  | Floor
-  | Anchor (GID Location, RoomAnchor)
-  | AnchoredTo' (GID Object, Proximity)
-    deriving stock Show
+  | Anchor (GameStateExceptT (Maybe (NonEmpty Anchored)))
+  | AnchoredTo' (GameStateExceptT Proximity)
 
 data Player = Player
   { _playerLocation'  :: GID Location
   , _p_inv'           :: [GID Object]
   } deriving stock Show
 
-data RoomAnchor
-  = NorthAnchor
-  | SouthAnchor
-  | WestAnchor
-  | EastAnchor
-  | NorthWestAnchor
-  | NorthEastAnchor
-  | SouthWestAnchor
-  | SouthEastAnchor
+data RoomSection
+  = NorthSection
+  | SouthSection
+  | WestSection
+  | EastSection
+  | NorthWestSection
+  | NorthEastSection
+  | SouthWestSection
+  | SouthEastSection
     deriving stock (Show,Eq,Ord)
 
-newtype RoomAnchors
-          = RoomAnchors {
-              _unRoomAnchors :: Data.Map.Strict.Map RoomAnchor ObjectAnchors
-            } deriving stock Show
+type RoomSectionMap = Data.Map.Strict.Map RoomSection ObjectAnchors
 
 data Scene = Scene
   {_sceneTitle'         :: Text
   , _sceneDescription'  :: Text
-  , _roomAnchored'      :: [DescribeRoomAnchor] -- text is Room area preamble
+  , _roomAnchored'      :: [DescribeRoomSection] -- text is Room area preamble
   , _visibleExits'      :: Maybe (NonEmpty Text)
   } deriving stock Show
 
-data DescribeRoomAnchor = DescribeRoomAnchor
+data DescribeRoomSection = DescribeRoomSection
   {   _preamble' :: Text
     , describeAnchoredObjects :: [DescribeAnchor]
   } deriving stock Show
 
 data DescribeAnchor = DescribeAnchor 
   { _anchorDesc'    :: Text
-  , _maybeShelf'    :: Maybe [Text]  
-  , _anchoredDesc'  :: [DescribeAnchored]
+  , _maybeShelf'    :: Maybe (Text, [Text]) 
+  , _anchoredDesc'  :: Maybe (NonEmpty DescribeAnchored)
   } deriving stock Show
   
 data DescribeAnchored = DescribeAnchored
   {_prelude' :: (Text, Text)
   , _maybeShelf' :: Maybe (Text, [Text])
   } deriving stock Show
-  {-
-data SceneAnchored = SceneAnchored {
-  _sceneAnchored' :: Text
-, _anchoredInventory' :: Maybe Text
-, _sceneRelated' :: [Text]
-} deriving stock Show
--}
+
 data World = World
   { _objectMap'         :: GIDToDataMap Object Object
   , _containerMap'      :: GIDToDataMap Object Container
@@ -306,8 +288,8 @@ data Verbosity
   | Normal
     deriving stock Show
 
-directionFromRoomAnchor :: RoomAnchor -> Text
-directionFromRoomAnchor roomAnchor =
+directionFromRoomSection :: RoomSection -> Text
+directionFromRoomSection roomAnchor =
   Data.Text.toLower . fst $ Data.Text.breakOn "Anchor" (toText $ show roomAnchor)
 
 instance ToText (Label Object) where
@@ -318,8 +300,8 @@ instance ToText (Label Location) where
   toText :: Label Location -> Text
   toText = toText . _unLabel'
 
-instance ToText RoomAnchor where
-  toText :: RoomAnchor -> Text
+instance ToText RoomSection where
+  toText :: RoomSection -> Text
   toText = toText . show
 
 getLocationIdM :: GameStateExceptT (GID Location)

@@ -1,11 +1,9 @@
 module Build.Locations.Kitchen.ShelfArea.Shelf where
     
-import Game.Model.Mapping
-        (ContainerMap (..), Label (..))
+import Game.Model.Mapping (Label (..))
 import Game.Model.World
-    ( Object(..), Container (..)
-    , GameStateExceptT, RoomAnchor (EastAnchor)
-    , StandardActions (..), Orientation (..))
+    ( Object(..), Container (..) , GameStateExceptT
+    , StandardActions (..), Orientation (..), Anchored, RoomSection (EastSection))
 import qualified Data.Map.Strict (empty)
 import Build.ObjectTemplate
     ( kitchenShelfGID )
@@ -15,7 +13,7 @@ import Build.Locations.Kitchen.ShelfArea.Actions.NoCanDo
 import Build.Locations.Kitchen.ShelfArea.Actions.Put
 import Game.World (initContainerMapM)
 import Build.Locations.Kitchen.ShelfArea.Actions.Look (initialLookAction)
-import Game.Object (setObjectMapM)
+import Game.Object (setObjectMapM, getAnchored)
 import Build.LocationTemplate (kitchenGID)
 
 buildKitchenShelf :: GameStateExceptT ()
@@ -49,8 +47,12 @@ standardActions = StandardActions {
 }
   
 orientation :: Orientation 
-orientation = Anchor (kitchenGID, EastAnchor)
+orientation = Anchor shelfAnchor -- (kitchenGID, EastAnchor)
+
+shelfAnchor :: GameStateExceptT (Maybe (NonEmpty Anchored))
+shelfAnchor = getAnchored kitchenGID EastSection kitchenShelfGID notAnchorMsg
+  where
+    notAnchorMsg = show kitchenShelfGID <> " is not an anchor"
 
 shelfContainer :: Container
-shelfContainer = Container 
-  $ ContainerMap Data.Map.Strict.empty
+shelfContainer = Container Data.Map.Strict.empty

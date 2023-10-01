@@ -3,10 +3,8 @@ import Game.Model.World
 import qualified Data.Map.Strict
 import Game.Model.GID (GID (..))
 import Game.Model.Mapping
-import Game.Object (getObjectM, getObjectGIDPairM)
+import Game.Object (getObjectM)
 import Game.Model.Condition (Proximity (..))
-import qualified Data.List.NonEmpty
-import Control.Monad.Except (MonadError(..))
 -- text builder for Scene
 
 display :: Text -> Text
@@ -14,197 +12,87 @@ display shortName = "a " <> shortName
 
 -- This module assumes all objects are perceivable 
 
-makeRoomAnchorDescriptions :: RoomAnchors
-                                -> GameStateExceptT [DescribeRoomAnchor]
-makeRoomAnchorDescriptions (RoomAnchors roomAnchorMap)
+makeRoomSectionDescriptions :: RoomSectionMap
+                                -> GameStateExceptT [DescribeRoomSection]
+makeRoomSectionDescriptions roomAnchorMap
   | Data.Map.Strict.null roomAnchorMap = pure mempty
-  | otherwise = mapM describeRoomAnchor (Data.Map.Strict.toList roomAnchorMap)
+  | otherwise = mapM describeRoomSection (Data.Map.Strict.toList roomAnchorMap)
 
-describeRoomAnchor :: (RoomAnchor, ObjectAnchors)
-                    -> GameStateExceptT DescribeRoomAnchor
-describeRoomAnchor (roomAnchor,objectAnchors) = do
-  describedEntityAnchors <- describeAnchors objectAnchors
-  pure $ DescribeRoomAnchor preamble describedEntityAnchors
+describeRoomSection :: (RoomSection, ObjectAnchors)
+                    -> GameStateExceptT DescribeRoomSection
+describeRoomSection (roomAnchor,ObjectAnchors objectAnchors) = do
+  describedEntityAnchors <- mapM describeAnchor $ Data.Map.Strict.toList objectAnchors
+  pure $ DescribeRoomSection preamble describedEntityAnchors
   where
     preamble = "In the "
-                  <> directionFromRoomAnchor  roomAnchor
+                  <> directionFromRoomSection  roomAnchor
                   <> "you see"
 
-describeAnchors :: ObjectAnchors
-                    -> GameStateExceptT [DescribeAnchor]
-describeAnchors (ObjectAnchors (_,objectAnchors)) = do
-  mapM describeAnchor (Data.Map.Strict.toList objectAnchors)
-
---- You don't need RoomAnchor data in two places
-describeAnchor :: (GID Object, Maybe (NonEmpty (GID Object)))
+describeAnchor :: (GID Object, Maybe (NonEmpty Anchored))
                     -> GameStateExceptT DescribeAnchor
-describeAnchor gid = do
-  (Object {..}) <- getObjectM gid
-  describedAnchoreds <- describeAnchoreds gid _orientation' _shortName'
-  shelfObjects :: Maybe [Text] <- tryDescribeShelf gid
-  pure $ DescribeAnchor ("a " <> _shortName') shelfObjects describedAnchoreds
+describeAnchor (anchorGid,mAnchoredGids) = do
+  (Object {..}) <- getObjectM anchorGid
+  descAnch <- case mAnchoredGids of
+                Nothing -> pure Nothing
+                Just anchGids -> Just
+                                  <$> describeAnchoreds _shortName' anchGids
+  shelfObjects <- tryDescribeShelf anchorGid
+  pure $ DescribeAnchor ("a " <> _shortName') shelfObjects descAnch
 
-describeAnchoreds :: GID Object
-                      -> Orientation
-                      -> Text
-                      -> GameStateExceptT [DescribeAnchored]
-describeAnchoreds gid (Anchor (lid, _)) shortName = do
-  (Location {..}) <- getLocationM lid
-  let gids = concatMap Data.List.NonEmpty.toList
-              (Data.Map.Strict.elems $ _objectLabelMap'._unLabelToGIDListMapping')
-  locationObjectGids <- mapM getObjectGIDPairM gids
-  let anchored = mapMaybe
-                  (\(gid',e) -> (,) gid' <$> findAnchored gid e)
-                  locationObjectGids
-  mapM (describeAnchored shortName) anchored
-
-describeAnchoreds _ _ shortName =
-  throwError ("describeAnchored being used on a non-anchor" <> shortName)
+describeAnchoreds :: Text
+                      -> NonEmpty Anchored
+                      -> GameStateExceptT (NonEmpty DescribeAnchored)
+describeAnchoreds shortName anchoredGids = do
+  mapM (describeAnchored shortName) anchoredGids
 
 describeAnchored :: Text
-                      -> (GID Object, (Object, Proximity))
+                      -> Anchored
                       -> GameStateExceptT DescribeAnchored
-describeAnchored shortName (gid, (Object {..}, proximity)) = do
+describeAnchored shortName (Anchored gid proximity) = do
+  (Object {..}) <- getObjectM gid
+  let proximityPair = (proximityDesc, "is a " <> _shortName')
   shelfContents <- tryDescribeShelf gid
-  let shelfDescription = (,) shelfPrelude <$> shelfContents
+  let shelfDescription = shelfPrelude <$> shelfContents
   pure (DescribeAnchored proximityPair shelfDescription)
   where
-    shelfPrelude = "On the " <> _shortName' <> " you see:"
+    shelfPrelude (shelfName, contents)
+      = (,) ("On the " <> shelfName <> " you see:") contents
     proximityDesc = displayProximity proximity <> shortName
-    proximityPair = (proximityDesc, "is a " <> _shortName')
 
 shallowDescribeObject :: Object -> GameStateExceptT (Maybe Text)
 shallowDescribeObject (Object {..}) = pure $ displayF $ display _shortName'
   where
     displayF = _standardActions'._lookAction'._perception'._displayPerceptionF'
 
-findAnchored :: GID Object -> Object  -> Maybe (Object, Proximity)
-findAnchored gid entity@(Object _ _ _ _ _ (AnchoredTo' (gid', proximity)) _)
-  | gid == gid' = Just (entity,proximity)
-findAnchored _ _ = Nothing
-
-tryDescribeShelf :: GID Object -> GameStateExceptT (Maybe [Text])
+tryDescribeShelf :: GID Object -> GameStateExceptT (Maybe (Text,[Text]))
 tryDescribeShelf gid = do
   (GIDToDataMap worldCMap) <- _containerMap' . _world' <$> get
   let maybeCmap = Data.Map.Strict.lookup gid worldCMap
   case maybeCmap of
-    Just ((Container (ContainerMap cmap))) -> Just . concat
-                                                <$> mapM tryDescribeShelfContents
-                                                (Data.Map.Strict.elems cmap)
+    Just ((Container cmap)) -> do
+                                shortName <- _shortName' <$> getObjectM gid
+                                content <- mapM describeShelfContents filtShelf
+                                pure $ Just (shortName,content)
+                                where
+                                  concatElems = concatMap toList 
+                                                  $ Data.Map.Strict.elems cmap
+                                  filtShelf = filter isShelf concatElems
     Nothing -> pure Nothing
+    where
+      isShelf (ContainedEntity _ On) = True
+      isShelf _ = False
 
-tryDescribeShelfContents :: GIDList Object
-                              -> GameStateExceptT [Text]
-tryDescribeShelfContents xs = do
-  entities <- mapM getObjectM xs
-  pure $ map (\(Object {..}) -> "a " <> _shortName')
-        $ Data.List.NonEmpty.filter
-            (\(Object {..}) -> isShelfInventory _orientation') entities
-
-isShelfInventory :: Orientation -> Bool
-isShelfInventory (ContainedBy' (ContainedBy (On _) _)) = True
-isShelfInventory _ = False
+describeShelfContents :: ContainedEntity -> GameStateExceptT Text
+describeShelfContents (ContainedEntity gid _) = do
+  shortName <$> getObjectM gid
+  where
+    shortName (Object {..} )= "a " <> _shortName'
 
 tryDisplay :: Object -> Maybe Text
 tryDisplay (Object {..}) =
   displayF (display _shortName')
   where
     displayF = _standardActions'._lookAction'._perception'._displayPerceptionF'
-
-
-{-
-class ScenePart a where
-  type RenderAs a
-  makeScenePart :: a -> GameStateExceptT (RenderAs a)
-{-
-instance ScenePart RoomAnchors where
-  type RenderAs RoomAnchors = Maybe (NonEmpty (Text, [SceneAnchored]))
-  makeScenePart :: RoomAnchors
-                    -> GameStateExceptT (Maybe (NonEmpty (Text, [SceneAnchored])))
-  makeScenePart (RoomAnchors roomAnchorMap) =
-    if Data.Map.Strict.null roomAnchorMap
-      then pure Nothing
-      else Just . Data.List.NonEmpty.fromList
-            <$> mapM makeScenePart (Data.Map.Strict.toList roomAnchorMap)
-   -- mapM makeScene (Data.Map.Strict.toList roomAnchorMap)
--}
-{-
-instance ScenePart (RoomAnchor, ObjectAnchors) where
-
-  type RenderAs (RoomAnchor, ObjectAnchors) = (Text,RenderAs ObjectAnchors)
-
-  makeScenePart (roomAnchor,objectAnchors) = do
-    sceneAnchored <- makeScenePart objectAnchors
-    pure (preamble,sceneAnchored)
-    where
-      preamble = case roomAnchor of
-                  CenterAnchor -> mempty
-                  _ -> "In the "
-                          <> directionFromRoomAnchor  roomAnchor
-                          <> "you see"
--}
-{-
-instance ScenePart ObjectAnchors where
-  type RenderAs ObjectAnchors = [SceneAnchored]
-
-  makeScenePart (ObjectAnchors objectAnchors) = do
-    catMaybes <$> mapM makeScenePart (Data.Map.Strict.toList objectAnchors)
--}
-
-
-instance ScenePart (GID Object, Neighbors) where
-
-  type RenderAs (GID Object, Neighbors) = Maybe SceneAnchored
-  makeScenePart (gid, neighbors) = error "undefined" {- do
-    object <- getObjectM gid
-    case _perceptability' object of
-      Perceptible -> do
-                        neighborPart <- makeScenePart neighbors
-                        inventory <- findShelfM gid
-                        pure . Just
-                          $ SceneAnchored (_shortName' object) inventory neighborPart
-      Imperceptible -> pure Nothing
--}
-instance ScenePart Neighbors where
-
-  type RenderAs Neighbors = [Text]
-  makeScenePart (Neighbors (NeighborMap nmap)) =
-    catMaybes <$> mapM makeScenePart (Data.Map.Strict.toList nmap)
-
-instance ScenePart (Proximity, GIDList Object) where
-
-  type RenderAs (Proximity, GIDList Object) = Maybe Text
-
-  makeScenePart (proximity, gidList) = do
-    let x :: [GID Object]
-        x = Data.List.NonEmpty.toList gidList
-    entities <- filter (\(_,e) -> (not . isRoomAnchor) e) <$> mapM getObjectGIDPairM x
-    res <- catMaybes <$> mapM makeScenePart entities
-    pure $ if null res
-      then Nothing
-      else Just (displayProximity proximity <> unlines res)
-
--- Entity can't be a RoomAnchor
-instance ScenePart (GID Object, Object) where
-
-  type RenderAs (GID Object, Object) = Maybe Text
-  makeScenePart (gid,Object {..}) = error ("undefined")
-    {-
-    case _perceptability' of
-      Perceptible   -> do
-                          mShelf <- presentShelfContents gid _shortName'
-                          pure (mShelf <|> Just _shortName')
-      Imperceptible -> pure Nothing
--}
-presentShelfContents :: GID Object -> Text -> GameStateExceptT (Maybe Text)
-presentShelfContents gid shortName = do
-  mEntities <- findShelfM gid
-  case mEntities of
-    (Just entities) -> do
-                          let prelude = "On the " <> shortName <> "you see:"
-                          pure (Just (prelude <> entities))
-    Nothing -> pure Nothing
--}
 
 displayProximity :: Proximity -> Text
 displayProximity PlacedIn = "In the "

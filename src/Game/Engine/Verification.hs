@@ -8,16 +8,15 @@ import Recognizer.WordClasses
 import Game.Model.GID (GID)
 import qualified Data.List.NonEmpty
 import Game.Object (getObjectsFromLabelM)
-import Game.World (makeErrorReport, findAnchoredTo)
+import Game.World (makeErrorReport)
 import Game.Model.World
 import Clarifier
     ( subObjectAgreement,
       checkProximity,
       findInDirectObject,
       findNoun)
-import Game.Model.Mapping (Label(..), LabelToGIDListMapping (..))
+import Game.Model.Mapping (Label(..))
 import Control.Monad.Except (MonadError(..))
-import qualified Data.Map.Strict
 import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
 
 verifySimple :: Label Adjective
@@ -64,7 +63,7 @@ data Orientation
   | Inventory 
   | Floor (GID Object)
   | AnchoredTo' (GID Object, Proximity) 
-  | Anchoring RoomAnchor
+  | Anchoring RoomSection
     deriving stock Show 
 -}
 
@@ -126,7 +125,8 @@ verifyAccessabilityPP clarifierM (PrepPhrase1 _ (NounPhrase2 adj (Noun noun))) =
   where
     nopeErr = "You don't see a " <> toText noun <> " here."
     -}
-verifyAccessabilityPP _ _ = throwError "verifyAccessabilityPP: evaluate not completed"
+verifyAccessabilityPP _ _ = 
+  throwError "verifyAccessabilityPP: evaluate not completed"
 
 matchAdjective :: Label Adjective -> Object -> Bool
 matchAdjective label (Object{..}) = label `elem` _descriptives'
@@ -134,8 +134,8 @@ matchAdjective label (Object{..}) = label `elem` _descriptives'
 verifySensibilityNPPP :: (Imperative -> GameStateExceptT ())
                           -> NounPhrase
                           -> PrepPhrase
-                          -> GameStateExceptT (GID Object, Object)
-verifySensibilityNPPP clarifyingM np pp = do
+                          -> GameStateExceptT () -- (GID Object, Object)
+verifySensibilityNPPP clarifyingM np pp = pass {- do
   possibleDirectObjects <- getObjectsFromLabelM (directObjectLabel (findNoun np))
   anchoredEntities <- throwMaybeM (makeErrorReport np pp)
                       $ nonEmpty
@@ -159,3 +159,4 @@ verifySensibilityNPPP clarifyingM np pp = do
   pure (_anchoredObject' matched)
   where
     indirectObjectLabel  = Label $ findInDirectObject pp
+-}

@@ -12,22 +12,24 @@ import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.NoCanDo
         (unlockAction, goAction, openAction, closeAction, lockAction)
 import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Put (putAction)
 import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Look (emptyPlantPotLookAction, hasPlantLookAction, hasSoilLookAction)
-import Game.Object (setObjectMapM)
+import Game.Object (setObjectMapM, getContainedPlacement)
+import Game.Model.GID (GID)
 
 buildPlantPot :: GameStateExceptT ()
 buildPlantPot =  setObjectMapM plantPotGID plantPot
 
 plantPot :: Object
 plantPot = Object {
-      _shortName'      = "plant pot"
-    , _entityLabel' = Label POT
-    , _odescription'   = [desc]
-    , _descriptives'   = [Label PLANT, Label SMALL]
-    , _moveability'    = NotMoveable
-    , _orientation'    = floorOrientation -- orientation 
+      _shortName'       = "plant pot"
+    , _entityLabel'     = Label POT
+    , _odescription'    = [desc]
+    , _descriptives'    = [Label PLANT, Label SMALL]
+    , _moveability'     = NotMoveable
+    , _orientation'     = potOrientation getPotPlacement
     , _standardActions' = standardActions
   }
   where
+    potOrientation = ContainedBy' 
     desc = "You can plant plants in the plant pot."
 
 standardActions :: StandardActions
@@ -42,11 +44,5 @@ standardActions = StandardActions {
   , _goAction' = goAction
 }
 
-floorOrientation :: Orientation
-floorOrientation = ContainedBy' containedBy
-
-containedBy :: ContainedBy 
-containedBy = ContainedBy {
-    _containedBy' = On kitchenFloorGID
-  , _self' = plantPotGID
-}
+getPotPlacement :: GameStateExceptT (GID Object,ContainedPlacement)
+getPotPlacement = getContainedPlacement plantPotGID kitchenFloorGID 

@@ -2,7 +2,7 @@ module Game.Narration where
 
 import Game.Model.World
 import qualified Data.Map.Strict (toList)
-import Game.Scene ( makeRoomAnchorDescriptions )
+import Game.Scene ( makeRoomSectionDescriptions )
 import Game.Model.Mapping
 import Game.Object (namedDirectionM, getShortNameM)
 import Game.Model.GID
@@ -16,10 +16,10 @@ reportFloorM :: [GID Object] -> GameStateExceptT [Text]
 reportFloorM = mapM getShortNameM
 
 makeSceneM :: Location -> GameStateExceptT ()
-makeSceneM (Location title desc anchObj olmap d) = do
+makeSceneM (Location title desc anchObj _ d) = do
   narration <- _narration' <$> get
-  roomAnchors <- makeRoomAnchorDescriptions anchObj
-  exits <- makeExits d 
+  roomAnchors <- makeRoomSectionDescriptions anchObj
+  exits <- makeExits d
   modify (\gs -> gs {_narration' =
                         narration {_scene' =
                           scene roomAnchors exits}})
@@ -63,7 +63,7 @@ displayQuietM (Scene title _ _ _ ) =
 
 displayNormalM :: Scene -> GameStateExceptT ()
 displayNormalM (Scene title desc _   exit) =
-  updateEnvironmentM ("You are in the " <> title) 
+  updateEnvironmentM ("You are in the " <> title)
   >> updateEnvironmentM desc >> displayExitsM exit
 
 displayLoudM :: Scene -> GameStateExceptT ()
@@ -73,7 +73,7 @@ displayLoudM (Scene title desc anchored exit) = do
   updateEnvironmentM ("This is what you see" :: Text)
   let showItemsM = case anchored of
                     [] -> updateEnvironmentM ("An Empty Room" :: Text)
-                    a  -> mapM_ displayDescribeRoomAnchorM a
+                    a  -> mapM_ displayDescribeRoomSectionM a
   showItemsM >> displayExitsM exit
 
 displayExitsM :: Maybe (NonEmpty Text) -> GameStateExceptT ()
@@ -81,14 +81,14 @@ displayExitsM Nothing = updateEnvironmentM ("There's no visible exits." :: Text)
 displayExitsM (Just exits) = mapM_ updateEnvironmentM exits
 
 {-
-data DescribeRoomAnchor = DescribeRoomAnchor
+data DescribeRoomSection = DescribeRoomSection
   {   _preamble' :: Text
     , describeAnchoredObjects :: [DescribeAnchor]
 -}
 
-displayDescribeRoomAnchorM :: DescribeRoomAnchor -> GameStateExceptT ()
-displayDescribeRoomAnchorM (DescribeRoomAnchor preamble anchoredObjects) =
-  updateEnvironmentM preamble 
+displayDescribeRoomSectionM :: DescribeRoomSection -> GameStateExceptT ()
+displayDescribeRoomSectionM (DescribeRoomSection preamble anchoredObjects) =
+  updateEnvironmentM preamble
     >> mapM_ displayDescribeAnchorM anchoredObjects
 
 {-
@@ -100,17 +100,15 @@ data DescribeAnchor = DescribeAnchor
 -}
 -- DescribeAnchor
 displayDescribeAnchorM :: DescribeAnchor -> GameStateExceptT ()
-displayDescribeAnchorM (DescribeAnchor {..}) =
-  updateEnvironmentM _anchorDesc'
-    >> maybeShelf 
-    >> mapM_ displayDescribeAnchored _anchoredDesc' 
-  where
-    shelfPreamble = "On the " <> _anchorDesc' <> "you see"
-    maybeShelf = case _maybeShelf' of 
-                  (Just inv) -> updateEnvironmentM shelfPreamble 
-                                  >> mapM_ updateEnvironmentM inv 
-                  Nothing -> pass 
+displayDescribeAnchorM (DescribeAnchor {..}) = do
+  updateEnvironmentM _anchorDesc' >> whenJust _maybeShelf' displayShelf
+  whenJust _anchoredDesc' (mapM_ displayDescribeAnchored)
+  pass
 
+displayShelf :: (Text, [Text]) -> GameStateExceptT ()
+displayShelf (preamble,inv) = 
+  updateEnvironmentM preamble 
+    >> mapM_ updateEnvironmentM inv
 {-
 data DescribeAnchored = DescribeAnchored
   {_prelude' :: (Text, Text)
@@ -118,15 +116,15 @@ data DescribeAnchored = DescribeAnchored
   } deriving stock Show
 -}
 displayDescribeAnchored :: DescribeAnchored -> GameStateExceptT ()
-displayDescribeAnchored (DescribeAnchored {..}) = do 
-  updateEnvironmentM (fst _prelude') 
+displayDescribeAnchored (DescribeAnchored {..}) = do
+  updateEnvironmentM (fst _prelude')
     >> updateEnvironmentM (snd _prelude')
     >> maybeShelf
-  where 
-    maybeShelf = case _maybeShelf' of 
-                  Just (shelf,inv) -> updateEnvironmentM (shelfPrelude shelf) 
-                                        >> mapM_ updateEnvironmentM inv 
-                  Nothing -> pass 
-    shelfPrelude shelf = "On the " <> shelf <> "you see:" 
+  where
+    maybeShelf = case _maybeShelf' of
+                  Just (shelf,inv) -> updateEnvironmentM (shelfPrelude shelf)
+                                        >> mapM_ updateEnvironmentM inv
+                  Nothing -> pass
+    shelfPrelude shelf = "On the " <> shelf <> "you see:"
 -- displayFloorM :: [Text] -> GameStateExceptT ()
 -- displayFloorM = mapM_ updateEnvironemtM 

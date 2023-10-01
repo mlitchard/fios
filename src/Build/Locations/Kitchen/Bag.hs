@@ -1,11 +1,4 @@
 module Build.Locations.Kitchen.Bag where
-import Data.Aeson ()
-import Game.Model.World
-        (Object(..), Orientation (ContainedBy'), ContainedBy (..), OnOrIn (In), StandardActions (..))
-import Game.Model.Condition (Perceptibility(Imperceptible), Moveability (..))
-import Build.ObjectTemplate (kitchenCabinetBelowShelfGID, bagOfSoilGID)
-import Game.Model.Mapping (Label(..))
-import Tokenizer (Lexeme(..))
 
 {-
 plantPot :: Object

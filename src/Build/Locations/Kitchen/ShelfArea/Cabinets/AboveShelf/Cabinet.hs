@@ -5,9 +5,7 @@ import Game.Model.Mapping
 import qualified Data.Map.Strict
 import Build.ObjectTemplate 
         (kitchenCabinetAboveShelfGID, kitchenShelfGID)
-import Game.Model.Condition 
-        (Moveability(..), Perceptibility (..), Proximity (PlacedAbove))
-import Tokenizer (Lexeme(SINK))
+import Tokenizer.Data ( Lexeme(SINK) )
 import Game.World (initContainerMapM)
 import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.NoCanDo
 import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.Put 
@@ -18,7 +16,9 @@ import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.Open
         (openAction)
 import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.Close 
         (closeAction)
-import Game.Object (setObjectMapM)
+import Game.Object (setObjectMapM, getProximity)
+import Build.LocationTemplate (kitchenGID)
+import Game.Model.Condition (Proximity, Moveability (NotMoveable))
 
 
 {-
@@ -56,8 +56,11 @@ standardActions = StandardActions {
 }
 
 orientation :: Orientation 
-orientation = AnchoredTo' (kitchenShelfGID, PlacedAbove)
+orientation = AnchoredTo' anchoredProximity
 
+anchoredProximity :: GameStateExceptT Proximity
+anchoredProximity = 
+  getProximity kitchenGID EastSection kitchenShelfGID kitchenCabinetAboveShelfGID
+  
 cabinetContainer :: Container
-cabinetContainer = Container
-  $ ContainerMap Data.Map.Strict.empty
+cabinetContainer = Container Data.Map.Strict.empty

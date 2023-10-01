@@ -25,16 +25,20 @@ import Build.ObjectTemplate
 import Game.Model.GID (GID)
 import Game.Model.Mapping
         (LabelToGIDMapping (LabelToGIDMapping), Label (..)
-        , LabelToGIDListMapping (..), GIDList, GIDToDataMap (..))
+        , LabelToGIDListMapping (..), GIDList)
 import Tokenizer ( Lexeme(..) )
 import Build.Locations.Kitchen.ShelfArea.Shelf (buildKitchenShelf)
 import Game.Model.Condition (Proximity (..))
 import Build.Locations.Kitchen.FloorArea.Floor (buildKitchenFloor)
 import Build.Locations.Kitchen.FloorArea.PlantPot (buildPlantPot)
-import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Cabinet (buildKitchenCabinetAboveShelf)
-import Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Cabinet (buildKitchenCabinetBelowShelf)
-import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Cabinet (buildKitchenCabinetAboveSink)
-import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Cabinet (buildKitchenCabinetBelowSink)
+import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Cabinet
+        (buildKitchenCabinetAboveShelf)
+import Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Cabinet
+        (buildKitchenCabinetBelowShelf)
+import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Cabinet
+        (buildKitchenCabinetAboveSink)
+import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Cabinet
+        (buildKitchenCabinetBelowSink)
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
@@ -104,55 +108,45 @@ kitchenCabinets = Data.List.NonEmpty.fromList
   , kitchenCabinetBelowShelfGID]
 
 -- Source of truth 
-roomAnchorMap :: RoomAnchors --- Data.Map.Strict.Map RoomAnchor ObjectAnchorMap
-roomAnchorMap = RoomAnchors $ Data.Map.Strict.fromList roomAnchorList
+roomAnchorMap :: RoomSectionMap 
+roomAnchorMap = Data.Map.Strict.fromList roomAnchorList
 
-roomAnchorList :: [(RoomAnchor,ObjectAnchors)]
-roomAnchorList = [(EastAnchor,eastAnchorObjectAnchors)]
+roomAnchorList :: [(RoomSection,ObjectAnchors)]
+roomAnchorList = [(EastSection,eastAnchorObjectAnchors)]
 
 eastAnchorObjectAnchors:: ObjectAnchors
 eastAnchorObjectAnchors =
-  ObjectAnchors (Data.Map.Strict.fromList objectAnchorList)
+  ObjectAnchors (Data.Map.Strict.fromList objectAnchorListSource)
 
-objectAnchorList :: [(GID Object, Maybe (NonEmpty (GID Object)))]
-objectAnchorList = map removeProximity objectAnchorListSource
 
-removeProximity :: (GID Object, Maybe (NonEmpty (GID Object,Proximity)))
-                      -> (GID Object, Maybe (NonEmpty (GID Object)))
-removeProximity (gid,Nothing) = (gid,Nothing)
-removeProximity (gid,Just xs) =
-  let removedProximity = fst <$> xs
-  in (gid,Just removedProximity)
-
-objectAnchorListSource :: [(GID Object, Maybe (NonEmpty (GID Object,Proximity)))]
+objectAnchorListSource :: [(GID Object, Maybe (NonEmpty Anchored))]
 objectAnchorListSource = [
     (kitchenSinkGID, Just sinkAnchored)
   , (kitchenShelfGID, Just shelfAnchored)
   , (kitchenEastDoorGID, Just doorAnchored)
   ]
 
-sinkAnchored :: NonEmpty (GID Object,Proximity)
+sinkAnchored :: NonEmpty Anchored
 sinkAnchored = Data.List.NonEmpty.fromList
-  [(kitchenCabinetAboveSinkGID, PlacedAbove)
-  , (kitchenCabinetBelowSinkGID,PlacedUnder)]
+  [Anchored kitchenCabinetAboveSinkGID PlacedAbove
+  , Anchored kitchenCabinetBelowSinkGID PlacedUnder]
 
-shelfAnchored :: NonEmpty (GID Object,Proximity)
+shelfAnchored :: NonEmpty Anchored
 shelfAnchored = Data.List.NonEmpty.fromList
-  [(kitchenCabinetAboveShelfGID, PlacedAbove)
-  , (kitchenCabinetBelowShelfGID, PlacedUnder)]
+  [Anchored kitchenCabinetAboveShelfGID PlacedAbove
+  , Anchored kitchenCabinetBelowShelfGID PlacedUnder]
 
-doorAnchored :: NonEmpty (GID Object, Proximity)
-doorAnchored = Data.List.NonEmpty.singleton (kitchenEastPortalGID, PlacedBehind)
+doorAnchored :: NonEmpty Anchored
+doorAnchored = Data.List.NonEmpty.singleton 
+  (Anchored kitchenEastPortalGID PlacedBehind)
 {-
-kitchenAnchors :: RoomAnchors
-kitchenAnchors = RoomAnchors $ Data.Map.Strict.fromList anchorList
+kitchenAnchors :: RoomSections
+kitchenAnchors = RoomSections $ Data.Map.Strict.fromList anchorList
 -}
-anchorList :: [(RoomAnchor, ObjectAnchors)]
-anchorList = [(EastAnchor, objectAnchors)]
-
-objectAnchors :: ObjectAnchors
-objectAnchors = ObjectAnchors (kitchenSinkGID,Data.List.NonEmpty.fromList
-  [kitchenShelfGID,kitchenEastDoorGID])
+{-
+anchorList :: [(RoomSection, ObjectAnchors)]
+anchorList = [(EastSection, eastAnchorObjectAnchors)]
+-}
 
 directions :: ExitGIDMap
 directions = ExitGIDMap $ LabelToGIDMapping $ Data.Map.Strict.fromList directionList

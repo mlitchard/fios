@@ -11,7 +11,8 @@ import Game.Model.World
 import Recognizer (NounPhrase, PrepPhrase)
 import qualified Data.List
 import qualified Data.Text
-import Data.List.NonEmpty
+import qualified Data.List.NonEmpty
+-- import Data.List.NonEmpty
 
 setWorldExitMapM :: GID Object -> GID Location -> GameStateExceptT ()
 setWorldExitMapM oGid lGid = do
@@ -34,14 +35,14 @@ initContainerMapM gid containment = do
                   $ (_unGIDToDataMap' . _containerMap') world
   modify' (\gs -> gs {_world' = world {_containerMap' = updated}})
 
-setContainerMap :: GID Object -> GID Object -> GameStateExceptT ()
-setContainerMap withContainerGid addedGid = do
+setContainerMap :: GID Object -> ContainedEntity -> GameStateExceptT ()
+setContainerMap withContainerGid containedEntity@(ContainedEntity {..}) = do
   world <- _world' <$> get
   containerMap <- _unGIDToDataMap' . _containerMap' . _world' <$> get
-  label <- _entityLabel' <$> getObjectM addedGid
+  label <- _entityLabel' <$> getObjectM _containedGid'
   containment <- throwMaybeM errMsg
                   $ Data.Map.Strict.lookup withContainerGid containerMap
-  let updatedContainer = updateContainer addedGid label containment
+  let updatedContainer = updateContainer containedEntity label containment
       updatedContainerMap = GIDToDataMap
                               $ Data.Map.Strict.insert
                                   withContainerGid
@@ -51,11 +52,11 @@ setContainerMap withContainerGid addedGid = do
   where
     errMsg = "setContainerMap: not a container " <> show withContainerGid
 
-updateContainer :: GID Object -> Label Object -> Container -> Container
-updateContainer addedGid label (Container (ContainerMap cmap)) =
-  let singleList = Data.List.NonEmpty.singleton addedGid
+updateContainer :: ContainedEntity -> Label Object -> Container -> Container
+updateContainer containedEntity label (Container cmap) =
+  let singleList = Data.List.NonEmpty.singleton containedEntity
       updated = Data.Map.Strict.insertWith (<>) label singleList cmap
-  in Container (ContainerMap updated)
+  in Container updated
 
 getGIDListM :: GID Location
                 -> Label Object
@@ -110,42 +111,64 @@ setLocationDirectionM locationGID exitLabel objectGID = do
     toExitMap :: Map (Label Exit) (GID Object) -> ExitGIDMap
     toExitMap = ExitGIDMap . LabelToGIDMapping
 
+containedBy :: GID Object -- object contained
+                -> GID Object -- object containing
+                -> GameStateExceptT ContainedPlacement
+containedBy containedGID containerGID = do
+  (GIDToDataMap cmap ) <- _containerMap' . _world' <$> get
+ 
+  containedXS <- makeContainedXS 
+                  <$> throwMaybeM notContainer 
+                  (Data.Map.Strict.lookup containerGID cmap)
+  
+  (ContainedEntity {..}) <- throwMaybeM notContained $ find matchContained containedXS
+  pure _placement'
+  where
+    concatElems = concat . (Data.List.NonEmpty.toList <<$>> Data.Map.Strict.elems)
+    makeContainedXS = concatElems . _unContainer'
+    matchContained (ContainedEntity {..}) = _containedGid' == containedGID
+    notContained = "containedBy error: "
+                      <> show containedGID
+                      <> "is not contained by "
+                      <> show containerGID
+    notContainer = "containedBy error: "
+                      <> show containerGID
+                      <> "not a container"
+-- _anchoredObjects'
+{-
+getAnchored :: GID Object
+                -> GameStateExceptT (Maybe (NonEmpty Anchored))
+getAnchored eid = do
+ 
+  findAnchored eid roomAnchors
+
+findAnchored :: GID Object
+                -> [ObjectAnchors]
+                -> GameStateExceptT (Maybe (NonEmpty Anchored))
+findAnchored _ [] = pure Nothing
+
+findAnchored eid [ObjectAnchors objectAnchors] = pure
+  $ join (maybeAnchored eid objectAnchors)
+
+findAnchored eid ((ObjectAnchors objectAnchors):xs) = do
+  case maybeAnchored eid objectAnchors of
+    Nothing -> findAnchored eid xs
+    Just anchor -> pure anchor
+
+maybeAnchored :: GID Object
+                  -> Map (GID Object) (Maybe (NonEmpty Anchored))
+                  -> Maybe (Maybe (NonEmpty Anchored))
+maybeAnchored = Data.Map.Strict.lookup
+-}
 makeErrorReport :: NounPhrase -> PrepPhrase -> Text
 makeErrorReport _np _pp = "You don't see that here"
-
-findShelfM :: GID Object -> GameStateExceptT (Maybe Text)
-findShelfM gid = do
-  (Object {..}) <- getObjectM gid
-  mContainer <- Data.Map.Strict.lookup gid
-        . _unGIDToDataMap'
-        . _containerMap'
-        . _world'
-        <$> get
-  case mContainer of
-    Nothing -> pure Nothing
-    Just (Container cmap) -> findContainedOnShortNameM cmap
-
-findContainedOnShortNameM :: ContainerMap Object -> GameStateExceptT (Maybe Text)
-findContainedOnShortNameM (ContainerMap cmap) = do
-  objects <- mapM getObjectM
-              $ concatMap Data.List.NonEmpty.toList
-              $ Data.Map.Strict.elems cmap
-  let res = mapMaybe findContainedOnShortName objects
-  pure $ if Data.List.null res
-          then Nothing
-          else Just (Data.Text.concat res)
-
-findContainedOnShortName :: Object -> Maybe Text
-findContainedOnShortName (Object {..}) = case _orientation' of
-  ContainedBy' (ContainedBy (On _) _) -> Just _shortName'
-  _ -> Nothing
-
+{-
 findAnchoredTo :: (GID Object, Object) -> Maybe FoundAnchoredTo
 findAnchoredTo object = case object of
   (gid,obj@(Object _ _ _ _ _ (AnchoredTo' gp) _)) -> Just $ FoundAnchoredTo
                                                               (gid, obj) gp
   _ -> Nothing
-
+-}
 -- assumes if the Label exists, the gid is in it's list
 -- used when player leaves location
 removeEntityLabelMapM :: Label Object -> GID Object  -> GameStateExceptT ()

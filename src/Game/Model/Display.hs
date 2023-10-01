@@ -2,14 +2,10 @@
 {-# OPTIONS_GHC -Wno-type-defaults #-}
 module Game.Model.Display where
 
-import Data.Map.Strict qualified (toList, null, member, lookup)
-
+import Data.Map.Strict qualified (member, lookup)
 import Game.Model.World
-
 import Game.Object (getShortNameM)
-
 import Data.List.NonEmpty ( (<|), reverse, toList, singleton )
-
 import Game.Model.GID (GID)
 import Game.Model.Condition (Proximity (..))
 import qualified Data.Text
@@ -99,9 +95,9 @@ maybeDescribeContainerShallowM gid = do
   res <- _unGIDToDataMap' . _containerMap' . _world' <$> get
   case Data.Map.Strict.lookup gid res of 
     Nothing -> pass 
-    Just (Container (ContainerMap container)) -> if null container 
-                                                  then updateEnvironmentM emsg 
-                                                  else updateEnvironmentM smsg
+    Just (Container container) -> if null container 
+                                    then updateEnvironmentM emsg 
+                                    else updateEnvironmentM smsg
   where 
     emsg = "It's empty."
     smsg = "You see something inside." 
@@ -115,27 +111,6 @@ describeInventoryM = do
               inv <- mapM getShortNameM gids
               updateEnvironmentM "You are carrying:"
               mapM_ updateEnvironmentM inv
-
-describeOrientationM :: Text -> Orientation -> GameStateExceptT ()
-describeOrientationM preamble orientation = do
-  desc <- case orientation of
-            ContainedBy' containedBy -> describeContainedByM containedBy
-            Inventory -> pure "in your inventory."
-            Floor -> pure "on the floor."
-            (AnchoredTo' anchoredTo) -> describeAnchoredToM anchoredTo
-            Anchor roomAnchor -> pure $ describeAnchoring (snd roomAnchor)
-  updateEnvironmentM (preamble <> desc)
-
-describeContainedByM :: ContainedBy -> GameStateExceptT Text
-describeContainedByM (ContainedBy onOrIn _) = do
-  (prep,shortName) <- case onOrIn of
-                        (On gid) -> do
-                                       shortName <- getShortNameM gid
-                                       pure ("on the", shortName)
-                        (In gid) -> do
-                                       shortName <- getShortNameM gid
-                                       pure ("in the", shortName)
-  pure (prep <> " the " <> shortName)
 
 describeAnchoredToM :: (GID Object, Proximity) -> GameStateExceptT Text
 describeAnchoredToM (gid, proximity) = do
@@ -152,32 +127,16 @@ describeProximity PlacedLeft = " to the left of "
 describeProximity PlacedRight = " to the right of "
 describeProximity PlacedFront = " in front of "
 describeProximity PlacedBehind = " behind "
+describeProximity PlacedIn = "inside"
 
 -- FIXME: unsafe
-describeAnchoring :: RoomAnchor -> Text
+describeAnchoring :: RoomSection -> Text
 describeAnchoring roomAnchor = "In the " <> anchor
   where
     anchor = Data.Text.toLower
               $ Data.List.head
               $ Data.Text.splitOn "Anchor"
               $ toText roomAnchor
-
-describeOpenStateM :: OpenState -> ContainerMap  Object -> GameStateExceptT ()
-describeOpenStateM openState (ContainerMap cmap) = do
-  case openState of
-    Open   -> do
-                updateEnvironmentM isOpenMsg
-                updateEnvironmentM describe
-    Closed -> updateEnvironmentM isClosed
-  where
-    hasContents = Data.Map.Strict.null cmap
-    describe = case (openState, hasContents) of
-        (Open,True) -> "You see something inside."
-        (Open,False) -> "It's empty"
-        (Closed, _)  -> "You can't see what might be inside."
-    isClosed = "It's closed"
-    isOpenMsg = "It's open"
-
 
 openSeeDeep :: Maybe (NonEmpty (Label Object, NonEmpty Text)) -> Text
 openSeeDeep (Just cList) = unlines $ fmap examineObjectsInside (Data.List.NonEmpty.toList cList)
@@ -202,21 +161,6 @@ examineObjectsInside (Label name, shortDescList) = preamble <> details
                   <> " "
                   <> (toLower . show $ name) <> "\n"
     details = unlines $ Data.List.NonEmpty.toList shortDescList
-
-makeDescriptionListM :: ContainerMap Object
-                          -> GameStateExceptT
-                              (Maybe (NonEmpty (Label Object, NonEmpty Text)))
-makeDescriptionListM (ContainerMap cmap) = do
-  case cList' of
-    Just cList -> Just <$> mapM makeShortNameListM cList
-    Nothing -> pure Nothing
-  where
-    makeShortNameListM :: (Label Object, NonEmpty (GID Object))
-                          -> GameStateExceptT (Label Object,NonEmpty Text)
-    makeShortNameListM (label, gids) = do
-      shortNames <- mapM getShortNameM gids
-      pure (label, shortNames)
-    cList' = nonEmpty $ Data.Map.Strict.toList cmap
 
 openSeeShallow :: Maybe (NonEmpty (Label Object, NonEmpty Text)) -> Text
 openSeeShallow (Just _) = "you see something inside"
