@@ -242,6 +242,7 @@ data RoomSection
   | NorthEastSection
   | SouthWestSection
   | SouthEastSection
+  | FloorSection
     deriving stock (Show,Eq,Ord)
 
 type RoomSectionMap = Data.Map.Strict.Map RoomSection ObjectAnchors

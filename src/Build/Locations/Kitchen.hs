@@ -39,6 +39,7 @@ import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Cabinet
         (buildKitchenCabinetAboveSink)
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Cabinet
         (buildKitchenCabinetBelowSink)
+import qualified Data.Aeson.KeyMap as Data.List
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
@@ -114,12 +115,21 @@ roomAnchorMap :: RoomSectionMap
 roomAnchorMap = Data.Map.Strict.fromList roomAnchorList
 
 roomAnchorList :: [(RoomSection,ObjectAnchors)]
-roomAnchorList = [(EastSection,eastAnchorObjectAnchors)]
+roomAnchorList = [
+      (EastSection,eastAnchorObjectAnchors)
+    , (FloorSection,floorAnchorObjectAnchors)
+  ]
 
-eastAnchorObjectAnchors:: ObjectAnchors
+eastAnchorObjectAnchors :: ObjectAnchors
 eastAnchorObjectAnchors =
   ObjectAnchors (Data.Map.Strict.fromList objectAnchorListSource)
 
+floorAnchorObjectAnchors :: ObjectAnchors 
+floorAnchorObjectAnchors = ObjectAnchors  
+  (Data.Map.Strict.fromList floorAnchorListSource)
+  
+floorAnchorListSource :: [(GID Object, Maybe (NonEmpty Anchored))]
+floorAnchorListSource = [(kitchenFloorGID, Nothing)]
 
 objectAnchorListSource :: [(GID Object, Maybe (NonEmpty Anchored))]
 objectAnchorListSource = [
