@@ -18,8 +18,10 @@ reportFloorM = mapM getShortNameM
 makeSceneM :: Location -> GameStateExceptT ()
 makeSceneM (Location title desc anchObj _ d) = do
   narration <- _narration' <$> get
-  roomAnchors <- makeRoomSectionDescriptions anchObj
-  exits <- makeExits d
+  -- roomAnchors <- makeRoomSectionDescriptions anchObj
+  let roomAnchors = []
+  -- exits <- makeExits d
+  let exits = Nothing
   modify (\gs -> gs {_narration' =
                         narration {_scene' =
                           scene roomAnchors exits}})

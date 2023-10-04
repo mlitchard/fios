@@ -2,7 +2,7 @@ module Game.Model.World where
 
 import Game.Model.Mapping
 import Recognizer (Adjective, Imperative, NounPhrase, Verb, PrepPhrase, AdjPhrase)
-import Game.Model.Condition (Proximity, Moveability)
+import Game.Model.Condition (Proximity)
 import System.Console.Haskeline (InputT)
 import Text.Show (Show(..))
 import Prelude hiding (show)
@@ -40,14 +40,14 @@ data Config = Config {
 }
 
 newtype Container = Container 
-  { _unContainer' :: Map (Label Object) (NonEmpty ContainedEntity)} 
+  { _unContainer' :: Map (Label Object) (NonEmpty ContainedEntity)} deriving stock Show
 
 data ContainedPlacement = On | In deriving stock Show
  
 data ContainedEntity = ContainedEntity {
     _containedGid' :: GID Object
   , _placement' :: ContainedPlacement 
-} 
+} deriving stock Show 
 
 type EvalVerbThree = (Verb, PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 

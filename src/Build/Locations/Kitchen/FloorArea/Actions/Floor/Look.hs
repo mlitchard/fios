@@ -4,7 +4,7 @@ import Game.Model.World
         , LookInF (..), GameStateExceptT, Object
         , UpdatePerceptionFunctions (..), PerceptionFunctions (..)
         , LookFunctions (..), Container)
-import Game.Actions.Look.StandardLook (lookInOpenBoxM)
+import Game.Actions.Look.StandardLook (lookInOpenBoxM, lookAtShelfM)
 import Build.ObjectTemplate (kitchenFloorGID)
 import Game.Model.Display (updateEnvironmentM)
 import Game.Object (setObjectMapM)
@@ -48,10 +48,11 @@ lookAtF = LookAtF lookFloor
 lookOnF :: LookOnF
 lookOnF = LookOnF lookFloor
 
-lookFloor :: Object 
+lookFloor :: Object
               -> Map (GID Object) Container
               -> GameStateExceptT ()
-lookFloor = lookInOpenBoxM kitchenFloorGID
+lookFloor o m  = do
+  lookAtShelfM kitchenFloorGID o m
 
 lookInF :: LookInF
 lookInF = LookInF $ const (const (updateEnvironmentM msg))

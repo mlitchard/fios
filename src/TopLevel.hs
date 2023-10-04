@@ -38,7 +38,10 @@ inputAction = do
                         >> topLevel
     Just (MkGameInput input') -> do
       case runParser tokens input' of
-          Left _ -> putStrLn "parse failed" >> displaySceneM True >> inputAction
+          Left _ -> putStrLn "parse failed" 
+                      >> clearReportM 
+                      >> displaySceneM True 
+                      >> inputAction
           Right tokens' -> either catchBadParseM catchEngine (parseTokens tokens')
                             >> topLevel
 

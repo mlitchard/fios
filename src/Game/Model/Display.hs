@@ -15,7 +15,6 @@ import Data.Text (toLower)
 
 updatePlayerActionM :: Text -> GameStateExceptT ()
 updatePlayerActionM action = do
-  print ("Player action " <> action)
   narration@(Narration {..}) <- _narration' <$> get
   let updatedAction = action <| _playerAction'
   modify' (\gs -> gs{_narration' = narration{_playerAction' = updatedAction}})

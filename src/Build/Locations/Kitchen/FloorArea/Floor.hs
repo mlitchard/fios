@@ -19,6 +19,7 @@ import Build.Locations.Kitchen.ShelfArea.Actions.Look
 import Game.Object (setObjectMapM, getAnchored)
 import qualified Data.List.NonEmpty
 import Build.LocationTemplate (kitchenGID)
+import Build.Locations.Kitchen.FloorArea.Actions.Floor.Look (defaultLookAction)
 
 -- Anchoring RoomSection
 
@@ -62,7 +63,7 @@ standardActions :: StandardActions
 standardActions = StandardActions { 
     _getAction' = getAction
   , _putAction' = putAction 
-  , _lookAction' = initialLookAction
+  , _lookAction' = defaultLookAction
   , _openAction' = openAction
   , _closeAction' = closeAction 
   , _lockAction' = lockAction

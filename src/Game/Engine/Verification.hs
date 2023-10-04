@@ -15,10 +15,27 @@ import Clarifier
       checkProximity,
       findInDirectObject,
       findNoun)
-import Game.Model.Mapping (Label(..))
+import Game.Model.Mapping (Label(..), LabelToGIDListMapping (..))
 import Control.Monad.Except (MonadError(..))
 import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
+import Data.Map.Strict (lookup)
+import Tokenizer (Lexeme)
 
+data PossibleDirectObjects 
+  = Found (GID Object) 
+  | Possibles (NonEmpty (GID Object)) 
+  | NotFound Lexeme  -- Maybe (Either (NonEmpty (GID Object)) (GID Object))
+identifyPossibleDirectObjects :: NounPhrase
+                                  -> GameStateExceptT PossibleDirectObjects
+identifyPossibleDirectObjects (NounPhrase1 _ (Noun noun)) = do
+  (LabelToGIDListMapping m) <- _objectLabelMap'
+                                <$> (getLocationM =<< getLocationIdM)
+  case Data.Map.Strict.lookup (Label noun) m of
+    Nothing -> pure (NotFound noun)
+    Just (x:|[]) -> pure $ Found x
+    Just xs -> pure $ Possibles xs
+
+identifyPossibleDirectObjects _ = throwError "identifyPossibleDirectObjects unfinished"
 verifySimple :: Label Adjective
                               -> Label Object
                               -> GameStateExceptT (GID Object, Object)
@@ -125,7 +142,7 @@ verifyAccessabilityPP clarifierM (PrepPhrase1 _ (NounPhrase2 adj (Noun noun))) =
   where
     nopeErr = "You don't see a " <> toText noun <> " here."
     -}
-verifyAccessabilityPP _ _ = 
+verifyAccessabilityPP _ _ =
   throwError "verifyAccessabilityPP: evaluate not completed"
 
 matchAdjective :: Label Adjective -> Object -> Bool

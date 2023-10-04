@@ -25,7 +25,7 @@ import Build.ObjectTemplate
 import Game.Model.GID (GID)
 import Game.Model.Mapping
         (LabelToGIDMapping (LabelToGIDMapping), Label (..)
-        , LabelToGIDListMapping (..), GIDList)
+        , LabelToGIDListMapping (..), GIDList, GIDToDataMap (..))
 import Tokenizer ( Lexeme(..) )
 import Build.Locations.Kitchen.ShelfArea.Shelf (buildKitchenShelf)
 import Game.Model.Condition (Proximity (..))
@@ -39,20 +39,22 @@ import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Cabinet
         (buildKitchenCabinetAboveSink)
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Cabinet
         (buildKitchenCabinetBelowSink)
+import Relude.Extra.Map (keys)
 
 buildKitchen :: GameStateExceptT ()
 buildKitchen = do
   buildLocationMap kitchenGID kitchenLocation
-  buildDescriptorMap descriptiveMap
-  buildExits
-  buildKitchenSink
-  buildKitchenShelf
+  -- buildDescriptorMap descriptiveMap
+  -- buildExits
+  -- buildKitchenSink
+ -- buildKitchenShelf
   buildKitchenFloor
   buildPlantPot
-  buildKitchenCabinetAboveShelf
-  buildKitchenCabinetBelowShelf
-  buildKitchenCabinetAboveSink
-  buildKitchenCabinetBelowSink
+  -- buildKitchenCabinetAboveShelf
+  -- buildKitchenCabinetBelowShelf
+  -- buildKitchenCabinetAboveSink
+  -- buildKitchenCabinetBelowSink
+
 
 kitchenDescription :: Text
 kitchenDescription = "It's a kitchen"
@@ -70,6 +72,7 @@ kitchenLocation = Location
 objectList :: [GID Object]
 objectList =
   [ kitchenShelfGID
+  , kitchenFloorGID
   , kitchenCabinetAboveShelfGID
   , kitchenCabinetBelowShelfGID
   , kitchenSinkGID
@@ -81,10 +84,10 @@ objectList =
 
 kitchenObjectLabelMap :: LabelToGIDListMapping Object Object
 kitchenObjectLabelMap = LabelToGIDListMapping $ Data.Map.Strict.fromList
-  [ (cabinetLabel,kitchenCabinets)
-    ,(kitchenSinkLabel, kitchenSink)
-    ,(kitchenShelfLabel, kitchenShelf)
-    , (plantPotLabel, kitchenPlantPot)
+  [ -- (cabinetLabel,kitchenCabinets)
+  --  ,(kitchenSinkLabel, kitchenSink)
+    -- (kitchenShelfLabel, kitchenShelf)
+     (plantPotLabel, kitchenPlantPot)
     , (floorLabel,kitchenFloor )
   ]
 
@@ -112,7 +115,7 @@ roomAnchorMap :: RoomSectionMap
 roomAnchorMap = Data.Map.Strict.fromList roomAnchorList
 
 roomAnchorList :: [(RoomSection,ObjectAnchors)]
-roomAnchorList = [(EastSection,eastAnchorObjectAnchors)]
+roomAnchorList = [] -- [(EastSection,eastAnchorObjectAnchors)]
 
 eastAnchorObjectAnchors:: ObjectAnchors
 eastAnchorObjectAnchors =
@@ -121,9 +124,9 @@ eastAnchorObjectAnchors =
 
 objectAnchorListSource :: [(GID Object, Maybe (NonEmpty Anchored))]
 objectAnchorListSource = [
-    (kitchenSinkGID, Just sinkAnchored)
-  , (kitchenShelfGID, Just shelfAnchored)
-  , (kitchenEastDoorGID, Just doorAnchored)
+  --  (kitchenSinkGID, Just sinkAnchored)
+ -- , (kitchenShelfGID, Just shelfAnchored)
+ -- , (kitchenEastDoorGID, Just doorAnchored)
   ]
 
 sinkAnchored :: NonEmpty Anchored

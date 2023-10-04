@@ -5,9 +5,6 @@ import Data.Map.Strict qualified
 import Game.Model.GID (GID)
 import Tokenizer (Lexeme)
 
-
-
-
 newtype GIDToDataMap a b
   = GIDToDataMap {_unGIDToDataMap' :: Data.Map.Strict.Map (GID a) b} 
       deriving stock Show

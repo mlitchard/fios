@@ -31,16 +31,28 @@ lookAtOpenBoxM :: GID Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
 lookAtOpenBoxM gid (Object {..}) =
   lookContainerM msg gid shallowLookInContainerM
-  where 
+  where
     msg = "You look at the " <> _shortName'
 {- updatePlayerActionM msg >> -}
+
+-- ToDo merge lookAtShelf and lookInOpenBox
+lookAtShelfM :: GID Object 
+                  -> Object 
+                  -> (Map (GID Object) Container -> GameStateExceptT ())
+lookAtShelfM gid (Object{..}) = 
+  lookContainerM msg gid (deepLookInContainerM onMsg) 
+  where 
+    msg = "You look at the " <> _shortName'
+    onMsg = "On it you see:" 
+
 lookInOpenBoxM :: GID Object
                     -> Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
 lookInOpenBoxM gid (Object {..}) =
-  lookContainerM msg gid deepLookInContainerM
+  lookContainerM msg gid (deepLookInContainerM insideMsg)
   where
     msg = "You look in the " <> _shortName'
+    insideMsg = "Inside the " <> _shortName' <> "you see:"
 
 lookAtClosedBoxM :: Object -> GameStateExceptT ()
 lookAtClosedBoxM entity = do
@@ -76,12 +88,15 @@ shallowLookInContainerM container
     emptyMsg = "it's empty."
     somethingMsg = "You see something inside."
 
-deepLookInContainerM :: Map (Label Object) (NonEmpty ContainedEntity)
+-- FixMe processing Map should be done by caller
+-- Pass in a NonEmpty
+deepLookInContainerM :: Text 
+                          -> Map (Label Object) (NonEmpty ContainedEntity)
                           -> GameStateExceptT ()
-deepLookInContainerM cMap = do
+deepLookInContainerM msg cMap = do
   shortNames <- mapM (getShortNameM . _containedGid')
                   $ concatMap toList $ Data.Map.Strict.elems cMap
-  updateEnvironmentM "Inside you see:"
+  updateEnvironmentM msg
   mapM_ updateEnvironmentM shortNames
 
 changeLookAction :: LookAction -> Object -> Object
