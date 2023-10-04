@@ -16,7 +16,9 @@ import Data.Text (toLower)
 updatePlayerActionM :: Text -> GameStateExceptT ()
 updatePlayerActionM action = do
   narration@(Narration {..}) <- _narration' <$> get
-  let updatedAction = action <| _playerAction'
+  let updatedAction = if Data.Text.null (head _playerAction')
+                        then Data.List.NonEmpty.singleton action
+                        else action <| _playerAction'
   modify' (\gs -> gs{_narration' = narration{_playerAction' = updatedAction}})
 
 finalizePlayerActionM :: GameStateExceptT ()
@@ -89,18 +91,18 @@ isContainerM gid = do
   res <- _unGIDToDataMap' . _containerMap' . _world' <$> get
   pure $ Data.Map.Strict.member gid res
 
-maybeDescribeContainerShallowM :: GID Object -> GameStateExceptT () 
-maybeDescribeContainerShallowM gid = do 
+maybeDescribeContainerShallowM :: GID Object -> GameStateExceptT ()
+maybeDescribeContainerShallowM gid = do
   res <- _unGIDToDataMap' . _containerMap' . _world' <$> get
-  case Data.Map.Strict.lookup gid res of 
-    Nothing -> pass 
-    Just (Container container) -> if null container 
-                                    then updateEnvironmentM emsg 
+  case Data.Map.Strict.lookup gid res of
+    Nothing -> pass
+    Just (Container container) -> if null container
+                                    then updateEnvironmentM emsg
                                     else updateEnvironmentM smsg
-  where 
+  where
     emsg = "It's empty."
-    smsg = "You see something inside." 
-    
+    smsg = "You see something inside."
+
 describeInventoryM :: GameStateExceptT ()
 describeInventoryM = do
   inventory <- _p_inv' . _player' <$> get
