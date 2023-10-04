@@ -36,7 +36,6 @@ buildCabinet = Object {
     , _entityLabel' = Label SINK
     , _odescription' = [desc]
     , _descriptives' = []
-    , _moveability' = NotMoveable
     , _orientation' = orientation
     , _standardActions' = standardActions
   }

@@ -30,7 +30,6 @@ kitchenEastDoorObject = Object {
     , _entityLabel' = Label DOOR
     , _odescription'   = [kitchenEastDoorDesc]
     , _descriptives'   = []
-    , _moveability'    = NotMoveable
     , _orientation'    = orientation
     , _standardActions' = doorActions
   }

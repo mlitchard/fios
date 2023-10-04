@@ -24,7 +24,6 @@ plantPot = Object {
     , _entityLabel'     = Label POT
     , _odescription'    = [desc]
     , _descriptives'    = [Label PLANT, Label SMALL]
-    , _moveability'     = NotMoveable
     , _orientation'     = potOrientation getPotPlacement
     , _standardActions' = standardActions
   }

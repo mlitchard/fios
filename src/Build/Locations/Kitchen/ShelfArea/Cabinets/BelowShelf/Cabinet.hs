@@ -27,8 +27,7 @@ buildCabinet = Object {
       _shortName' = "cabinet"
     , _entityLabel' = Label CABINET
     , _odescription' = [desc]
-    , _descriptives' = [] 
-    , _moveability' = NotMoveable
+    , _descriptives' = []
     , _orientation' = orientation
     , _standardActions' = standardActions 
   }

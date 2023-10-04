@@ -27,7 +27,6 @@ buildShelf= Object {
     , _entityLabel' = Label SHELF
     , _odescription' = [desc]
     , _descriptives' = []
-    , _moveability' = NotMoveable
     , _orientation' = orientation
     , _standardActions' = standardActions 
   }

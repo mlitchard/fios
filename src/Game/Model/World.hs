@@ -114,7 +114,6 @@ data Object = Object {
   , _entityLabel'     :: Label Object
   , _odescription'    :: [Text]
   , _descriptives'    :: [Label Adjective]
-  , _moveability'     :: Moveability
   , _orientation'     :: Orientation
   , _standardActions'  :: StandardActions
 }

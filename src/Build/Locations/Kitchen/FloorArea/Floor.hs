@@ -33,7 +33,6 @@ buildFloor = Object {
   , _entityLabel' = Label FLOOR
   , _odescription'    = [desc]
   , _descriptives'     = []
-  , _moveability'     = NotMoveable
   , _orientation'     = orientation
   , _standardActions' = standardActions
 }
