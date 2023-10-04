@@ -34,7 +34,13 @@ identifyPossibleDirectObjects (NounPhrase1 _ (Noun noun)) = do
     Nothing -> pure (NotFound noun)
     Just (x:|[]) -> pure $ Found x
     Just xs -> pure $ Possibles xs
-
+identifyPossibleDirectObjects (Noun noun) = do 
+    (LabelToGIDListMapping m) <- _objectLabelMap'
+                                  <$> (getLocationM =<< getLocationIdM)
+    case Data.Map.Strict.lookup (Label noun) m of
+      Nothing -> pure (NotFound noun)
+      Just (x:|[]) -> pure $ Found x
+      Just xs -> pure $ Possibles xs   
 identifyPossibleDirectObjects _ = throwError "identifyPossibleDirectObjects unfinished"
 verifySimple :: Label Adjective
                               -> Label Object
