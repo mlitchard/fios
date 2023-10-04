@@ -36,7 +36,6 @@ describeAnchor (anchorGid,mAnchoredGids) = do
                 Nothing -> pure Nothing
                 Just anchGids -> Just
                                   <$> describeAnchoreds _shortName' anchGids
-  -- print ("DEBUGGING describeAnchor: " <> show descAnch :: Text)
   shelfObjects <- tryDescribeShelf anchorGid
   pure $ DescribeAnchor ("a " <> _shortName') shelfObjects descAnch
 
