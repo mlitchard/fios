@@ -261,13 +261,13 @@ data DescribeRoomSection = DescribeRoomSection
 
 data DescribeAnchor = DescribeAnchor 
   { _anchorDesc'    :: Text
-  , _maybeShelf'    :: Maybe (Text, [Text]) 
+  , _maybeShelf'    :: Maybe (Text, NonEmpty Text) 
   , _anchoredDesc'  :: Maybe (NonEmpty DescribeAnchored)
   } deriving stock Show
   
 data DescribeAnchored = DescribeAnchored
   {_prelude' :: (Text, Text)
-  , _maybeShelf' :: Maybe (Text, [Text])
+  , _maybeShelf' :: Maybe (Text, NonEmpty Text)
   } deriving stock Show
 
 data World = World
@@ -290,7 +290,7 @@ data Verbosity
 
 directionFromRoomSection :: RoomSection -> Text
 directionFromRoomSection roomAnchor =
-  Data.Text.toLower . fst $ Data.Text.breakOn "Anchor" (toText $ show roomAnchor)
+  Data.Text.toLower . fst $ Data.Text.breakOn "Section" (toText $ show roomAnchor)
 
 instance ToText (Label Object) where
   toText :: Label Object -> Text

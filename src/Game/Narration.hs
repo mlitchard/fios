@@ -88,8 +88,8 @@ data DescribeRoomSection = DescribeRoomSection
 
 displayDescribeRoomSectionM :: DescribeRoomSection -> GameStateExceptT ()
 displayDescribeRoomSectionM (DescribeRoomSection preamble anchoredObjects) =
-  updateEnvironmentM preamble
-    >> mapM_ displayDescribeAnchorM anchoredObjects
+ updateEnvironmentM preamble
+    >>  mapM_ displayDescribeAnchorM anchoredObjects
 
 {-
 data DescribeAnchor = DescribeAnchor 
@@ -105,7 +105,7 @@ displayDescribeAnchorM (DescribeAnchor {..}) = do
   whenJust _anchoredDesc' (mapM_ displayDescribeAnchored)
   pass
 
-displayShelf :: (Text, [Text]) -> GameStateExceptT ()
+displayShelf :: (Text, NonEmpty Text) -> GameStateExceptT ()
 displayShelf (preamble,inv) = 
   updateEnvironmentM preamble 
     >> mapM_ updateEnvironmentM inv

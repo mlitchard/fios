@@ -26,7 +26,7 @@ describeRoomSection (roomAnchor,ObjectAnchors objectAnchors) = do
   where
     preamble = "In the "
                   <> directionFromRoomSection  roomAnchor
-                  <> "you see"
+                  <> " you see"
 
 describeAnchor :: (GID Object, Maybe (NonEmpty Anchored))
                     -> GameStateExceptT DescribeAnchor
@@ -36,6 +36,7 @@ describeAnchor (anchorGid,mAnchoredGids) = do
                 Nothing -> pure Nothing
                 Just anchGids -> Just
                                   <$> describeAnchoreds _shortName' anchGids
+  -- print ("DEBUGGING describeAnchor: " <> show descAnch :: Text)
   shelfObjects <- tryDescribeShelf anchorGid
   pure $ DescribeAnchor ("a " <> _shortName') shelfObjects descAnch
 
@@ -44,7 +45,7 @@ describeAnchoreds :: Text
                       -> GameStateExceptT (NonEmpty DescribeAnchored)
 describeAnchoreds shortName anchoredGids = do
   mapM (describeAnchored shortName) anchoredGids
-
+-- ToDo fix visibililty. Ought not to assume visible
 describeAnchored :: Text
                       -> Anchored
                       -> GameStateExceptT DescribeAnchored
@@ -64,19 +65,22 @@ shallowDescribeObject (Object {..}) = pure $ displayF $ display _shortName'
   where
     displayF = _standardActions'._lookAction'._perception'._displayPerceptionF'
 
-tryDescribeShelf :: GID Object -> GameStateExceptT (Maybe (Text,[Text]))
+tryDescribeShelf :: GID Object -> GameStateExceptT (Maybe (Text,NonEmpty Text))
 tryDescribeShelf gid = do
   (GIDToDataMap worldCMap) <- _containerMap' . _world' <$> get
   let maybeCmap = Data.Map.Strict.lookup gid worldCMap
   case maybeCmap of
     Just ((Container cmap)) -> do
                                 shortName <- _shortName' <$> getObjectM gid
-                                content <- mapM describeShelfContents filtShelf
-                                pure $ Just (shortName,content)
+                                case filtShelf of 
+                                  Nothing -> pure Nothing 
+                                  Just filtered -> do 
+                                                    content <- mapM describeShelfContents filtered
+                                                    pure $ Just (shortName,content)
                                 where
                                   concatElems = concatMap toList 
                                                   $ Data.Map.Strict.elems cmap
-                                  filtShelf = filter isShelf concatElems
+                                  filtShelf = nonEmpty $ filter isShelf concatElems
     Nothing -> pure Nothing
     where
       isShelf (ContainedEntity _ On) = True
@@ -87,6 +91,7 @@ describeShelfContents (ContainedEntity gid _) = do
   shortName <$> getObjectM gid
   where
     shortName (Object {..} )= "a " <> _shortName'
+    
 
 tryDisplay :: Object -> Maybe Text
 tryDisplay (Object {..}) =

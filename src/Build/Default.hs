@@ -18,6 +18,7 @@ import Game.Engine.VerbPhraseTwo (evalVerbPrepPhrase)
 import Game.Engine.VerbPhraseThree (verbPhraseThree)
 import Game.Engine.VerbPhraseSeven 
 import Game.Engine.VerbPhraseFive (verbPhraseFive)
+import Game.Model.Display (showEnvironmentM)
 defaultGameState :: GameState
 defaultGameState = GameState
   { _world' = defaultWorld
@@ -48,6 +49,7 @@ defaultDisplayAction =
     >>= getLocationM 
     >>= makeSceneM 
     >> displaySceneM True
+    >> showEnvironmentM
 
 defaultWorld :: World
 defaultWorld = World
