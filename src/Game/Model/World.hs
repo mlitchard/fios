@@ -104,7 +104,7 @@ data Lockability = Locked | UnLocked | NotLockable deriving stock Show
 
 data Narration = Narration {
       _playerAction' :: Data.List.NonEmpty.NonEmpty Text
-    , _enviroment'   :: Data.List.NonEmpty.NonEmpty Text
+    , _environment'   :: Data.List.NonEmpty.NonEmpty Text
     , _npcResponse' :: Data.List.NonEmpty.NonEmpty Text
     , _scene'       :: Scene
   } deriving stock Show

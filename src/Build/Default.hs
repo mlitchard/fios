@@ -70,7 +70,7 @@ defaultPlayer = Player
 defaultNarration :: Narration
 defaultNarration = Narration
   {_playerAction' = Data.List.NonEmpty.singleton Data.Text.empty
-  , _enviroment' = Data.List.NonEmpty.singleton Data.Text.empty
+  , _environment' = Data.List.NonEmpty.singleton Data.Text.empty
   , _npcResponse' = Data.List.NonEmpty.singleton Data.Text.empty
   , _scene' = defaultScene
   }

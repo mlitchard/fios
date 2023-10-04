@@ -30,20 +30,22 @@ finalizePlayerActionM = do
 -- FIXME - residual empty list
 updateEnvironmentM :: Text -> GameStateExceptT ()
 updateEnvironmentM result = do
-  narration@(Narration _ env _ _) <- _narration' <$> get
-  let updatedEnv = result <| env
-  modify' (\gs -> gs{_narration' = narration{_enviroment' = updatedEnv}})
+  narration@(Narration {..}) <- _narration' <$> get
+  let updatedEnv = if Data.Text.null (head _environment')
+                    then Data.List.NonEmpty.singleton result
+                    else result <| _environment'
+  modify' (\gs -> gs{_narration' = narration{_environment' = updatedEnv}})
 
 finalizeEnvironmentM :: GameStateExceptT ()
 finalizeEnvironmentM = do
   narration@(Narration _ env _ _) <- _narration' <$> get
   let flippedEnv = Data.List.NonEmpty.reverse env
-  modify' (\gs -> gs{_narration' = narration{_enviroment' = flippedEnv}})
+  modify' (\gs -> gs{_narration' = narration{_environment' = flippedEnv}})
 
 showEnvironmentM :: GameStateExceptT ()
 showEnvironmentM = do
   finalizeEnvironmentM
-  environment <- _enviroment' . _narration' <$> get
+  environment <- _environment' . _narration' <$> get
   mapM_ print environment
   clearEnvironmentM
 
@@ -57,7 +59,7 @@ clearPlayerActionM = do
 clearEnvironmentM :: GameStateExceptT ()
 clearEnvironmentM = do
   narration <- _narration' <$> get
-  modify' (\gs -> gs{_narration' = narration{_enviroment' = clear}})
+  modify' (\gs -> gs{_narration' = narration{_environment' = clear}})
   where
     clear = Data.List.NonEmpty.singleton mempty
 
