@@ -4,7 +4,7 @@ import Game.Model.World
         , LookInF (..), GameStateExceptT, Object
         , UpdatePerceptionFunctions (..), PerceptionFunctions (..)
         , LookFunctions (..), Container)
-import Game.Actions.Look.StandardLook (lookInOpenBoxM, lookAtShelfM)
+import Game.Actions.Look.StandardLook (lookAtShelfM)
 import Build.ObjectTemplate (kitchenFloorGID)
 import Game.Model.Display (updateEnvironmentM)
 import Game.Object (setObjectMapM)
@@ -32,7 +32,7 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = id
-  , _displayPerceptionF' = const Nothing
+  , _displayPerceptionF' = Just
 }
 
 defaultLookFunctions :: LookFunctions

@@ -3,6 +3,7 @@ import Game.Model.World
         (LookAction (..), UpdatePerceptionFunctions (..)
         , PerceptionFunctions (..), LookFunctions (..), LookAtF (..)
         , LookInF (..), LookOnF (..))
+import Game.Actions.Look.StandardLook (noDisplayF)
 
 defaultLookAction :: LookAction
 defaultLookAction = LookAction {
@@ -20,7 +21,8 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = id
-  , _displayPerceptionF' = const Nothing
+  , _displayPerceptionF' = noDisplayF
+                              
 }
 
 defaultLookFunctions :: LookFunctions

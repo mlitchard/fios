@@ -14,8 +14,6 @@ import Build.Locations.Kitchen.FloorArea.Actions.Floor.Get (getAction)
 import Build.Locations.Kitchen.FloorArea.Actions.Floor.Put (putAction)
 import Build.Locations.Kitchen.FloorArea.Actions.Floor.NoCanDo 
         (openAction, closeAction, lockAction, unlockAction, goAction)
-import Build.Locations.Kitchen.ShelfArea.Actions.Look
-        ( initialLookAction ) 
 import Game.Object (setObjectMapM, getAnchored)
 import qualified Data.List.NonEmpty
 import Build.LocationTemplate (kitchenGID)

@@ -7,7 +7,7 @@ import Game.Model.World
         , PerceptionFunctions (..), LookFunctions (..), StandardActions (..))
 
 import Game.Actions.Look.StandardLook
-        (lookAtOpenBoxM, lookInClosedBoxM, lookInOpenBoxM, changeLookAction)
+        (lookAtOpenBoxM, lookInClosedBoxM, lookInOpenBoxM, changeLookAction, )
 import Build.ObjectTemplate (kitchenCabinetBelowSinkGID)
 import Game.Model.Display (updateEnvironmentM)
 import Game.Object (setObjectMapM)
@@ -32,7 +32,7 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = id
-  , _displayPerceptionF' = const Nothing
+  , _displayPerceptionF' = Just
 }
 
 defaultLookFunctions :: LookFunctions
@@ -57,8 +57,8 @@ cannotDoLook _ = const (const (updateEnvironmentM noSeeMsg))
   where
     noSeeMsg = "You can't see that cabinet."
 
-canDisplayCabinet :: LookAtF -> LookAtF
-canDisplayCabinet lookAtF = lookAtF
+cabinet :: LookAtF -> LookAtF
+cabinet lookAtF = lookAtF
 
 cannotDisplayCabinet :: LookAtF -> LookAtF
 cannotDisplayCabinet _ = LookAtF (const (const pass))

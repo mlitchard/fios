@@ -1,17 +1,15 @@
 module Build.Locations.Kitchen.FloorArea.PlantPot where
 import Game.Model.Mapping
-        (GIDToDataMap (..), Label (..))
-import qualified Data.Map.Strict
-import Game.Model.Condition (Moveability(..), Perceptibility (..))
+        (Label (..))
 import Tokenizer.Data ( Lexeme(PLANT, SMALL, POT) )
 import Game.Model.World
-import Game.Model.Display (updateEnvironmentM)
 import Build.ObjectTemplate (plantPotGID, kitchenFloorGID)
 import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Get (getAction)
 import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.NoCanDo
         (unlockAction, goAction, openAction, closeAction, lockAction)
 import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Put (putAction)
-import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Look (emptyPlantPotLookAction, hasPlantLookAction, hasSoilLookAction)
+import Build.Locations.Kitchen.FloorArea.Actions.PlantPot.Look 
+        (emptyPlantPotLookAction)
 import Game.Object (setObjectMapM, getContainedPlacement)
 import Game.Model.GID (GID)
 

@@ -4,7 +4,7 @@ import Game.Model.GID
 import Game.Model.Mapping
 import qualified Data.Map.Strict
 import Game.Model.Display (updateEnvironmentM, updatePlayerActionM)
-import Game.Object (getShortNameM)
+import Game.Object (getShortNameM, getObjectM)
 import qualified Data.Text
 
 look :: Object
@@ -34,7 +34,7 @@ lookAtOpenBoxM gid (Object {..}) =
   where
     msg = "You look at the " <> _shortName'
 {- updatePlayerActionM msg >> -}
-
+  
 -- ToDo merge lookAtShelf and lookInOpenBox
 lookAtShelfM :: GID Object 
                   -> Object 
@@ -103,3 +103,9 @@ changeLookAction :: LookAction -> Object -> Object
 changeLookAction lookAction' entity@(Object {..}) =
   let standardActions' = _standardActions'
   in entity{_standardActions' = standardActions' {_lookAction' = lookAction'}}
+
+onDisplayF :: DisplayF 
+onDisplayF = Just 
+
+noDisplayF :: DisplayF 
+noDisplayF = const Nothing 

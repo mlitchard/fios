@@ -3,9 +3,9 @@ module Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.Look
 import Game.Model.World
 import Build.ObjectTemplate (kitchenCabinetAboveShelfGID)
 import Game.Object (setObjectMapM)
-import Game.Actions.Look.StandardLook 
+import Game.Actions.Look.StandardLook
         (changeLookAction, lookAtOpenBoxM, lookInOpenBoxM
-        , lookInClosedBoxM, lookAtClosedBoxM)
+        , lookInClosedBoxM, lookAtClosedBoxM, )
 import Game.Model.Display (updateEnvironmentM)
 import Game.Actions.Look.Update
 
@@ -28,7 +28,7 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = id
-  , _displayPerceptionF' = const Nothing
+  , _displayPerceptionF' = Just
 }
 
 defaultLookFunctions :: LookFunctions

@@ -12,7 +12,7 @@ import Game.Model.World
       StandardActions (_lookAction'),
       Object(..), LookF, DisplayF )
 import Game.Model.Display (updateEnvironmentM)
-import Game.Actions.Look.StandardLook (changeLookAction)
+import Game.Actions.Look.StandardLook (changeLookAction, onDisplayF, noDisplayF, )
 import Build.ObjectTemplate (plantPotGID)
 import Game.Object (setObjectMapM)
 import Game.Actions.Look.Update
@@ -40,15 +40,9 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = canSeeF
-  , _displayPerceptionF' = onDisplayF
+  , _displayPerceptionF' = Just 
 }
-
-onDisplayF :: DisplayF
-onDisplayF = Just  
-
-noDisplayF :: DisplayF
-noDisplayF _ = Nothing
-
+  
 changeLookPerception :: (LookF -> LookF)
                           -> (Object -> GameStateExceptT ())
                           -> Object 
@@ -109,7 +103,7 @@ updateLookPerception f lookAction@(LookAction {..}) =
   where 
     perception = _perception'
 
-updateDisplayPerception :: (Text -> Maybe Text) -> LookAction -> LookAction 
+updateDisplayPerception :: DisplayF -> LookAction -> LookAction 
 updateDisplayPerception f lookAction@(LookAction {..}) = 
   lookAction {_perception' = perception {_displayPerceptionF' = f}}
   where 

@@ -13,7 +13,7 @@ import qualified Data.Text
 import Control.Monad.Except (MonadError(throwError))
 import Tokenizer (Lexeme (..))
 
-newtype ObjectAnchorMap = 
+newtype ObjectAnchorMap =
   ObjectAnchorMap (GIDToDataMap Object (Maybe (NonEmpty (GID Object))))
 
 type GameStateExceptT = ReaderT Config (ExceptT Text (StateT GameState IO))
@@ -39,15 +39,15 @@ data Config = Config {
   , _evalVerbPhraseSeven'    :: EvalVerbSeven
 }
 
-newtype Container = Container 
+newtype Container = Container
   { _unContainer' :: Map (Label Object) (NonEmpty ContainedEntity)} deriving stock Show
 
 data ContainedPlacement = On | In deriving stock Show
- 
+
 data ContainedEntity = ContainedEntity {
     _containedGid' :: GID Object
-  , _placement' :: ContainedPlacement 
-} deriving stock Show 
+  , _placement' :: ContainedPlacement
+} deriving stock Show
 
 type EvalVerbThree = (Verb, PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 
@@ -119,7 +119,7 @@ data Object = Object {
 }
 
 data StandardActions = StandardActions
-  {   _getAction' :: GetAction 
+  {   _getAction' :: GetAction
     , _putAction' :: PutAction
     , _lookAction' :: LookAction
     , _openAction' :: OpenAction
@@ -129,47 +129,47 @@ data StandardActions = StandardActions
     , _goAction' :: GoAction
   }
 
-data GetAction = GetAction 
+data GetAction = GetAction
   { _updateGet' :: GameStateExceptT ()
   -- object taken from    -- object taken
   , _get' :: Object -> GameStateExceptT ()
   }
 
 data PutPrep
-  = PutOn 
-  | PutIn 
-  | PutTo  
+  = PutOn
+  | PutIn
+  | PutTo
 
-toPutPrep :: Lexeme -> Maybe PutPrep 
-toPutPrep ON = Just PutOn 
-toPutPrep IN = Just PutIn 
-toPutPrep TO = Just PutTo 
-toPutPrep _  = Nothing 
+toPutPrep :: Lexeme -> Maybe PutPrep
+toPutPrep ON = Just PutOn
+toPutPrep IN = Just PutIn
+toPutPrep TO = Just PutTo
+toPutPrep _  = Nothing
 
-data PutAction = PutAction 
+data PutAction = PutAction
   {   _updatePut' :: GameStateExceptT ()
     , _put' :: GID Object -> PutPrep -> GameStateExceptT ()
   }
 
 type LookF = (Object -> Map (GID Object) Container -> GameStateExceptT ())
-                                                                                
-newtype LookAtF = LookAtF {_unLookAt' :: LookF} 
+
+newtype LookAtF = LookAtF {_unLookAt' :: LookF}
 newtype LookOnF = LookOnF {_unLookOn' :: LookF}
 newtype LookInF = LookInF {_unLookIn' :: LookF}
 
-data LookAction = LookAction { 
+data LookAction = LookAction {
       _updatePerception'  :: UpdatePerceptionFunctions
-    , _perception'        :: PerceptionFunctions 
-    , _lookFunctions'     :: LookFunctions  
-  } 
+    , _perception'        :: PerceptionFunctions
+    , _lookFunctions'     :: LookFunctions
+  }
 
 data LookFunctions = LookFunctions {
     _lookAt'          :: LookAtF
-  , _lookIn'          :: LookInF 
+  , _lookIn'          :: LookInF
   , _lookOn'          :: LookOnF
 }
 
-type DisplayF = Text -> Maybe Text
+type DisplayF = Object -> Maybe Object
 
 data PerceptionFunctions = PerceptionFunctions {
     _lookPerceptionF'     :: LookF -> LookF
@@ -177,45 +177,45 @@ data PerceptionFunctions = PerceptionFunctions {
 }
 
 data UpdatePerceptionFunctions = UpdatePerceptionFunctions {
-    _updateBlockReport' :: Object -> GameStateExceptT () 
-  , _updateDisplay' :: Object -> GameStateExceptT () 
+    _updateBlockReport' :: Object -> GameStateExceptT ()
+  , _updateDisplay' :: Object -> GameStateExceptT ()
 }
 
-data OpenAction = OpenAction 
+data OpenAction = OpenAction
   { _updateOpen' :: GameStateExceptT ()
   , _open' :: Object -> GameStateExceptT ()
   }
 
-data CloseAction = CloseAction 
+data CloseAction = CloseAction
   { _updateClose' :: GameStateExceptT ()
   , _close' :: Object -> GameStateExceptT ()
   }
 
-data LockAction = LockAction 
+data LockAction = LockAction
   { _updateLock' :: GameStateExceptT ()
   , _lock' :: GameStateExceptT ()
   }
-data UnlockAction = UnlockAction 
+data UnlockAction = UnlockAction
   { _updateUnlock' :: GameStateExceptT ()
   , _unlock' :: GameStateExceptT ()
   }
 
 data GoPrep
   = GoUp
-  | GoDown 
-  | GoThrough 
-  | GoIn 
+  | GoDown
+  | GoThrough
+  | GoIn
 
-data GoAction = GoAction 
+data GoAction = GoAction
   { _updateGo' :: GameStateExceptT ()
   , _go' :: GID Object -> GoPrep -> GameStateExceptT ()
   }
 
 type AnchorMap = Data.Map.Strict.Map (GID Object) (Maybe (NonEmpty Anchored))
 
-newtype ObjectAnchors = ObjectAnchors { _unObjectAnchors' :: AnchorMap } 
+newtype ObjectAnchors = ObjectAnchors { _unObjectAnchors' :: AnchorMap }
 
-data Anchored = Anchored 
+data Anchored = Anchored
   { _gid' :: GID Object
   , _proximity :: Proximity
   }
@@ -259,12 +259,12 @@ data DescribeRoomSection = DescribeRoomSection
     , describeAnchoredObjects :: [DescribeAnchor]
   } deriving stock Show
 
-data DescribeAnchor = DescribeAnchor 
+data DescribeAnchor = DescribeAnchor
   { _anchorDesc'    :: Text
-  , _maybeShelf'    :: Maybe (Text, NonEmpty Text) 
+  , _maybeShelf'    :: Maybe (Text, NonEmpty Text)
   , _anchoredDesc'  :: Maybe (NonEmpty DescribeAnchored)
   } deriving stock Show
-  
+
 data DescribeAnchored = DescribeAnchored
   {_prelude' :: (Text, Text)
   , _maybeShelf' :: Maybe (Text, NonEmpty Text)

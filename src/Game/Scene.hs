@@ -7,8 +7,8 @@ import Game.Object (getObjectM)
 import Game.Model.Condition (Proximity (..))
 -- text builder for Scene
 
-display :: Text -> Text
-display shortName = "a " <> shortName
+display :: Object -> Text
+display Object {..} = "a " <> _shortName'
 
 -- This module assumes all objects are perceivable 
 
@@ -60,9 +60,8 @@ describeAnchored shortName (Anchored gid proximity) = do
     proximityDesc = displayProximity proximity <> shortName
 
 shallowDescribeObject :: Object -> GameStateExceptT (Maybe Text)
-shallowDescribeObject (Object {..}) = pure $ displayF $ display _shortName'
-  where
-    displayF = _standardActions'._lookAction'._perception'._displayPerceptionF'
+shallowDescribeObject entity = 
+  pure (display <$> tryDisplayF entity)
 
 tryDescribeShelf :: GID Object -> GameStateExceptT (Maybe (Text,NonEmpty Text))
 tryDescribeShelf gid = do
@@ -92,9 +91,9 @@ describeShelfContents (ContainedEntity gid _) = do
     shortName (Object {..} )= "a " <> _shortName'
     
 
-tryDisplay :: Object -> Maybe Text
-tryDisplay (Object {..}) =
-  displayF (display _shortName')
+tryDisplayF :: Object -> Maybe Object
+tryDisplayF entity@(Object {..}) =
+  displayF entity
   where
     displayF = _standardActions'._lookAction'._perception'._displayPerceptionF'
 

@@ -1,11 +1,22 @@
 module Build.Locations.Kitchen.Exits.EastExit.Door.Actions.Look where
 import Game.Model.World
+    ( GameStateExceptT,
+      LookAction(..),
+      LookAtF(LookAtF),
+      LookFunctions(..),
+      LookInF(LookInF),
+      LookOnF(LookOnF),
+      Object(..),
+      PerceptionFunctions(..),
+      StandardActions(_lookAction'),
+      UpdatePerceptionFunctions(..) )
 import Game.Actions.Look.StandardLook (changeLookAction)
 import Build.ObjectTemplate (kitchenEastDoorGID)
 import Game.Object (setObjectMapM, getObjectM)
 import Game.Model.Display (updatePlayerActionM, updateEnvironmentM)
 import qualified Data.Text
-import Game.Actions.Look.Update 
+import Game.Actions.Look.Update
+    ( updateLookAtF, updateLookInF, updateLookOnF, updateOpenReport )
 
 updateLookActionObject :: Object -> GameStateExceptT ()
 updateLookActionObject = setObjectMapM kitchenEastDoorGID
@@ -26,7 +37,7 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = id
-  , _displayPerceptionF' = const Nothing
+  , _displayPerceptionF' = Just
 }
 
 defaultLookFunctions :: LookFunctions

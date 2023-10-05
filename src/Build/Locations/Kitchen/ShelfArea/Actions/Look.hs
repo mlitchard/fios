@@ -1,6 +1,7 @@
 module Build.Locations.Kitchen.ShelfArea.Actions.Look where
 
 import Game.Actions.Look.StandardLook
+    ( lookInOpenBoxM,  )
 import Game.Model.World
 import Game.Model.Display (updateEnvironmentM)
 import Game.Model.GID (GID)
@@ -29,7 +30,7 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = id
-  , _displayPerceptionF' = const Nothing
+  , _displayPerceptionF' = Just
 }
 
 defaultLookFunctions :: LookFunctions

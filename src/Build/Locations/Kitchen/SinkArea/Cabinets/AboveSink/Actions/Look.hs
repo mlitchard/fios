@@ -2,8 +2,8 @@ module Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Actions.Look
   where
 import Game.Model.World 
 import Build.ObjectTemplate (kitchenCabinetAboveSinkGID)
-import Game.Actions.Look.StandardLook 
-        (lookAtOpenBoxM, lookInOpenBoxM, lookInClosedBoxM, lookAtClosedBoxM)
+import Game.Actions.Look.StandardLook
+        (lookAtOpenBoxM, lookInOpenBoxM, lookInClosedBoxM, lookAtClosedBoxM, )
 import Game.Model.Display (updateEnvironmentM)
 import Game.Object (setObjectMapM)
 import Game.Actions.Look.Update
@@ -27,7 +27,7 @@ defaultUpdatePerceptions = UpdatePerceptionFunctions {
 defaultPerception :: PerceptionFunctions
 defaultPerception = PerceptionFunctions {
     _lookPerceptionF' = id
-  , _displayPerceptionF' = const Nothing
+  , _displayPerceptionF' = Just
 }
 
 defaultLookFunctions :: LookFunctions
