@@ -5,6 +5,7 @@ import Game.Model.GID (GID (..))
 import Game.Model.Mapping
 import Game.Object (getObjectM)
 import Game.Model.Condition (Proximity (..))
+import qualified Data.List.NonEmpty
 -- text builder for Scene
 
 display :: Object -> Text
@@ -34,33 +35,41 @@ describeAnchor (anchorGid,mAnchoredGids) = do
   (Object {..}) <- getObjectM anchorGid
   descAnch <- case mAnchoredGids of
                 Nothing -> pure Nothing
-                Just anchGids -> Just
-                                  <$> describeAnchoreds _shortName' anchGids
+                Just anchGids -> describeAnchoreds _shortName' anchGids
   shelfObjects <- tryDescribeShelf anchorGid
   pure $ DescribeAnchor ("a " <> _shortName') shelfObjects descAnch
 
 describeAnchoreds :: Text
                       -> NonEmpty Anchored
-                      -> GameStateExceptT (NonEmpty DescribeAnchored)
+                      -> GameStateExceptT (Maybe (NonEmpty DescribeAnchored))
 describeAnchoreds shortName anchoredGids = do
-  mapM (describeAnchored shortName) anchoredGids
+  removeNonPerceptible <$> mapM (describeAnchored shortName) anchoredGids
+  where
+    removeNonPerceptible = (nonEmpty <$> catMaybes) . Data.List.NonEmpty.toList
 -- ToDo fix visibililty. Ought not to assume visible
 describeAnchored :: Text
                       -> Anchored
-                      -> GameStateExceptT DescribeAnchored
+                      -> GameStateExceptT (Maybe DescribeAnchored)
 describeAnchored shortName (Anchored gid proximity) = do
-  (Object {..}) <- getObjectM gid
-  let proximityPair = (proximityDesc, "is a " <> _shortName')
-  shelfContents <- tryDescribeShelf gid
-  let shelfDescription = shelfPrelude <$> shelfContents
-  pure (DescribeAnchored proximityPair shelfDescription)
+  anchored <- getObjectM gid
+  let display' = tryDisplayF anchored
+  print ("DEBUG describeAnchored prior" <> _shortName' anchored)
+  print (fmap ("DEBUG describeAnchored maybe visible" <>) (_shortName' <$> display') )
+
+  case display' of
+    Nothing -> pure Nothing
+    Just anchored' -> do
+                        let proximityPair = (proximityDesc, "is a " <> _shortName' anchored')
+                        shelfContents <- tryDescribeShelf gid
+                        let shelfDescription = shelfPrelude <$> shelfContents
+                        (pure . Just) (DescribeAnchored proximityPair shelfDescription)
   where
     shelfPrelude (shelfName, contents)
       = (,) ("On the " <> shelfName <> " you see:") contents
     proximityDesc = displayProximity proximity <> shortName
 
 shallowDescribeObject :: Object -> GameStateExceptT (Maybe Text)
-shallowDescribeObject entity = 
+shallowDescribeObject entity =
   pure (display <$> tryDisplayF entity)
 
 tryDescribeShelf :: GID Object -> GameStateExceptT (Maybe (Text,NonEmpty Text))
@@ -70,13 +79,13 @@ tryDescribeShelf gid = do
   case maybeCmap of
     Just ((Container cmap)) -> do
                                 shortName <- _shortName' <$> getObjectM gid
-                                case filtShelf of 
-                                  Nothing -> pure Nothing 
-                                  Just filtered -> do 
+                                case filtShelf of
+                                  Nothing -> pure Nothing
+                                  Just filtered -> do
                                                     content <- mapM describeShelfContents filtered
                                                     pure $ Just (shortName,content)
                                 where
-                                  concatElems = concatMap toList 
+                                  concatElems = concatMap toList
                                                   $ Data.Map.Strict.elems cmap
                                   filtShelf = nonEmpty $ filter isShelf concatElems
     Nothing -> pure Nothing
@@ -89,7 +98,7 @@ describeShelfContents (ContainedEntity gid _) = do
   shortName <$> getObjectM gid
   where
     shortName (Object {..} )= "a " <> _shortName'
-    
+
 
 tryDisplayF :: Object -> Maybe Object
 tryDisplayF entity@(Object {..}) =
