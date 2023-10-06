@@ -7,7 +7,7 @@ import Recognizer.WordClasses
       PrepPhrase(PrepPhrase1) )
 import Game.Model.GID (GID)
 import qualified Data.List.NonEmpty
-import Game.Object (getObjectsFromLabelM)
+import Game.Object (getObjectsFromLabelM, getObjectM)
 import Game.World (makeErrorReport)
 import Game.Model.World
 import Clarifier
@@ -20,28 +20,42 @@ import Control.Monad.Except (MonadError(..))
 import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
 import Data.Map.Strict (lookup)
 import Tokenizer (Lexeme)
+import Game.Scene (tryDisplayF)
 
-data PossibleDirectObjects 
-  = Found (GID Object) 
-  | Possibles (NonEmpty (GID Object)) 
-  | NotFound Lexeme  -- Maybe (Either (NonEmpty (GID Object)) (GID Object))
+data PossibleDirectObjects
+  = Found (GID Object)
+  | Possibles (NonEmpty (GID Object))
+  | NotFound
+
+evaluatePossibleDirectObjects :: NonEmpty (GID Object)
+                                    -> GameStateExceptT (Maybe (NonEmpty Object))
+evaluatePossibleDirectObjects possibles = do 
+  entities <- mapM evaluatePossibleDirectObject possibles
+  pure $ nonEmpty $ catMaybes $ toList entities
+
+evaluatePossibleDirectObject :: GID Object -> GameStateExceptT (Maybe Object)
+evaluatePossibleDirectObject gid = tryDisplayF <$> getObjectM gid
+
 identifyPossibleDirectObjects :: NounPhrase
-                                  -> GameStateExceptT PossibleDirectObjects
+                                  -> GameStateExceptT (Label Object,PossibleDirectObjects)
 identifyPossibleDirectObjects (NounPhrase1 _ (Noun noun)) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   case Data.Map.Strict.lookup (Label noun) m of
-    Nothing -> pure (NotFound noun)
-    Just (x:|[]) -> pure $ Found x
-    Just xs -> pure $ Possibles xs
-identifyPossibleDirectObjects (Noun noun) = do 
+    Nothing -> pure (Label noun,NotFound)
+    Just (x:|[]) -> pure (Label noun,Found x)
+    Just xs -> pure (Label noun,Possibles xs)
+
+identifyPossibleDirectObjects (Noun noun) = do
     (LabelToGIDListMapping m) <- _objectLabelMap'
                                   <$> (getLocationM =<< getLocationIdM)
     case Data.Map.Strict.lookup (Label noun) m of
-      Nothing -> pure (NotFound noun)
-      Just (x:|[]) -> pure $ Found x
-      Just xs -> pure $ Possibles xs   
+      Nothing -> pure (Label noun, NotFound)
+      Just (x:|[]) -> pure (Label noun,Found x)
+      Just xs -> pure (Label noun,Possibles xs)
+
 identifyPossibleDirectObjects _ = throwError "identifyPossibleDirectObjects unfinished"
+
 verifySimple :: Label Adjective
                               -> Label Object
                               -> GameStateExceptT (GID Object, Object)

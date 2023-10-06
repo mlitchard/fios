@@ -44,10 +44,9 @@ displayReport = do
   mapM_ print . _report' =<< get
 
 clarifyWhich :: ClarifyWhich
-clarifyWhich f labelObjectPair@(Label label', objects) = pass 
-{-
+clarifyWhich f labelObjectPair@(Label label', objects) = do
   updateEnvironmentM preamble
-    >> mapM_ (\(_,object) -> objectOrientation object) objects
+    >> mapM_ objectOrientation  objects
     >> modify' (\gs -> gs {_clarification' = Just clarification})
     >> setEvaluatorM f -- clarifyingLookSubjectM
     >> updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
@@ -57,7 +56,7 @@ clarifyWhich f labelObjectPair@(Label label', objects) = pass
       , _gidObjectPairs' = objects
     }
     preamble = "which " <> (toLower . toText) label' <> " do you mean?"
--}
+
 setEvaluatorM :: (Imperative -> GameStateExceptT ()) -> GameStateExceptT ()
 setEvaluatorM engine = modify' (\gs -> gs{_evaluator' = engine})
 {-

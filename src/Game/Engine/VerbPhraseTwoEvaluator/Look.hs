@@ -8,7 +8,7 @@ import Game.Model.Display
 import Recognizer (AdjPhrase (..))
 import Tokenizer.Data (Lexeme(..))
 import Game.Engine.Verification
-        (verifySimple, identifyPossibleDirectObjects, PossibleDirectObjects (..))
+        (verifySimple, identifyPossibleDirectObjects, PossibleDirectObjects (..), evaluatePossibleDirectObject, evaluatePossibleDirectObjects)
 import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
 import Control.Monad.Except (MonadError(..))
 import Game.Actions.Look.StandardLook (look)
@@ -16,6 +16,7 @@ import Game.Model.GID (GID)
 import Game.Object (getObjectM)
 import Data.Text (toLower)
 import Build.ObjectTemplate (kitchenFloorGID)
+import Clarifier (clarifyingLookDirectObjectM)
 
 
 -- (ImperativeClause (VerbPhrase2 LOOK (PrepPhrase2 IN THE (Adjective POT) (Noun PLANT))))
@@ -24,11 +25,17 @@ evalLookObjectM :: PrepPhrase -> GameStateExceptT ()
 evalLookObjectM (PrepPhrase1 prep np) = do
   pdo <- identifyPossibleDirectObjects np
   case pdo of
-    NotFound x -> throwError ("You don't see a " <> toLower (show x) <> " here")
-    Found gid -> do 
-                  object <- getObjectM gid
-                  doLookObject prep object
-    Possibles gids -> throwError "possibles not completed"
+    (label,NotFound) -> throwError ("You don't see that here")
+    (label,Found gid) -> do 
+                  entity <- throwMaybeM "You don't see that here" 
+                              =<< evaluatePossibleDirectObject gid
+                  doLookObject prep entity
+    (label,Possibles gids) -> do 
+                                entities <- throwMaybeM "You don't see that here"
+                                              =<< evaluatePossibleDirectObjects gids
+                                clarifyWhich <- _clarifyWhich' <$> ask 
+                                clarifyWhich (clarifyingLookDirectObjectM prep) (label, entities)
+                                pass
  -- evaluateNounPhrase (clarifyingLookDirectObjectM prep) np 
 
 {- evalLookObjectM (PrepPhrase2 prep _ (Adjective adj) (Noun noun)) =  do

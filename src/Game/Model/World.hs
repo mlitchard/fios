@@ -25,9 +25,8 @@ newtype AnchoredTo = AnchoredTo
     deriving stock (Show, Eq, Ord)
 
 type ClarifyWhich = (Imperative -> GameStateExceptT ())
-                      -> (Label Object, NonEmpty (GID Object, Object))
+                      -> (Label Object, NonEmpty Object)
                       -> GameStateExceptT ()
-
 
 data Config = Config {
   _primaryEvaluator'         :: Imperative -> GameStateExceptT ()

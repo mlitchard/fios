@@ -74,7 +74,42 @@ updateDisplayActionM :: GameStateExceptT () -> GameStateExceptT ()
 updateDisplayActionM displayAction = do
   modify' (\gs -> gs{_displayAction'  = displayAction})
 
+{-
+describeOrientationM :: Text -> Orientation -> GameStateExceptT ()
+describeOrientationM preamble orientation = do
+  desc <- case orientation of
+            ContainedBy' containedBy -> describeContainedByM containedBy
+            Inventory -> pure "in your inventory."
+            (Floor _) -> pure "on the floor."
+            (AnchoredTo' anchoredTo) -> describeAnchoredToM anchoredTo
+            Anchoring roomAnchor -> pure $ describeAnchoring roomAnchor
+            Anchored roomAnchor -> pure $ describeAnchoring roomAnchor
+  updateEnvironmentM (preamble <> desc)
+  data Orientation
+  = ContainedBy' (GameStateExceptT (GID Object, ContainedPlacement))
+  | Inventory
+  | Anchor (GameStateExceptT (Maybe (NonEmpty Anchored)))
+  | AnchoredTo' (GameStateExceptT Proximity)
+-}
+
+describeOrientation :: Text -> Orientation -> GameStateExceptT ()
+describeOrientation preamble orientation = do
+  desc <- case orientation of
+            ContainedBy' f -> describeContainedBy f
+            Inventory -> pure "in your inventory"
+            Anchor f -> describeAnchor f 
+
 -- FIXME perception test should happen seperately
+
+describeAnchor :: 
+describeContainedBy :: GameStateExceptT (GID Object, ContainedPlacement)
+                          -> GameStateExceptT Text
+describeContainedBy f = do 
+  (gid,containedPlacement) <- f
+  shortName <- getShortNameM gid
+  pure $ (toLower . show) containedPlacement <> " the " <> shortName
+
+  
 describeObjectM :: GID Object -> GameStateExceptT ()
 describeObjectM gid = error "undefined" {- do
   (Object {..}) <- getObjectM gid
