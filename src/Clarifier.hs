@@ -7,7 +7,7 @@ import Game.Model.Mapping (Label (..))
 import Tokenizer (Lexeme)
 import Game.Model.Display
         (updateEnvironmentM, showEnvironmentM
-        , showPlayerActionM, updateDisplayActionM)
+        , showPlayerActionM, updateDisplayActionM, describeOrientation)
 import Data.Text (toLower)
 import Recognizer.WordClasses
         (Imperative (..) , PrepPhrase (..), Noun, Preposition)
@@ -53,17 +53,17 @@ clarifyWhich f labelObjectPair@(Label label', objects) = do
   where
     clarification = Clarification {
         _clarifyingLabel' = fst labelObjectPair
-      , _gidObjectPairs' = objects
+      , _gidObject' = objects
     }
     preamble = "which " <> (toLower . toText) label' <> " do you mean?"
 
 setEvaluatorM :: (Imperative -> GameStateExceptT ()) -> GameStateExceptT ()
 setEvaluatorM engine = modify' (\gs -> gs{_evaluator' = engine})
-{-
+
 objectOrientation :: Object -> GameStateExceptT ()
 objectOrientation (Object {..}) =
-  describeOrientationM ("The " <> _shortName') _orientation'
--}
+  describeOrientation ("The " <> _shortName') _orientation'
+
 checkProximity :: PrepPhrase -> FoundAnchoredTo -> Bool
 checkProximity prep (FoundAnchoredTo _ (_,prox)) =
   matchesProximity (prox,prep)

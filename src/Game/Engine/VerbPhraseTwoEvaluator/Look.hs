@@ -36,36 +36,24 @@ evalLookObjectM (PrepPhrase1 prep np) = do
                                 clarifyWhich <- _clarifyWhich' <$> ask 
                                 clarifyWhich (clarifyingLookDirectObjectM prep) (label, entities)
                                 pass
+
  -- evaluateNounPhrase (clarifyingLookDirectObjectM prep) np 
 
-{- evalLookObjectM (PrepPhrase2 prep _ (Adjective adj) (Noun noun)) =  do
-  (_, entity) <- verifySimple descriptiveLabel' directObjectLabel'
-  print ("doLookObjectM" <> _shortName' entity :: Text)
-
-  let res = case prep of
-              AT -> Right (lookAt entity)
-              IN -> Right (lookIn entity)
-              ON -> Right (lookOn entity)
-              THROUGH -> Left lookThroughMsg
-              _ -> Left nonsenseMsg
-  _ <- error ("DEBUG" :: Text)
-  either throwError (look entity) res
-
-  updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
+evalLookObjectM (PrepPhrase2 prep _ (Adjective adj) noun) =  do
+  pdo <- identifyPossibleDirectObjects (NounPhrase2 adj noun)
+  case pdo of 
+    (label,NotFound) -> throwError ("You don't see that here")
+    (label,Found gid) -> do 
+                  entity <- throwMaybeM "You don't see that here" 
+                              =<< evaluatePossibleDirectObject gid
+                  doLookObject prep entity
+    (label,Possibles gids) -> pass 
   
-  where
-    lookAt =  _unLookAt' . _lookAt' . _lookFunctions' . _lookAction' . _standardActions'
-    lookIn = _unLookIn' . _lookIn' . _lookFunctions' . _lookAction' . _standardActions'
-    lookOn = _unLookOn' . _lookOn' . _lookFunctions' . _lookAction' . _standardActions'
-    lookThroughMsg = "Look through not implemented" :: Text
-    nonsenseMsg = "Arble and garble, I say to you." :: Text
-    directObjectLabel' = directObjectLabel noun
-    descriptiveLabel' = descriptiveLabel adj
--}
+
 -- doLookObjectM pp@(PrepPhrase1 prep (Noun noun)) = pass
 -- doLookObjectM pp@(PrepPhrase1 prep (NounPhrase1 _ (Noun noun))) = pass
 -- doLookObjectM pp@(PrepPhrase1 prep (NounPhrase2 adj (Noun noun))) = pass
-evalLookObjectM _  = throwError ("doLookObjectM not finished" :: Text) {- do
+evalLookObjectM _  = throwError ("evalLookObjectM not finished" :: Text) {- do
   res <- verifyAccessabilityPP (clarifyingLookDirectObjectM prep) pp
   case res of
     (Left clarifyM) -> clarifyM

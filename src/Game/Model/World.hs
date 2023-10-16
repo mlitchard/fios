@@ -24,6 +24,11 @@ newtype AnchoredTo = AnchoredTo
   { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)}
     deriving stock (Show, Eq, Ord)
 
+data Clarification = Clarification {
+    _clarifyingLabel' :: Label Object
+  , _gidObject' :: NonEmpty Object
+}
+
 type ClarifyWhich = (Imperative -> GameStateExceptT ())
                       -> (Label Object, NonEmpty Object)
                       -> GameStateExceptT ()
@@ -81,15 +86,18 @@ data GameState = GameState
   , _displayAction'         :: GameStateExceptT ()
   }
 
-type GIDObjectPair = (GID Object,Object)
-data Clarification = Clarification {
-    _clarifyingLabel' :: Label Object
-  , _gidObjectPairs' :: NonEmpty (GID Object,Object)
-}
 report :: GameStateExceptT ()
 report = do
   report' <- _report' <$> get
   mapM_ print report'
+
+data GetAction = GetAction
+  { _updateGet' :: GameStateExceptT ()
+  -- object taken from    -- object taken
+  , _get' :: Object -> GameStateExceptT ()
+  }
+
+type GIDObjectPair = (GID Object,Object)
 
 data Location = Location {
     _title'           :: Text
@@ -126,12 +134,6 @@ data StandardActions = StandardActions
     , _lockAction' :: LockAction
     , _unlockAction' :: UnlockAction
     , _goAction' :: GoAction
-  }
-
-data GetAction = GetAction
-  { _updateGet' :: GameStateExceptT ()
-  -- object taken from    -- object taken
-  , _get' :: Object -> GameStateExceptT ()
   }
 
 data PutPrep

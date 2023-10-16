@@ -97,11 +97,19 @@ describeOrientation preamble orientation = do
   desc <- case orientation of
             ContainedBy' f -> describeContainedBy f
             Inventory -> pure "in your inventory"
-            Anchor f -> describeAnchor f 
+            Anchor f -> describeAnchor f
+            AnchoredTo' f -> describeAnchoredTo f 
+  pass
 
--- FIXME perception test should happen seperately
+describeAnchoredTo :: GameStateExceptT Proximity -> GameStateExceptT Text
+describeAnchoredTo _ = pure mempty
 
-describeAnchor :: 
+describeAnchor :: (GameStateExceptT (Maybe (NonEmpty Anchored))) 
+                    -> GameStateExceptT Text
+describeAnchor f = do
+  res <- f 
+  pure mempty
+
 describeContainedBy :: GameStateExceptT (GID Object, ContainedPlacement)
                           -> GameStateExceptT Text
 describeContainedBy f = do 

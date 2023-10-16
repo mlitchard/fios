@@ -7,7 +7,7 @@ import Recognizer.WordClasses
       PrepPhrase(PrepPhrase1) )
 import Game.Model.GID (GID)
 import qualified Data.List.NonEmpty
-import Game.Object (getObjectsFromLabelM, getObjectM)
+import Game.Object (getObjectsFromLabelM, getObjectM, getObjectGIDPairM)
 import Game.World (makeErrorReport)
 import Game.Model.World
 import Clarifier
@@ -15,7 +15,7 @@ import Clarifier
       checkProximity,
       findInDirectObject,
       findNoun)
-import Game.Model.Mapping (Label(..), LabelToGIDListMapping (..))
+import Game.Model.Mapping (Label(..), LabelToGIDListMapping (..), GIDList)
 import Control.Monad.Except (MonadError(..))
 import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
 import Data.Map.Strict (lookup)
@@ -29,7 +29,7 @@ data PossibleDirectObjects
 
 evaluatePossibleDirectObjects :: NonEmpty (GID Object)
                                     -> GameStateExceptT (Maybe (NonEmpty Object))
-evaluatePossibleDirectObjects possibles = do 
+evaluatePossibleDirectObjects possibles = do
   entities <- mapM evaluatePossibleDirectObject possibles
   pure $ nonEmpty $ catMaybes $ toList entities
 
@@ -46,6 +46,16 @@ identifyPossibleDirectObjects (NounPhrase1 _ (Noun noun)) = do
     Just (x:|[]) -> pure (Label noun,Found x)
     Just xs -> pure (Label noun,Possibles xs)
 
+identifyPossibleDirectObjects (NounPhrase2 adj (Noun noun)) = do
+  (LabelToGIDListMapping m) <- _objectLabelMap'
+                                <$> (getLocationM =<< getLocationIdM)
+  case Data.Map.Strict.lookup (Label noun) m of
+        Nothing -> pure (Label noun,NotFound)
+        Just (x:|[]) -> pure (Label noun,Found x)
+        Just xs -> do 
+                    res <- matchDescriptor (Label adj) xs 
+                    pure (Label noun, res)
+
 identifyPossibleDirectObjects (Noun noun) = do
     (LabelToGIDListMapping m) <- _objectLabelMap'
                                   <$> (getLocationM =<< getLocationIdM)
@@ -55,6 +65,18 @@ identifyPossibleDirectObjects (Noun noun) = do
       Just xs -> pure (Label noun,Possibles xs)
 
 identifyPossibleDirectObjects _ = throwError "identifyPossibleDirectObjects unfinished"
+
+matchDescriptor :: Label Adjective
+                    -> GIDList Object
+                    -> GameStateExceptT PossibleDirectObjects
+matchDescriptor adj entityGids = do
+  entities <- mapM getObjectGIDPairM entityGids
+  let matched = nonEmpty $ fst <$> Data.List.NonEmpty.filter
+                (\(_,Object {..}) -> adj `elem` _descriptives') entities
+  pure $ case matched of
+                Nothing        -> NotFound
+                Just (x :| []) -> Found x
+                Just xs        -> Possibles xs
 
 verifySimple :: Label Adjective
                               -> Label Object
