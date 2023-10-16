@@ -77,10 +77,14 @@ common shared
     , aeson
     , async
     , base          >=4.13.0.0 && <4.18.0.0.0
+    , containers    == 0.6.5.1
     , data-default
     , directory
     , filepath
+    , first-class-families
     , mtl
+    , vector == 0.12.3.1
+    , ghc-prim == 0.8.0
     , optics-core
     , profunctors
     , relude        >=1.0
@@ -90,6 +94,18 @@ common shared
 
   hs-source-dirs:     src
   default-language:   Haskell2010
+
+library
+  import:          shared
+  exposed-modules:
+    Types.ChapterOne
+    Types.ChapterThree
+    Types.ChapterFive
+    Types.ChapterEight
+    Types.ChapterNine
+    Types.ChapterTen
+    Types.ChapterEleven
+    Types.ChapterElevenThree
 
 executable fios
   import:  shared
