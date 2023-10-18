@@ -7,7 +7,7 @@ import Game.Model.Condition (Proximity(PlacedFront), Moveability (..), Perceptib
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.NoCanDo
 import Build.Locations.Kitchen.Exits.EastExit.Door.Actions.Look 
         (initialLookAction)
-import Game.Object (setObjectMapM, setObjectLabelMapM, getAnchored)
+import Game.Object (setObjectMapM, setObjectLabelMapM, getAnchoreds)
 import Build.ObjectLabels (doorLabel)
 import Build.LocationTemplate (kitchenGID)
 import Game.World (setLocationDirectionM)
@@ -52,6 +52,6 @@ doorActions = StandardActions {
 
 getDoorAnchored :: GameStateExceptT (Maybe (NonEmpty Anchored))
 getDoorAnchored = 
-  getAnchored kitchenGID EastSection kitchenEastDoorGID notSection
+  getAnchoreds kitchenGID EastSection kitchenEastDoorGID notSection
   where 
     notSection = show kitchenEastDoorGID <> "is not in " <> show EastSection

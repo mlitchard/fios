@@ -2,7 +2,6 @@ module Game.Engine.VerbPhraseOneEvaluator.Get where
 import Game.Model.World 
   (GameStateExceptT, Object (..), StandardActions (..))
 import Recognizer (NounPhrase (..))
-import Game.Engine.Verification (verifyAccessabilityNP)
 import Game.Model.Display (updateDisplayActionM, showPlayerActionM)
 
 {-

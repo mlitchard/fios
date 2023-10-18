@@ -4,9 +4,7 @@ module Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Cabinet
 import Game.Model.Mapping (Label (..))
 import Game.Model.World
 import qualified Data.Map.Strict (empty)
-import Build.ObjectTemplate (kitchenCabinetBelowShelfGID, kitchenShelfGID)
-import Game.Model.Condition 
-        (Moveability(..), Proximity (PlacedUnder))
+import Build.ObjectTemplate (kitchenCabinetBelowShelfGID)
 import Tokenizer (Lexeme(CABINET))
 import Game.World (initContainerMapM)
 import Build.Locations.Kitchen.ShelfArea.Actions.NoCanDo
@@ -14,7 +12,7 @@ import Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Actions.Put
         (putAction)
 import Build.Locations.Kitchen.ShelfArea.Cabinets.BelowShelf.Actions.Look 
         (initialLookAction)
-import Game.Object (setObjectMapM, getProximity)
+import Game.Object (setObjectMapM, getAnchoredTo)
 import Build.LocationTemplate (kitchenGID)
 
 buildKitchenCabinetBelowShelf :: GameStateExceptT ()
@@ -47,11 +45,11 @@ standardActions = StandardActions {
 }
 
 orientation :: Orientation 
-orientation = AnchoredTo' anchoredProximity
+orientation = AnchoredTo' anchoredTo
 
-anchoredProximity :: GameStateExceptT Proximity
-anchoredProximity = 
-  getProximity kitchenGID EastSection kitchenShelfGID kitchenCabinetBelowShelfGID
+anchoredTo :: GameStateExceptT AnchoredTo
+anchoredTo = 
+  getAnchoredTo kitchenGID kitchenCabinetBelowShelfGID
 
 cabinetContainer :: Container
 cabinetContainer = Container Data.Map.Strict.empty

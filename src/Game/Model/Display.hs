@@ -74,24 +74,6 @@ updateDisplayActionM :: GameStateExceptT () -> GameStateExceptT ()
 updateDisplayActionM displayAction = do
   modify' (\gs -> gs{_displayAction'  = displayAction})
 
-{-
-describeOrientationM :: Text -> Orientation -> GameStateExceptT ()
-describeOrientationM preamble orientation = do
-  desc <- case orientation of
-            ContainedBy' containedBy -> describeContainedByM containedBy
-            Inventory -> pure "in your inventory."
-            (Floor _) -> pure "on the floor."
-            (AnchoredTo' anchoredTo) -> describeAnchoredToM anchoredTo
-            Anchoring roomAnchor -> pure $ describeAnchoring roomAnchor
-            Anchored roomAnchor -> pure $ describeAnchoring roomAnchor
-  updateEnvironmentM (preamble <> desc)
-  data Orientation
-  = ContainedBy' (GameStateExceptT (GID Object, ContainedPlacement))
-  | Inventory
-  | Anchor (GameStateExceptT (Maybe (NonEmpty Anchored)))
-  | AnchoredTo' (GameStateExceptT Proximity)
--}
-
 describeOrientation :: Text -> Orientation -> GameStateExceptT ()
 describeOrientation preamble orientation = do
   desc <- case orientation of
@@ -101,7 +83,7 @@ describeOrientation preamble orientation = do
             AnchoredTo' f -> describeAnchoredTo f 
   pass
 
-describeAnchoredTo :: GameStateExceptT Proximity -> GameStateExceptT Text
+describeAnchoredTo :: GameStateExceptT AnchoredTo -> GameStateExceptT Text
 describeAnchoredTo _ = pure mempty
 
 describeAnchor :: (GameStateExceptT (Maybe (NonEmpty Anchored))) 

@@ -35,7 +35,7 @@ data VerbPhrase
 
 data PrepPhrase
   = PrepPhrase1 Preposition NounPhrase
-  | PrepPhrase2 Preposition  Determiner AdjPhrase NounPhrase
+  | PrepPhrase2 Preposition  Determiner Adjective NounPhrase
   -- | Preposition Preposition
   deriving stock (Show, Eq, Ord)
 

@@ -4,8 +4,6 @@ import Data.Map.Strict qualified
 import Build.ObjectTemplate ( kitchenSinkGID )
 import Game.Model.Mapping
 import Game.Model.World
-import Game.Model.Condition
-        (Moveability (..))
 import Game.World 
 import Tokenizer (Lexeme (SINK)) 
 import Build.Locations.Kitchen.SinkArea.Actions.Put
@@ -13,7 +11,7 @@ import Build.Locations.Kitchen.SinkArea.Actions.Look
 import Build.Locations.Kitchen.SinkArea.Actions.Open (openAction)
 import Build.Locations.Kitchen.SinkArea.Actions.Close (closeAction)
 import Build.Locations.Kitchen.SinkArea.Actions.NoCanDo
-import Game.Object (setObjectMapM, getAnchored)
+import Game.Object (setObjectMapM, getAnchoreds)
 import Build.LocationTemplate (kitchenGID)
 
 buildKitchenSink :: GameStateExceptT ()
@@ -49,7 +47,7 @@ orientation :: Orientation
 orientation = Anchor sinkAnchor
 
 sinkAnchor :: GameStateExceptT (Maybe (NonEmpty Anchored))
-sinkAnchor = getAnchored kitchenGID EastSection kitchenSinkGID notAnchorMsg
+sinkAnchor = getAnchoreds kitchenGID EastSection kitchenSinkGID notAnchorMsg
   where
     notAnchorMsg = show kitchenSinkGID <> " is not an anchor"
 

@@ -14,7 +14,7 @@ import Build.Locations.Kitchen.FloorArea.Actions.Floor.Get (getAction)
 import Build.Locations.Kitchen.FloorArea.Actions.Floor.Put (putAction)
 import Build.Locations.Kitchen.FloorArea.Actions.Floor.NoCanDo 
         (openAction, closeAction, lockAction, unlockAction, goAction)
-import Game.Object (setObjectMapM, getAnchored)
+import Game.Object (setObjectMapM, getAnchoreds)
 import qualified Data.List.NonEmpty
 import Build.LocationTemplate (kitchenGID)
 import Build.Locations.Kitchen.FloorArea.Actions.Floor.Look (defaultLookAction)
@@ -40,7 +40,7 @@ buildFloor = Object {
     orientation = Anchor floorAnchor 
 
 floorAnchor :: GameStateExceptT (Maybe (NonEmpty Anchored))
-floorAnchor = getAnchored kitchenGID EastSection kitchenFloorGID notAnchorMsg
+floorAnchor = getAnchoreds kitchenGID EastSection kitchenFloorGID notAnchorMsg
   where
     notAnchorMsg = show kitchenFloorGID <> " is not an anchor"
 

@@ -135,40 +135,10 @@ containedBy containedGID containerGID = do
                       <> show containerGID
                       <> "not a container"
 -- _anchoredObjects'
-{-
-getAnchored :: GID Object
-                -> GameStateExceptT (Maybe (NonEmpty Anchored))
-getAnchored eid = do
- 
-  findAnchored eid roomAnchors
 
-findAnchored :: GID Object
-                -> [ObjectAnchors]
-                -> GameStateExceptT (Maybe (NonEmpty Anchored))
-findAnchored _ [] = pure Nothing
-
-findAnchored eid [ObjectAnchors objectAnchors] = pure
-  $ join (maybeAnchored eid objectAnchors)
-
-findAnchored eid ((ObjectAnchors objectAnchors):xs) = do
-  case maybeAnchored eid objectAnchors of
-    Nothing -> findAnchored eid xs
-    Just anchor -> pure anchor
-
-maybeAnchored :: GID Object
-                  -> Map (GID Object) (Maybe (NonEmpty Anchored))
-                  -> Maybe (Maybe (NonEmpty Anchored))
-maybeAnchored = Data.Map.Strict.lookup
--}
 makeErrorReport :: NounPhrase -> PrepPhrase -> Text
 makeErrorReport _np _pp = "You don't see that here"
-{-
-findAnchoredTo :: (GID Object, Object) -> Maybe FoundAnchoredTo
-findAnchoredTo object = case object of
-  (gid,obj@(Object _ _ _ _ _ (AnchoredTo' gp) _)) -> Just $ FoundAnchoredTo
-                                                              (gid, obj) gp
-  _ -> Nothing
--}
+
 -- assumes if the Label exists, the gid is in it's list
 -- used when player leaves location
 removeEntityLabelMapM :: Label Object -> GID Object  -> GameStateExceptT ()

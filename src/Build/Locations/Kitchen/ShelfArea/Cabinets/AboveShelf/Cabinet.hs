@@ -4,7 +4,7 @@ import Game.Model.World
 import Game.Model.Mapping
 import qualified Data.Map.Strict
 import Build.ObjectTemplate 
-        (kitchenCabinetAboveShelfGID, kitchenShelfGID)
+        (kitchenCabinetAboveShelfGID)
 import Tokenizer.Data ( Lexeme(SINK) )
 import Game.World (initContainerMapM)
 import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.NoCanDo
@@ -16,15 +16,9 @@ import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.Open
         (openAction)
 import Build.Locations.Kitchen.ShelfArea.Cabinets.AboveShelf.Actions.Close 
         (closeAction)
-import Game.Object (setObjectMapM, getProximity)
+import Game.Object (setObjectMapM, getAnchoredTo)
 import Build.LocationTemplate (kitchenGID)
-import Game.Model.Condition (Proximity, Moveability (NotMoveable))
 
-
-{-
-  setObjectMapM kitchenFloorGID buildFloor 
-  initContainerMapM kitchenFloorGID floorContainer
--}
 buildKitchenCabinetAboveShelf :: GameStateExceptT ()
 buildKitchenCabinetAboveShelf = do
   setObjectMapM kitchenCabinetAboveShelfGID buildCabinet     
@@ -55,11 +49,11 @@ standardActions = StandardActions {
 }
 
 orientation :: Orientation 
-orientation = AnchoredTo' anchoredProximity
+orientation = AnchoredTo' anchoredTo
 
-anchoredProximity :: GameStateExceptT Proximity
-anchoredProximity = 
-  getProximity kitchenGID EastSection kitchenShelfGID kitchenCabinetAboveShelfGID
-  
+anchoredTo :: GameStateExceptT AnchoredTo
+anchoredTo = 
+  getAnchoredTo kitchenGID kitchenCabinetAboveShelfGID
+
 cabinetContainer :: Container
 cabinetContainer = Container Data.Map.Strict.empty

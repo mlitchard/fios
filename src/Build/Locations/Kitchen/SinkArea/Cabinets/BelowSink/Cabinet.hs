@@ -5,15 +5,14 @@ import Game.Model.Mapping ( Label(..) )
 import Game.Model.World
 import Game.World
 import qualified Data.Map.Strict
-import Build.ObjectTemplate (kitchenCabinetBelowSinkGID, kitchenSinkGID)
+import Build.ObjectTemplate (kitchenCabinetBelowSinkGID)
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Close
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Look 
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.NoCanDo
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Open
 import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Put
-import Game.Model.Condition (Moveability(..), Proximity)
 import Tokenizer.Data ( Lexeme(CABINET) )
-import Game.Object (setObjectMapM, getProximity)
+import Game.Object (setObjectMapM, getAnchoredTo)
 import Build.LocationTemplate (kitchenGID)
 
 buildKitchenCabinetBelowSink :: GameStateExceptT ()
@@ -46,11 +45,11 @@ standardActions = StandardActions {
 }
 
 orientation :: Orientation
-orientation = AnchoredTo' anchoredProximity
+orientation = AnchoredTo' anchoredTo
 
-anchoredProximity :: GameStateExceptT Proximity
-anchoredProximity = 
-  getProximity kitchenGID EastSection kitchenSinkGID kitchenCabinetBelowSinkGID
+anchoredTo :: GameStateExceptT AnchoredTo
+anchoredTo = 
+  getAnchoredTo kitchenGID kitchenCabinetBelowSinkGID
   
 cabinetContainer :: Container
 cabinetContainer = Container Data.Map.Strict.empty

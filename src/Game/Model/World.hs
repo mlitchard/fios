@@ -20,10 +20,20 @@ type GameStateExceptT = ReaderT Config (ExceptT Text (StateT GameState IO))
 
 type InputGameStateExceptT = InputT GameStateExceptT
 
+data Anchored = Anchored
+  { _gid' :: GID Object
+  , _proximity :: Proximity
+  }
+
+data AnchoredTo = AnchoredTo {
+    _anchoredTo' :: GID Object  
+  , _proximity' :: Proximity
+}
+  {-
 newtype AnchoredTo = AnchoredTo
   { _unAnchoredTo' :: Data.Map.Strict.Map (GID Object) (GID Object,Proximity)}
     deriving stock (Show, Eq, Ord)
-
+-}
 data Clarification = Clarification {
     _clarifyingLabel' :: Label Object
   , _gidObject' :: NonEmpty Object
@@ -64,6 +74,11 @@ type EvalVerbFive = (Verb, AdjPhrase) -> GameStateExceptT ()
 newtype ExitGIDMap
   = ExitGIDMap {_unExitGIDMap' :: LabelToGIDMapping Exit Object}
       deriving stock Show
+
+data FoundObject = FoundObject {
+    _gid' :: GID Object
+  , _entity' :: Object
+}
 
 data FoundAnchoredTo = FoundAnchoredTo
   {  _anchoredObject' :: (GID Object,Object)
@@ -109,6 +124,24 @@ data Location = Location {
 
 data Lockability = Locked | UnLocked | NotLockable deriving stock Show
 
+type LookF = (Object -> Map (GID Object) Container -> GameStateExceptT ())
+
+newtype LookAtF = LookAtF {_unLookAt' :: LookF}
+newtype LookOnF = LookOnF {_unLookOn' :: LookF}
+newtype LookInF = LookInF {_unLookIn' :: LookF}
+
+data LookAction = LookAction {
+      _updatePerception'  :: UpdatePerceptionFunctions
+    , _perception'        :: PerceptionFunctions
+    , _lookFunctions'     :: LookFunctions
+  }
+
+data LookFunctions = LookFunctions {
+    _lookAt'          :: LookAtF
+  , _lookIn'          :: LookInF
+  , _lookOn'          :: LookOnF
+}
+
 data Narration = Narration {
       _playerAction' :: Data.List.NonEmpty.NonEmpty Text
     , _environment'   :: Data.List.NonEmpty.NonEmpty Text
@@ -124,6 +157,38 @@ data Object = Object {
   , _orientation'     :: Orientation
   , _standardActions'  :: StandardActions
 }
+
+newtype ObjectAnchors = ObjectAnchors { _unObjectAnchors' :: AnchorMap }
+
+data OpenState = Open | Closed deriving stock Show
+
+data Orientation
+  = ContainedBy' (GameStateExceptT (GID Object, ContainedPlacement))
+  | Inventory
+  | Anchor (GameStateExceptT (Maybe (NonEmpty Anchored)))
+  | AnchoredTo' (GameStateExceptT AnchoredTo)
+
+data Player = Player
+  { _playerLocation'  :: GID Location
+  , _p_inv'           :: [GID Object]
+  } deriving stock Show
+
+data RoomSection
+  = NorthSection
+  | SouthSection
+  | WestSection
+  | EastSection
+  | NorthWestSection
+  | NorthEastSection
+  | SouthWestSection
+  | SouthEastSection
+  | FloorSection
+    deriving stock (Show,Eq,Ord)
+
+type RoomSectionMap = Data.Map.Strict.Map RoomSection ObjectAnchors
+data PossibleObjects
+  = Found FoundObject
+  | Possibles (NonEmpty FoundObject)
 
 data StandardActions = StandardActions
   {   _getAction' :: GetAction
@@ -151,24 +216,6 @@ data PutAction = PutAction
   {   _updatePut' :: GameStateExceptT ()
     , _put' :: GID Object -> PutPrep -> GameStateExceptT ()
   }
-
-type LookF = (Object -> Map (GID Object) Container -> GameStateExceptT ())
-
-newtype LookAtF = LookAtF {_unLookAt' :: LookF}
-newtype LookOnF = LookOnF {_unLookOn' :: LookF}
-newtype LookInF = LookInF {_unLookIn' :: LookF}
-
-data LookAction = LookAction {
-      _updatePerception'  :: UpdatePerceptionFunctions
-    , _perception'        :: PerceptionFunctions
-    , _lookFunctions'     :: LookFunctions
-  }
-
-data LookFunctions = LookFunctions {
-    _lookAt'          :: LookAtF
-  , _lookIn'          :: LookInF
-  , _lookOn'          :: LookOnF
-}
 
 type DisplayF = Object -> Maybe Object
 
@@ -213,40 +260,6 @@ data GoAction = GoAction
   }
 
 type AnchorMap = Data.Map.Strict.Map (GID Object) (Maybe (NonEmpty Anchored))
-
-newtype ObjectAnchors = ObjectAnchors { _unObjectAnchors' :: AnchorMap }
-
-data Anchored = Anchored
-  { _gid' :: GID Object
-  , _proximity :: Proximity
-  }
-
-data OpenState = Open | Closed deriving stock Show
-
-data Orientation
-  = ContainedBy' (GameStateExceptT (GID Object, ContainedPlacement))
-  | Inventory
-  | Anchor (GameStateExceptT (Maybe (NonEmpty Anchored)))
-  | AnchoredTo' (GameStateExceptT Proximity)
-
-data Player = Player
-  { _playerLocation'  :: GID Location
-  , _p_inv'           :: [GID Object]
-  } deriving stock Show
-
-data RoomSection
-  = NorthSection
-  | SouthSection
-  | WestSection
-  | EastSection
-  | NorthWestSection
-  | NorthEastSection
-  | SouthWestSection
-  | SouthEastSection
-  | FloorSection
-    deriving stock (Show,Eq,Ord)
-
-type RoomSectionMap = Data.Map.Strict.Map RoomSection ObjectAnchors
 
 data Scene = Scene
   {_sceneTitle'         :: Text

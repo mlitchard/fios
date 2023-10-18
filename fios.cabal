@@ -202,6 +202,7 @@ library
     Game.Engine.OnlyVerb
     Game.Engine.OnlyVerb.DoLook
     Game.Engine.OnlyVerb.DoGo
+    Game.Engine.Verbs.Look
     Game.Engine.VerbPhraseOneEvaluator
     Game.Engine.VerbPhraseOneEvaluator.Get
     Game.Engine.VerbPhraseThree 

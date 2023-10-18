@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Game.Object where
 
-import qualified Data.Map.Strict (lookup, insert, insertWith)
+import qualified Data.Map.Strict (lookup, insert, insertWith, elems, toList)
 import Game.Model.Mapping
 import Game.Model.GID (GID (GID))
 import Game.Model.World
@@ -11,64 +11,97 @@ import Game.Model.Condition (Proximity)
 
 getContainedPlacement :: GID Object -- contained gid 
                           -> GID Object -- container gid 
-                          -> GameStateExceptT (GID Object,ContainedPlacement) 
-getContainedPlacement containedGid containerGid = do 
+                          -> GameStateExceptT (GID Object,ContainedPlacement)
+getContainedPlacement containedGid containerGid = do
   containerMap <- _unGIDToDataMap' . _containerMap' . _world' <$> get
   (Container container) <- throwMaybeM notContainerMsg
                             $ Data.Map.Strict.lookup containedGid containerMap
   (Object {..}) <- getObjectM containedGid
   containedEntities <- throwMaybeM (noEntities _entityLabel')
                         $ Data.Map.Strict.lookup _entityLabel' container
-  (ContainedEntity {..}) <- throwMaybeM notFoundMsg 
+  (ContainedEntity {..}) <- throwMaybeM notFoundMsg
                     $ find (isContainedGid containedGid) $ Data.List.NonEmpty.toList containedEntities
-  pure $ (,) containerGid _placement' 
-  where 
-    noEntities (Label label) = "getContainedPlacement error: when looking for " 
-                                  <> show containedGid 
+  pure $ (,) containerGid _placement'
+  where
+    noEntities (Label label) = "getContainedPlacement error: when looking for "
+                                  <> show containedGid
                                   <> " could not find any "
                                   <> show label
     notFoundMsg = "getContainedPlacement error: "
                     <> show containerGid
                     <> " not found."
-    notContainerMsg = "getContainedPlacement error : " 
+    notContainerMsg = "getContainedPlacement error : "
                         <> show containerGid <> " is not a container."
 
-isContainedGid :: GID Object -> ContainedEntity -> Bool 
+isContainedGid :: GID Object -> ContainedEntity -> Bool
 isContainedGid gid (ContainedEntity gid' _) = gid == gid'
 
-getAnchored :: GID Location 
-                -> RoomSection 
+getAnchoreds :: GID Location
+                -> RoomSection
                 -> GID Object
                 -> Text
                 -> GameStateExceptT (Maybe (NonEmpty Anchored))
-getAnchored lid roomSection anchorGid roomSectionMsg = do 
+getAnchoreds lid roomSection anchorGid roomSectionMsg = do
   (Location {..}) <- getLocationM lid
   objectAnchors <- _unObjectAnchors'
                       <$> throwMaybeM roomSectionMsg
                       (Data.Map.Strict.lookup roomSection _anchoredObjects')
   throwMaybeM notAnchorMsg
-                    $ Data.Map.Strict.lookup anchorGid objectAnchors  
-  where 
+                    $ Data.Map.Strict.lookup anchorGid objectAnchors
+  where
     notAnchorMsg = show anchorGid <> "is not an anchor in " <> show roomSection
 
-getProximity :: GID Location
-                  -> RoomSection
-                  -> GID Object
-                  -> GID Object
-                  -> GameStateExceptT Proximity
-getProximity lid roomSection anchorGid anchoredGid = do
-  maybeAnchored <- getAnchored lid roomSection anchorGid roomSectionMsg
-  case maybeAnchored of
-    Nothing -> throwError notAnchoredByMsg
-    Just anchoreds -> case find isAnchored $ toList anchoreds of
-                        Nothing -> throwError notAnchoredByMsg
-                        Just (Anchored _ proximity) -> pure proximity
+getAnchoredTo :: GID Location -> GID Object -> GameStateExceptT AnchoredTo
+getAnchoredTo lid anchoredGid = do
+  (Location {..}) <- getLocationM lid
+  let anchors = concatMap (Data.Map.Strict.toList . _unObjectAnchors')
+            $ Data.Map.Strict.elems _anchoredObjects'
+  case findAnchoredTo anchoredGid anchors of
+    Nothing -> throwError programmerErr
+    Just anchoredTo -> pure anchoredTo
   where
-    isAnchored (Anchored gid _) = gid == anchoredGid
-    notAnchoredByMsg = show anchoredGid
-                        <> " is not anchored by "
-                        <> show anchorGid
-    roomSectionMsg = show anchoredGid <> "not anchored in " <> show roomSection
+    programmerErr = "getAnchoredTo says programmer error: "
+                      <> (show anchoredGid <> " should be anchored but isn't.")
+
+
+findAnchoredTo :: GID Object
+                    -> [(GID Object, Maybe (NonEmpty Anchored))]
+                    -> Maybe AnchoredTo
+findAnchoredTo _ [] = Nothing
+findAnchoredTo _ [(_,Nothing)] = Nothing
+findAnchoredTo findAnchoredGid [(anchorGid, Just anchoredXS)] =
+  findAnchoredTo' findAnchoredGid anchorGid anchoredXS
+findAnchoredTo findAnchoredGid ((_,Nothing):xs) = findAnchoredTo findAnchoredGid xs
+findAnchoredTo findAnchoredGid ((anchorGid, Just anchoredXS):xs) =
+  case findAnchoredTo' findAnchoredGid anchorGid anchoredXS of
+    (Just anchoredTo) -> Just anchoredTo
+    Nothing -> findAnchoredTo findAnchoredGid xs
+
+
+findAnchoredTo' :: GID Object
+                    -> GID Object
+                    -> NonEmpty Anchored
+                    -> Maybe AnchoredTo
+findAnchoredTo' findAnchoredGid anchorGid (Anchored testGid proximity :| [])
+  | findAnchoredGid == testGid = Just (AnchoredTo anchorGid proximity)
+  | otherwise = Nothing
+
+findAnchoredTo' findAnchoredGid anchorGid (Anchored testGid proximity :| (x:xs))
+  | findAnchoredGid == testGid = Just (AnchoredTo anchorGid proximity)
+  | otherwise = findAnchoredTo' findAnchoredGid anchorGid (x :| xs)
+{-
+findAnchoredTo anchoredGid [(anchorGid,xs)] = findAnchoredTo' anchoredGid xs
+findAnchoredTo anchoredGid ((anchorGid,anchoredXS):xs) =
+  case findAnchoredTo' anchoredGid anchoredXS of
+    Just anchoredTo -> Just anchoredTo
+    Nothing -> findAnchoredTo anchoredGid xs
+
+findAnchoredTo' :: GID Object -> [Anchored] -> Maybe AnchoredTo
+findAnchoredTo' _ [] = Nothing
+findAnchoredTo' anchoredGid ((Anchored testAnchored proximity):xs)
+  | testAnchored == anchoredGid = Just (AnchoredTo anchoredGid proximity)
+  | otherwise = findAnchoredTo' anchoredGid xs
+-}
 
 getObjectM :: GID Object -> GameStateExceptT Object
 getObjectM gid@(GID gid') = do

@@ -4,80 +4,127 @@ import Recognizer.WordClasses
       Adjective,
       Imperative,
       NounPhrase(Noun, NounPhrase1, NounPhrase2),
-      PrepPhrase(PrepPhrase1) )
+      PrepPhrase(..), Preposition )
 import Game.Model.GID (GID)
 import qualified Data.List.NonEmpty
 import Game.Object (getObjectsFromLabelM, getObjectM, getObjectGIDPairM)
 import Game.World (makeErrorReport)
+import Game.Model.World as FoundObject (FoundObject (..))
 import Game.Model.World
 import Clarifier
     ( subObjectAgreement,
       checkProximity,
       findInDirectObject,
-      findNoun)
+      findNoun, matchesProximity)
 import Game.Model.Mapping (Label(..), LabelToGIDListMapping (..), GIDList)
 import Control.Monad.Except (MonadError(..))
 import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
 import Data.Map.Strict (lookup)
-import Tokenizer (Lexeme)
+import Tokenizer (Lexeme (..))
 import Game.Scene (tryDisplayF)
+import Data.Time.Calendar.OrdinalDate (fromSundayStartWeek)
+import Game.Model.Condition (Proximity (..))
 
-data PossibleDirectObjects
-  = Found (GID Object)
-  | Possibles (NonEmpty (GID Object))
-  | NotFound
+matchObjects :: FoundObject
+                  -> FoundObject
+                  -> GameStateExceptT (Maybe Proximity)
+matchObjects advObject adjObject = do
+  res <- tryAnchoredTo advOrientation
+  pure $ case res of
+    Nothing -> Nothing
+    Just (AnchoredTo anchoredGid proximity)
+      | anchoredGid == adjGid -> Just proximity
+      | otherwise -> Nothing
+  where
+    advOrientation = _orientation' (FoundObject._entity' advObject)
+    adjGid =  FoundObject._gid' adjObject
 
-evaluatePossibleDirectObjects :: NonEmpty (GID Object)
-                                    -> GameStateExceptT (Maybe (NonEmpty Object))
-evaluatePossibleDirectObjects possibles = do
-  entities <- mapM evaluatePossibleDirectObject possibles
-  pure $ nonEmpty $ catMaybes $ toList entities
+tryAnchoredTo :: Orientation -> GameStateExceptT (Maybe AnchoredTo)
+tryAnchoredTo (AnchoredTo' f) = Just <$> f
+tryAnchoredTo _ = pure Nothing
 
-evaluatePossibleDirectObject :: GID Object -> GameStateExceptT (Maybe Object)
-evaluatePossibleDirectObject gid = tryDisplayF <$> getObjectM gid
+evaluatePossibleObjects :: NonEmpty FoundObject 
+                            -> Maybe (NonEmpty FoundObject)
+evaluatePossibleObjects possibles =
+  let entities = evaluatePossibleObject <$> possibles
+  in nonEmpty $ catMaybes $ toList entities
 
-identifyPossibleDirectObjects :: NounPhrase
-                                  -> GameStateExceptT (Label Object,PossibleDirectObjects)
-identifyPossibleDirectObjects (NounPhrase1 _ (Noun noun)) = do
+evaluatePossibleObject :: FoundObject -> Maybe FoundObject
+evaluatePossibleObject (FoundObject gid entity) =
+      let res = tryDisplayF entity
+      in FoundObject gid <$> res
+
+identifyPossiblelObjects :: NounPhrase
+                                  -> GameStateExceptT (Label Object, Maybe PossibleObjects)
+
+identifyPossiblelObjects (NounPhrase1 _ (Noun noun)) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   case Data.Map.Strict.lookup (Label noun) m of
-    Nothing -> pure (Label noun,NotFound)
-    Just (x:|[]) -> pure (Label noun,Found x)
-    Just xs -> pure (Label noun,Possibles xs)
+    Nothing -> pure (Label noun,Nothing)
+    Just (gid:|[]) -> do
+                      objPair <- getObjectGIDPairM gid
+                      pure (Label noun, Just (Found (makeFoundObject objPair)))
+    Just gids -> do
+                  objPairs <- mapM getObjectGIDPairM gids
+                  let foundObjects = fmap makeFoundObject objPairs
+                  pure (Label noun,Just (Possibles foundObjects))
 
-identifyPossibleDirectObjects (NounPhrase2 adj (Noun noun)) = do
+identifyPossiblelObjects (NounPhrase2 adj (Noun noun)) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   case Data.Map.Strict.lookup (Label noun) m of
-        Nothing -> pure (Label noun,NotFound)
-        Just (x:|[]) -> pure (Label noun,Found x)
-        Just xs -> do 
-                    res <- matchDescriptor (Label adj) xs 
+        Nothing -> pure (Label noun,Nothing)
+        Just (gid:|[]) -> do
+                            objPair <- getObjectGIDPairM gid
+                            let found = makeFoundObject objPair
+                            pure (Label noun,Just (Found found))
+        Just gids -> do
+                    res <- matchDescriptor (Label adj) gids
                     pure (Label noun, res)
 
-identifyPossibleDirectObjects (Noun noun) = do
+identifyPossiblelObjects (Noun noun) = do
     (LabelToGIDListMapping m) <- _objectLabelMap'
                                   <$> (getLocationM =<< getLocationIdM)
     case Data.Map.Strict.lookup (Label noun) m of
-      Nothing -> pure (Label noun, NotFound)
-      Just (x:|[]) -> pure (Label noun,Found x)
-      Just xs -> pure (Label noun,Possibles xs)
+      Nothing -> pure (Label noun, Nothing)
+      Just (gid:|[]) -> do
+                          objPair <- getObjectGIDPairM gid
+                          let found = makeFoundObject objPair
+                          pure (Label noun, Just (Found found))
+      Just _ -> throwError "identifyPossiblelObjects incomplete" -- pure (Label noun, Just (Possibles xs))
 
-identifyPossibleDirectObjects _ = throwError "identifyPossibleDirectObjects unfinished"
+identifyPossiblelObjects _ = throwError "identifyPossiblelObjects unfinished"
 
 matchDescriptor :: Label Adjective
                     -> GIDList Object
-                    -> GameStateExceptT PossibleDirectObjects
+                    -> GameStateExceptT (Maybe PossibleObjects)
 matchDescriptor adj entityGids = do
   entities <- mapM getObjectGIDPairM entityGids
-  let matched = nonEmpty $ fst <$> Data.List.NonEmpty.filter
+  let matched = nonEmpty $ Data.List.NonEmpty.filter
                 (\(_,Object {..}) -> adj `elem` _descriptives') entities
   pure $ case matched of
-                Nothing        -> NotFound
-                Just (x :| []) -> Found x
-                Just xs        -> Possibles xs
+                Nothing        -> Nothing
+                Just (x :| []) -> Just (Found $ makeFoundObject x)
+                Just xs        -> Just (Possibles $ makeFoundObject <$> xs)
 
+makeFoundObject :: (GID Object, Object) -> FoundObject
+makeFoundObject (gid, entity) = FoundObject {
+    _gid' = gid
+  , _entity' = entity
+}
+
+matchesProximity :: Proximity -> Lexeme -> Bool
+matchesProximity PlacedOn ON = True
+matchesProximity PlacedUnder UNDER = True
+matchesProximity PlacedAbove ABOVE = True
+matchesProximity PlacedLeft LEFT = True
+matchesProximity PlacedRight RIGHT = True
+matchesProximity PlacedFront FRONT = True
+matchesProximity PlacedBehind BEHIND = True
+matchesProximity _ _ = False
+
+{-
 verifySimple :: Label Adjective
                               -> Label Object
                               -> GameStateExceptT (GID Object, Object)
@@ -86,7 +133,7 @@ verifySimple descriptiveLabel' directObjectLabel' = do
   testableEntity <- if length possibleDirectObjects > 1
     then throwError "verifySimple can't differentiate yet"
     else pure (head possibleDirectObjects)
-  let descriptives = _descriptives' (snd testableEntity)
+  let descriptives = Game.Model.World._descriptives' (snd testableEntity)
   -- does it match description?
   unless (matchDescriptive descriptiveLabel' descriptives)
     $ throwError noSeeMSG
@@ -101,7 +148,8 @@ verifySimple descriptiveLabel' directObjectLabel' = do
   where
     noSeeMSG = "You don't see that here."
 -- (AdjNoun _ (Adjective adj) (Noun noun))
-
+-}
+{-
 verifyAccessabilityNP :: NounPhrase -> GameStateExceptT (GID Object, Object)
 verifyAccessabilityNP (NounPhrase1 _ (NounPhrase2 adj (Noun n))) =
   verifySimple (descriptiveLabel adj) (directObjectLabel n)
@@ -115,7 +163,7 @@ verifyAccessabilityNP _ = throwError "verifyAccessabilityAP unfinished"
 matchDescriptive :: Label Adjective -> [Label Adjective] -> Bool
 matchDescriptive  testDescriptive descriptives =
   testDescriptive `elem` descriptives
-
+-}
 {-
 data Orientation 
   = ContainedBy' ContainedBy 
@@ -138,7 +186,7 @@ type ResultAccessabilityNP =
 
 type ResultAccessabilityPP =
       GameStateExceptT (Either (GameStateExceptT ()) (GID Object, Object))
-
+{-
 verifyAccessabilityAPNP :: AdjPhrase
                             -> NounPhrase
                             -> GameStateExceptT (GID Object, Object)
@@ -146,7 +194,7 @@ verifyAccessabilityAPNP (Adjective adj) (Noun noun) = do
   verifySimple (Label adj) (Label noun)
 verifyAccessabilityAPNP _ _ = throwError "verifyAccessabilityAPNP unfinished"
 -- (PrepPhrase1 _ (Noun noun))
-
+-}
 verifyAccessabilityPP :: (Imperative -> GameStateExceptT ())
                           -> PrepPhrase
                           -> ResultAccessabilityPP

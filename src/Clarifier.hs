@@ -65,8 +65,8 @@ objectOrientation (Object {..}) =
   describeOrientation ("The " <> _shortName') _orientation'
 
 checkProximity :: PrepPhrase -> FoundAnchoredTo -> Bool
-checkProximity prep (FoundAnchoredTo _ (_,prox)) =
-  matchesProximity (prox,prep)
+checkProximity prep (FoundAnchoredTo _ (_,prox)) = error ("checkProximity deprecated")
+-- matchesProximity (prox,prep)
 
 clarifyNotThere :: GameStateExceptT ()
 clarifyNotThere = throwError "You don't see that here"

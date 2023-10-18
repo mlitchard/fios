@@ -72,7 +72,7 @@ VerbPhrase7 Verb NounPhrase PrepPhrase
   prepPhrase <-
     rule $
       PrepPhrase1 <$> preposition <*> nounPhrase
-        <|> PrepPhrase2 <$> preposition <*> determiner <*> adjPhrase <*> nounPhrase
+        <|> PrepPhrase2 <$> preposition <*> determiner <*> adjective <*> nounPhrase
        -- <|> Preposition <$> preposition
         <?> toText ("prep phrase" :: String)
 -- AdjNoun Adjective NounPhrase

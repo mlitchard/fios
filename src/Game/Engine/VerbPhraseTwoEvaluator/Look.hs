@@ -5,55 +5,48 @@ import Game.Model.World
 import Game.Model.Display
         (showPlayerActionM, showEnvironmentM
         , updateDisplayActionM)
-import Recognizer (AdjPhrase (..))
 import Tokenizer.Data (Lexeme(..))
 import Game.Engine.Verification
-        (verifySimple, identifyPossibleDirectObjects, PossibleDirectObjects (..), evaluatePossibleDirectObject, evaluatePossibleDirectObjects)
-import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
+        (identifyPossiblelObjects, evaluatePossibleObjects, evaluatePossibleObject)
 import Control.Monad.Except (MonadError(..))
 import Game.Actions.Look.StandardLook (look)
-import Game.Model.GID (GID)
-import Game.Object (getObjectM)
-import Data.Text (toLower)
-import Build.ObjectTemplate (kitchenFloorGID)
 import Clarifier (clarifyingLookDirectObjectM)
+import Game.Scene (tryDisplayF)
 
-
--- (ImperativeClause (VerbPhrase2 LOOK (PrepPhrase2 IN THE (Adjective POT) (Noun PLANT))))
--- (ImperativeClause (VerbPhrase2 LOOK (PrepPhrase2 AT THE (Adjective POT) (Noun PLANT))))
 evalLookObjectM :: PrepPhrase -> GameStateExceptT ()
 evalLookObjectM (PrepPhrase1 prep np) = do
-  pdo <- identifyPossibleDirectObjects np
+  pdo <- identifyPossiblelObjects np
   case pdo of
-    (label,NotFound) -> throwError ("You don't see that here")
-    (label,Found gid) -> do 
-                  entity <- throwMaybeM "You don't see that here" 
-                              =<< evaluatePossibleDirectObject gid
-                  doLookObject prep entity
-    (label,Possibles gids) -> do 
-                                entities <- throwMaybeM "You don't see that here"
-                                              =<< evaluatePossibleDirectObjects gids
-                                clarifyWhich <- _clarifyWhich' <$> ask 
+    (label,Nothing) -> throwError ("You don't see that here")
+    (label,Just (Found fobj)) -> do
+                  (FoundObject {..}) <- throwMaybeM "You don't see that here"
+                              $ evaluatePossibleObject fobj
+                  doLookObject prep _entity'
+    (label,Just (Possibles gids)) -> do
+                                entities <- _entity' 
+                                              <<$>> throwMaybeM "You don't see that here" 
+                                                    (evaluatePossibleObjects gids)
+                                clarifyWhich <- _clarifyWhich' <$> ask
                                 clarifyWhich (clarifyingLookDirectObjectM prep) (label, entities)
                                 pass
 
  -- evaluateNounPhrase (clarifyingLookDirectObjectM prep) np 
 
-evalLookObjectM (PrepPhrase2 prep _ (Adjective adj) noun) =  do
-  pdo <- identifyPossibleDirectObjects (NounPhrase2 adj noun)
-  case pdo of 
-    (label,NotFound) -> throwError ("You don't see that here")
-    (label,Found gid) -> do 
-                  entity <- throwMaybeM "You don't see that here" 
-                              =<< evaluatePossibleDirectObject gid
-                  doLookObject prep entity
-    (label,Possibles gids) -> pass 
-  
+evalLookObjectM (PrepPhrase2 prep _ adj noun) =  do
+  pdo <- identifyPossiblelObjects (NounPhrase2 adj noun)
+  case pdo of
+    (label,Nothing) -> throwError ("You don't see that here")
+    (label,Just (Found fobj)) -> do
+                  (FoundObject {..}) <- throwMaybeM "You don't see that here"
+                              $ evaluatePossibleObject fobj
+                  doLookObject prep _entity'
+    (label,Just (Possibles gids)) -> pass
+
 
 -- doLookObjectM pp@(PrepPhrase1 prep (Noun noun)) = pass
 -- doLookObjectM pp@(PrepPhrase1 prep (NounPhrase1 _ (Noun noun))) = pass
 -- doLookObjectM pp@(PrepPhrase1 prep (NounPhrase2 adj (Noun noun))) = pass
-evalLookObjectM _  = throwError ("evalLookObjectM not finished" :: Text) {- do
+ {- do
   res <- verifyAccessabilityPP (clarifyingLookDirectObjectM prep) pp
   case res of
     (Left clarifyM) -> clarifyM
@@ -74,15 +67,15 @@ doLookObjectM (PrepPhrase2 prep _ ap np) = pass  do
   -}
 doLookObject :: Lexeme -> Object -> GameStateExceptT ()
 doLookObject prep entity@(Object {..})= do
-  let lookf =  case prep of 
+  let lookf =  case prep of
             AT -> lookFunctions._lookAt'._unLookAt'
             IN -> lookFunctions._lookIn'._unLookIn'
             ON -> lookFunctions._lookOn'._unLookOn'
             _ -> const (const (throwError lookAbsurd))
-  look entity lookf  
+  look entity lookf
   updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   pass
-  where 
+  where
     lookAbsurd = "Think hard about what you just tried to do."
     lookFunctions = _standardActions'._lookAction'._lookFunctions'
 errorSee :: Text -> GameStateExceptT ()
