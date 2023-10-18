@@ -6,27 +6,29 @@ import Control.Monad.Except (throwError)
 import Game.Engine.Verification
     ( identifyPossiblelObjects,
       matchObjects,
-      matchesProximity )
+      matchesProximity, evaluatePossibleObject )
 import Game.Model.Display (updateEnvironmentM)
-import Game.Engine.Verbs.Look (whichLook)
+import Game.Engine.Verbs.Look (whichLook, doLookObject)
 -- (_lookIn' _standardActions') _shortName'
 doLookTwoPrepM :: (PrepPhrase, PrepPhrase) -> GameStateExceptT ()
 doLookTwoPrepM (PrepPhrase1 advPrep advNP,PrepPhrase1 adjPrep adjNP) = do
-  padvdo <- identifyPossiblelObjects advNP
-  case padvdo of
-    (label,Nothing) -> throwError ("You don't see that here")
-    (label,Just (Found advObj)) -> do
-                  -- evaluatePossibleObject 
+  padvo <- identifyPossiblelObjects advNP
+  case padvo of
+    (label,Nothing) -> updateEnvironmentM "You don't see that here" >> pass
+    (label,Just (Found advObj')) -> do
+                  advObj <- throwMaybeM "That makes no sense"
+                              $ evaluatePossibleObject advObj'
                   padjo <- identifyPossiblelObjects adjNP
                   case padjo of
-                    (_,Nothing) -> updateEnvironmentM "That makes no sense" >> pass    
-                    (label', Just (Found adjObj)) -> do
-                                                res <- matchObjects advObj adjObj
-                                                case res of
-                                                  Nothing -> updateEnvironmentM ("You don't see the " <> show label' <> "there")
-                                                  (Just proximity)
-                                                    | matchesProximity proximity adjPrep -> pass -- whichLook advPrep advObj
-                                                    | otherwise -> updateEnvironmentM ("You don't see the " <> show label' <> "there")
+                    (_,Nothing) -> updateEnvironmentM "That makes no sense" >> pass
+                    (label', Just (Found adjObj')) -> do
+                                                adjObj <- throwMaybeM "That makes no sense"
+                                                            $ evaluatePossibleObject adjObj'
+                                                proximity <- throwMaybeM "That's not where you think it is"
+                                                              =<< matchObjects advObj adjObj
+                                                if matchesProximity proximity adjPrep
+                                                  then doLookObject advPrep (_entity' advObj')
+                                                  else updateEnvironmentM "That's not where you think it is."
                     (label', Just (Possibles advGids)) -> pass
     (label,Just (Possibles gids)) -> pass
   {- do

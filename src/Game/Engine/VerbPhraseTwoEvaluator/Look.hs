@@ -12,6 +12,7 @@ import Control.Monad.Except (MonadError(..))
 import Game.Actions.Look.StandardLook (look)
 import Clarifier (clarifyingLookDirectObjectM)
 import Game.Scene (tryDisplayF)
+import Game.Engine.Verbs.Look (doLookObject)
 
 evalLookObjectM :: PrepPhrase -> GameStateExceptT ()
 evalLookObjectM (PrepPhrase1 prep np) = do
@@ -42,7 +43,6 @@ evalLookObjectM (PrepPhrase2 prep _ adj noun) =  do
                   doLookObject prep _entity'
     (label,Just (Possibles gids)) -> pass
 
-
 -- doLookObjectM pp@(PrepPhrase1 prep (Noun noun)) = pass
 -- doLookObjectM pp@(PrepPhrase1 prep (NounPhrase1 _ (Noun noun))) = pass
 -- doLookObjectM pp@(PrepPhrase1 prep (NounPhrase2 adj (Noun noun))) = pass
@@ -65,19 +65,7 @@ doLookObjectM (PrepPhrase2 prep _ ap np) = pass  do
     _ -> throwError "Think hard about what you just tried to do."
   updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
   -}
-doLookObject :: Lexeme -> Object -> GameStateExceptT ()
-doLookObject prep entity@(Object {..})= do
-  let lookf =  case prep of
-            AT -> lookFunctions._lookAt'._unLookAt'
-            IN -> lookFunctions._lookIn'._unLookIn'
-            ON -> lookFunctions._lookOn'._unLookOn'
-            _ -> const (const (throwError lookAbsurd))
-  look entity lookf
-  updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
-  pass
-  where
-    lookAbsurd = "Think hard about what you just tried to do."
-    lookFunctions = _standardActions'._lookAction'._lookFunctions'
+
 errorSee :: Text -> GameStateExceptT ()
 errorSee = print
 {-
