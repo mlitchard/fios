@@ -73,8 +73,9 @@ identifyPossiblelObjects (NounPhrase2 adj (Noun noun)) = do
                             let found = makeFoundObject objPair
                             pure (Label noun,Just (Found found))
         Just gids -> do
-                    res <- matchDescriptor (Label adj) gids
-                    pure (Label noun, res)
+                      objPairs <- mapM getObjectGIDPairM gids
+                      let foundObjects = fmap makeFoundObject objPairs
+                      pure (Label noun,Just (Possibles foundObjects))
 
 identifyPossiblelObjects (Noun noun) = do
     (LabelToGIDListMapping m) <- _objectLabelMap'
@@ -85,7 +86,10 @@ identifyPossiblelObjects (Noun noun) = do
                           objPair <- getObjectGIDPairM gid
                           let found = makeFoundObject objPair
                           pure (Label noun, Just (Found found))
-      Just _ -> throwError "identifyPossiblelObjects incomplete" -- pure (Label noun, Just (Possibles xs))
+      Just gids -> do 
+                    objPairs <- mapM getObjectGIDPairM gids
+                    let foundObjects = fmap makeFoundObject objPairs
+                    pure (Label noun,Just (Possibles foundObjects))
 
 identifyPossiblelObjects _ = throwError "identifyPossiblelObjects unfinished"
 
