@@ -1,13 +1,12 @@
 module Build.Locations.Kitchen.Exits.EastExit.Portal.MakePortal where 
 import Game.Model.World
-        (GameStateExceptT, Object (..), Orientation (..), StandardActions (..), RoomSection (EastSection), AnchoredTo)
+        (GameStateExceptT, Object (..), Orientation (..), StandardActions (..), AnchoredTo)
 import Game.World (setWorldExitMapM)
-import Build.ObjectTemplate (kitchenEastPortalGID, kitchenEastDoorGID)
+import Build.ObjectTemplate (kitchenEastPortalGID)
 import Build.LocationTemplate (hallGID, kitchenGID)
 import Game.Object (setObjectMapM, getAnchoredTo)
 import Game.Model.Mapping (Label(..))
 import Tokenizer.Data (Lexeme(PORTAL))
-import Game.Model.Condition (Moveability(..), Proximity)
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.Look 
         (defaultLookAction)
 import Build.Locations.Kitchen.Exits.EastExit.Portal.Actions.NoCanDo

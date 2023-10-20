@@ -10,11 +10,10 @@ import Game.Model.World
       PerceptionFunctions(..),
       StandardActions(_lookAction'),
       UpdatePerceptionFunctions(..) )
-import Game.Actions.Look.StandardLook (changeLookAction)
+import Game.Actions.Look.StandardLook (changeLookAction, lookAtOpenDoor, lookAtClosedDoor)
 import Build.ObjectTemplate (kitchenEastDoorGID)
-import Game.Object (setObjectMapM, getObjectM)
-import Game.Model.Display (updatePlayerActionM, updateEnvironmentM)
-import qualified Data.Text
+import Game.Object (setObjectMapM)
+import Game.Model.Display (updateEnvironmentM)
 import Game.Actions.Look.Update
     ( updateLookAtF, updateLookInF, updateLookOnF, updateOpenReport )
 
@@ -79,14 +78,10 @@ closedDoorLookAction =
     . updateLookInF lookInF
 
 lookAtOpenF :: LookAtF
-lookAtOpenF = LookAtF $ const (const (lookAt openMsg))
-  where 
-    openMsg = updateEnvironmentM "It's open."
+lookAtOpenF = LookAtF $ const (const lookAtOpenDoor)
 
 lookAtClosedF :: LookAtF 
-lookAtClosedF = LookAtF $ const (const (lookAt closedMsg))
-  where 
-    closedMsg = updateEnvironmentM "It's closed"
+lookAtClosedF = LookAtF $ const (const lookAtClosedDoor)
 
 lookOnF :: LookOnF
 lookOnF = LookOnF $ const (const (updateEnvironmentM msg))
@@ -99,9 +94,3 @@ lookInF = LookInF $ const (const (updateEnvironmentM msg))
     msg = "You can look at a door. "
             <> "You can look on the door. "
             <> "But you can't look in a door"
-lookAt :: GameStateExceptT () -> GameStateExceptT ()
-lookAt openStateM = do 
-  (Object {..}) <- getObjectM kitchenEastDoorGID
-  updatePlayerActionM ("You look at the " <> _shortName')
-  openStateM
-  updateEnvironmentM (Data.Text.concat _odescription') 

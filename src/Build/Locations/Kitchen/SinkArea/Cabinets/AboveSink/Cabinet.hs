@@ -7,8 +7,6 @@ import Build.ObjectTemplate (kitchenCabinetAboveSinkGID)
 import Tokenizer (Lexeme (CABINET))
 import Game.World (initContainerMapM)
 import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Actions.NoCanDo
-import Build.Locations.Kitchen.Exits.EastExit.Door.Actions.Look 
-        (initialLookAction)
 import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Actions.Put
         ( putAction )
 import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Actions.Open 
@@ -17,6 +15,8 @@ import Build.Locations.Kitchen.SinkArea.Cabinets.BelowSink.Actions.Close
         (closeAction)
 import Game.Object (setObjectMapM, getAnchoredTo)
 import Build.LocationTemplate (kitchenGID)
+import Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Actions.Look 
+        (initialLookAction)
 
 buildKitchenCabinetAboveSink :: GameStateExceptT ()
 buildKitchenCabinetAboveSink = do

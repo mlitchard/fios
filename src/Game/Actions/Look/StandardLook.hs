@@ -6,7 +6,6 @@ import qualified Data.Map.Strict
 import Game.Model.Display (updateEnvironmentM, updatePlayerActionM)
 import Game.Object (getShortNameM)
 import qualified Data.Text
-import Control.Monad.Except (throwError)
 
 look :: Object
           -> LookF
@@ -54,6 +53,12 @@ lookInOpenBoxM gid (Object {..}) =
   where
     msg = "You look in the " <> _shortName'
     insideMsg = "Inside the " <> _shortName' <> "you see:"
+
+lookAtOpenDoor :: GameStateExceptT () 
+lookAtOpenDoor = updateEnvironmentM "The door is open."
+
+lookAtClosedDoor :: GameStateExceptT () 
+lookAtClosedDoor = updateEnvironmentM "The door is closed."
 
 lookAtClosedBoxM :: Object -> GameStateExceptT ()
 lookAtClosedBoxM entity = do

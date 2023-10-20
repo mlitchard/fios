@@ -3,13 +3,13 @@ module Build.Locations.Kitchen.SinkArea.Cabinets.AboveSink.Actions.Look
 import Game.Model.World 
 import Build.ObjectTemplate (kitchenCabinetAboveSinkGID)
 import Game.Actions.Look.StandardLook
-        (lookAtOpenBoxM, lookInOpenBoxM, lookInClosedBoxM, lookAtClosedBoxM, )
+        (lookAtOpenBoxM, lookInOpenBoxM, lookInClosedBoxM, lookAtClosedBoxM )
 import Game.Model.Display (updateEnvironmentM)
 import Game.Object (setObjectMapM)
 import Game.Actions.Look.Update
 
 initialLookAction :: LookAction
-initialLookAction = closedCabinetLookAction defaultLookAction
+initialLookAction = openCabinetLookAction defaultLookAction
 
 defaultLookAction :: LookAction
 defaultLookAction = LookAction {
@@ -32,8 +32,8 @@ defaultPerception = PerceptionFunctions {
 
 defaultLookFunctions :: LookFunctions
 defaultLookFunctions = LookFunctions {
-    _lookAt' = lookAtClosedF
-  , _lookIn' = lookInClosedF
+    _lookAt' = lookAtOpenF
+  , _lookIn' = lookInOpenF
   , _lookOn' = lookOnF
 }
 
@@ -76,12 +76,12 @@ changeLookAction lookAction entity@(Object {..}) =
 cabinetOpen :: GameStateExceptT () 
 cabinetOpen = updateEnvironmentM msg 
   where 
-    msg = "The door is open"
+    msg = "The cabinet is open"
     
 cabinetClosed :: GameStateExceptT () 
 cabinetClosed = updateEnvironmentM msg 
   where 
-    msg = "The door is closed"
+    msg = "The cabinet is closed"
 
 -- lookAtClosedF :: LookAtF 
 lookAtClosedF :: LookAtF

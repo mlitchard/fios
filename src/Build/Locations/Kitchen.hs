@@ -151,14 +151,6 @@ shelfAnchored = Data.List.NonEmpty.fromList
 doorAnchored :: NonEmpty Anchored
 doorAnchored = Data.List.NonEmpty.singleton 
   (Anchored kitchenEastPortalGID PlacedBehind)
-{-
-kitchenAnchors :: RoomSections
-kitchenAnchors = RoomSections $ Data.Map.Strict.fromList anchorList
--}
-{-
-anchorList :: [(RoomSection, ObjectAnchors)]
-anchorList = [(EastSection, eastAnchorObjectAnchors)]
--}
 
 directions :: ExitGIDMap
 directions = ExitGIDMap $ LabelToGIDMapping $ Data.Map.Strict.fromList directionList
