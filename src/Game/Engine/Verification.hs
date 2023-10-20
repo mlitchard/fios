@@ -63,7 +63,7 @@ identifyPossiblelObjects (NounPhrase1 _ (Noun noun)) = do
                   let foundObjects = fmap makeFoundObject objPairs
                   pure (Label noun,Just (Possibles foundObjects))
 
-identifyPossiblelObjects (NounPhrase2 adj (Noun noun)) = do
+identifyPossiblelObjects (NounPhrase2 _ (Noun noun)) = do
   (LabelToGIDListMapping m) <- _objectLabelMap'
                                 <$> (getLocationM =<< getLocationIdM)
   case Data.Map.Strict.lookup (Label noun) m of
