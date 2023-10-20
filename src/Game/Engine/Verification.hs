@@ -1,40 +1,31 @@
 module Game.Engine.Verification where
 import Recognizer.WordClasses
-    ( AdjPhrase(Adjective),
-      Adjective,
-      Imperative,
+    ( Imperative,
       NounPhrase(Noun, NounPhrase1, NounPhrase2),
-      PrepPhrase(..), Preposition )
+      PrepPhrase(..) )
 import Game.Model.GID (GID)
 import qualified Data.List.NonEmpty
-import Game.Object (getObjectsFromLabelM, getObjectM, getObjectGIDPairM)
-import Game.World (makeErrorReport)
+import Game.Object (getObjectGIDPairM)
 import Game.Model.World as FoundObject (FoundObject (..))
 import Game.Model.World
-import Clarifier
-    ( subObjectAgreement,
-      checkProximity,
-      findInDirectObject,
-      findNoun, matchesProximity)
 import Game.Model.Mapping (Label(..), LabelToGIDListMapping (..), GIDList)
 import Control.Monad.Except (MonadError(..))
-import Game.Engine.Utilities (descriptiveLabel, directObjectLabel)
 import Data.Map.Strict (lookup)
 import Tokenizer (Lexeme (..))
 import Game.Scene (tryDisplayF)
-import Data.Time.Calendar.OrdinalDate (fromSundayStartWeek)
 import Game.Model.Condition (Proximity (..))
+
 
 -- proximityMatch :: FoundObject 
 matchAnchored :: FoundObject
-                  -> FoundObject
-                  -> GameStateExceptT (Maybe (FoundObject,Proximity))
+                  -> FoundObject              --- adv       adj
+                  -> GameStateExceptT (Maybe (FoundObject,FoundObject,Proximity))
 matchAnchored advObject adjObject = do
   res <- tryAnchoredTo advOrientation
   pure $ case res of
     Nothing -> Nothing
     Just (AnchoredTo anchoredGid proximity)
-      | anchoredGid == adjGid -> Just (adjObject,proximity)
+      | anchoredGid == adjGid -> Just (advObject,adjObject,proximity)
       | otherwise -> Nothing
   where
     advOrientation = _orientation' (FoundObject._entity' advObject)

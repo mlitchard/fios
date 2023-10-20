@@ -18,7 +18,9 @@ import Game.Model.Display (updateDisplayActionM, showPlayerActionM, showEnvironm
 doLookObject :: Lexeme -> Object -> GameStateExceptT ()
 doLookObject prep entity@(Object {..})= do
   let lookf =  case prep of
-            AT -> lookFunctions._lookAt'._unLookAt'
+            AT -> do
+                    void $ error "AT"
+                    lookFunctions._lookAt'._unLookAt'
             IN -> lookFunctions._lookIn'._unLookIn'
             ON -> lookFunctions._lookOn'._unLookOn'
             _ -> const (const (throwError lookAbsurd))

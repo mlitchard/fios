@@ -7,7 +7,7 @@ import Game.Model.World
         , PerceptionFunctions (..), LookFunctions (..), StandardActions (..))
 
 import Game.Actions.Look.StandardLook
-        (lookAtOpenBoxM, lookInClosedBoxM, lookInOpenBoxM, changeLookAction, )
+        (lookAtOpenBoxM, lookInClosedBoxM, lookInOpenBoxM, changeLookAction, lookAtClosedBoxM, )
 import Build.ObjectTemplate (kitchenCabinetBelowSinkGID)
 import Game.Model.Display (updateEnvironmentM)
 import Game.Object (setObjectMapM)
@@ -101,7 +101,7 @@ lookAtOpenF :: LookAtF
 lookAtOpenF = LookAtF $ lookAtOpenBoxM kitchenCabinetBelowSinkGID
 
 lookAtClosedF :: LookAtF
-lookAtClosedF = LookAtF (const (const lookInClosedBoxM))
+lookAtClosedF = LookAtF (flip (const lookAtClosedBoxM))
 
 lookOnF :: LookOnF
 lookOnF = LookOnF $ const (const (updateEnvironmentM msg))

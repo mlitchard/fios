@@ -33,9 +33,7 @@ primaryEvaluator (ImperativeClause (VerbPhrase5 verb ap@(AdjNoun {}))) = do
   eval <- _evalVerbPhraseFive' <$> ask
   eval (verb, ap)
 
-primaryEvaluator err = do
-                          print (show err)
-                          throwError "You need to be more clear"
+primaryEvaluator err = throwError (show err <> "You need to be more clear")
 {-
 data Clarification = Clarification {
     _clarifyingLabel' :: Label Lexeme

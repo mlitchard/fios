@@ -4,8 +4,9 @@ import Game.Model.GID
 import Game.Model.Mapping
 import qualified Data.Map.Strict
 import Game.Model.Display (updateEnvironmentM, updatePlayerActionM)
-import Game.Object (getShortNameM, getObjectM)
+import Game.Object (getShortNameM)
 import qualified Data.Text
+import Control.Monad.Except (throwError)
 
 look :: Object
           -> LookF
@@ -29,7 +30,7 @@ lookInImpossibleM = updateEnvironmentM msg
 lookAtOpenBoxM :: GID Object
                     -> Object
                     -> (Map (GID Object) Container -> GameStateExceptT ())
-lookAtOpenBoxM gid (Object {..}) =
+lookAtOpenBoxM gid (Object {..}) = do 
   lookContainerM msg gid shallowLookInContainerM
   where
     msg = "You look at the " <> _shortName'
@@ -70,7 +71,6 @@ lookContainerM :: Text
                   -> Map (GID Object) Container
                   -> GameStateExceptT ()
 lookContainerM msg gid lookFunction worldCMap = do
-  -- (_unContainerMap' . _unContainer')
   cMap <- _unContainer'
             <$> throwMaybeM errMsg (Data.Map.Strict.lookup gid worldCMap)
   if Data.Map.Strict.null cMap

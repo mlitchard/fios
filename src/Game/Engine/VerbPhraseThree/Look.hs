@@ -14,7 +14,7 @@ import qualified Data.List.NonEmpty
 import Game.Model.Condition (Proximity)
 import Data.List.NonEmpty ((<|))
 -- (_lookIn' _standardActions') _shortName'
-
+-- (FoundObject,NonEmpty (FoundObject,Proximity)
 data MatchResult
   = Adjectival (FoundObject,Proximity) -- adverbialObject found adjectivalObject proximity match
   | Adverbial (NonEmpty (FoundObject,Proximity)) -- adjectivalObject found adverbial(s)
@@ -30,14 +30,14 @@ doLookTwoPrepM  (PrepPhrase1 advPrep advNP,PrepPhrase1 adjPrep adjNP) = do
                                           res <- matchAnchored padvo padjo
                                           case res of
                                             Nothing -> pure Nothing
-                                            Just (_,proximity) -> pure
-                                                            $ Just (Adjectival (padvo,proximity))
+                                            Just (advObj,_,proximity) -> pure
+                                                            $ Just (Adjectival (advObj,proximity))
                         padjos        -> do
                                           res <- tryMatchAdv padvo (toList padjos)
                                           case res of
                                             Nothing -> pure Nothing
-                                            Just proximity -> pure
-                                                                $ Just (Adjectival (padvo, proximity))
+                                            Just (advObj,_,proximity) -> pure
+                                                                $ Just (Adjectival (advObj, proximity))
       padvos -> case padjos' of
                   (padjo :| []) -> do
                                     res <- tryMatchAdj padjo (toList padvos)
@@ -54,38 +54,46 @@ doLookTwoPrepM  (PrepPhrase1 advPrep advNP,PrepPhrase1 adjPrep adjNP) = do
                                           then doLookObject advPrep (_entity' advObj)
                                           else updateEnvironmentM notWhere
                                                 >> showEnvironmentM
-    (Adverbial advObjs) -> do 
-                              let res = Data.List.NonEmpty.filter 
+    (Adverbial advObjs) -> do
+                              let res = Data.List.NonEmpty.filter
                                         (\(_,proximity) -> checkAdvObjProximity adjPrep proximity) advObjs
-                              case res of 
+                              case res of
                                 [] -> updateEnvironmentM notWhere
                                       >> showEnvironmentM
-                                [(advObj,_)] -> doLookObject advPrep (_entity' advObj)
+                                [(advObj,_)] -> do
+                                                  doLookObject advPrep (_entity' advObj)
                                 _xs -> throwError "descriptives case unhandled"
-                              
+
     ManyBoth _ -> throwError "ManyBoth unhandled"
   where
     notWhere = "That's not where you think it is."
     errMsg = "Seriously?"
     tryMatchAdv :: FoundObject
                     -> [FoundObject]
-                    -> GameStateExceptT (Maybe Proximity)
+                    -> GameStateExceptT (Maybe (FoundObject,FoundObject,Proximity))
     tryMatchAdv _ [] = pure Nothing
-    tryMatchAdv advObj [adjObj] = snd <<$>> matchAnchored advObj adjObj
+    tryMatchAdv advObj [adjObj] = do
+                                    res <- matchAnchored advObj adjObj
+                                    case res of
+                                      Nothing -> pure Nothing
+                                      Just match -> pure (Just match)
     tryMatchAdv advObj (adjObj : adjObjXS) = do
       res <- matchAnchored advObj adjObj
       case res of
         Nothing -> tryMatchAdv advObj adjObjXS
-        Just (_,proximity) -> pure (Just proximity)
+        Just match -> pure (Just match)
 
     tryMatchAdj :: FoundObject
-                    -> [FoundObject]
+                    -> [FoundObject]                            -- advs
                     -> GameStateExceptT (Maybe (NonEmpty (FoundObject,Proximity)))
     tryMatchAdj adjObj advObjXS = do
       proximities' <- mapM (`matchAnchored` adjObj) advObjXS
       case catMaybes proximities' of
         [] -> pure Nothing
-        proximities -> pure $ Just (Data.List.NonEmpty.fromList proximities)
+        proximities -> do
+                        let removedAdj = (\(adv,_,proximity) -> (adv,proximity))
+                                            <$> proximities
+                        pure $ Just (Data.List.NonEmpty.fromList removedAdj)
 
     tryBoth :: [FoundObject]
                 -> [FoundObject]
@@ -97,7 +105,9 @@ doLookTwoPrepM  (PrepPhrase1 advPrep advNP,PrepPhrase1 adjPrep adjNP) = do
         [] -> tryBoth advObvXS adjObjXS
         matches -> do
                       res' <- tryBoth advObvXS adjObjXS
-                      let newMatch = (,) advObj (Data.List.NonEmpty.fromList matches)
+                      let removeAdv = (\(_,adjObj,proximity) -> (adjObj,proximity))
+                                        <$> matches
+                      let newMatch = (,) advObj (Data.List.NonEmpty.fromList removeAdv)
                       pure $ (<|) newMatch <$> res'
 
 
@@ -224,45 +234,4 @@ visibilityExistence np = do
   where
     objNotFound (Label label) =
       "You don't see a " <> show label <> " here."
-{- 
-doLookTwoPrepM :: (PrepPhrase, PrepPhrase) -> GameStateExceptT ()
-doLookTwoPrepM (PrepPhrase1 advPrep advNP,PrepPhrase1 adjPrep adjNP) = do
-  print "*** doLookTwoPrepM ***"
-  padvo <- identifyPossiblelObjects advNP
-  case padvo of
-    (label,Nothing) -> throwError "debug label nothing" -- updateEnvironmentM "You don't see that here" >> showEnvironmentM
-    (label,Just (Found advObj')) -> do
-                  advObj <- throwMaybeM "That makes no sense"
-                              $ evaluatePossibleObject advObj'
-                  padjo <- identifyPossiblelObjects adjNP
-                  case padjo of
-                    (_,Nothing) -> throwError "debug padjo nothing" -- updateEnvironmentM "That makes no sense" >> showEnvironmentM
-                    (label', Just (Found adjObj')) -> do
-                                                adjObj <- throwMaybeM "That makes no sense"
-                                                            $ evaluatePossibleObject adjObj'
-                                                tryDoObject advObj adjObj
-                    (label', Just (Possibles adjGids)) -> throwError "adjGids error"
-    (label,Just (Possibles advObjs')) -> do
-                                          advObjs <- throwMaybeM "I don't see that here" 
-                                                      $ evaluatePossibleObjects advObjs'
-                                          case advObjs of 
-                                            ((advObjs :| [])) -> tryDoObject adv 
-                                          pass
-  -}
 
-
-  {- do
-  (_,entity@(Object {..})) <- verifySensibilityNPPP clarifying np pp
-  void $ case prep of
-    IN -> _lookIn' _standardActions' entity
-    ON -> _lookOn' _standardActions' entity
-    AT -> _lookAt' _standardActions' entity
-    _ -> throwError "Think hard about what you just tried to do."
-  -- maybeDescribeNexusM _mNexus'
-  updateDisplayActionM (showPlayerActionM >> showEnvironmentM)
-  where
-    clarifying = clarifyingLookDirectObjectM prep
--}
-
-
--- FIXME . change data Object to data Entity everywhere
