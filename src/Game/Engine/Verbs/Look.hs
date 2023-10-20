@@ -1,4 +1,4 @@
-module Game.Engine.Verbs.Look where 
+module Game.Engine.Verbs.Look where
 import Game.Model.GID (GID)
 import Game.Model.World
     ( StandardActions(_lookAction'),
@@ -8,7 +8,7 @@ import Game.Model.World
       LookInF(_unLookIn'),
       LookOnF(_unLookOn'),
       LookAtF(_unLookAt'),
-      GameStateExceptT ) 
+      GameStateExceptT )
 import Recognizer (Preposition)
 import Tokenizer (Lexeme (..))
 import Control.Monad.Except (MonadError(throwError))
@@ -28,6 +28,6 @@ doLookObject prep entity@(Object {..})= do
   where
     lookAbsurd = "Think hard about what you just tried to do."
     lookFunctions = _standardActions'._lookAction'._lookFunctions'
-    
-whichLook :: Preposition -> GID Object -> GameStateExceptT () 
-whichLook _ _ = pass 
+
+whichLook :: Preposition -> GID Object -> GameStateExceptT ()
+whichLook _ _ = pass

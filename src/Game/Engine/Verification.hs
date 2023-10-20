@@ -25,15 +25,16 @@ import Game.Scene (tryDisplayF)
 import Data.Time.Calendar.OrdinalDate (fromSundayStartWeek)
 import Game.Model.Condition (Proximity (..))
 
-matchObjects :: FoundObject
+-- proximityMatch :: FoundObject 
+matchAnchored :: FoundObject
                   -> FoundObject
-                  -> GameStateExceptT (Maybe Proximity)
-matchObjects advObject adjObject = do
+                  -> GameStateExceptT (Maybe (FoundObject,Proximity))
+matchAnchored advObject adjObject = do
   res <- tryAnchoredTo advOrientation
   pure $ case res of
     Nothing -> Nothing
     Just (AnchoredTo anchoredGid proximity)
-      | anchoredGid == adjGid -> Just proximity
+      | anchoredGid == adjGid -> Just (adjObject,proximity)
       | otherwise -> Nothing
   where
     advOrientation = _orientation' (FoundObject._entity' advObject)
@@ -43,7 +44,7 @@ tryAnchoredTo :: Orientation -> GameStateExceptT (Maybe AnchoredTo)
 tryAnchoredTo (AnchoredTo' f) = Just <$> f
 tryAnchoredTo _ = pure Nothing
 
-evaluatePossibleObjects :: NonEmpty FoundObject 
+evaluatePossibleObjects :: NonEmpty FoundObject
                             -> Maybe (NonEmpty FoundObject)
 evaluatePossibleObjects possibles =
   let entities = evaluatePossibleObject <$> possibles
@@ -113,6 +114,22 @@ makeFoundObject (gid, entity) = FoundObject {
     _gid' = gid
   , _entity' = entity
 }
+
+checkAdvObjProximity :: Lexeme -> Proximity -> Bool
+checkAdvObjProximity lex proximity =
+  case toProximity lex of
+    Nothing -> False
+    Just proximity' -> proximity == proximity'
+
+toProximity :: Lexeme -> Maybe Proximity
+toProximity ON = Just PlacedOn
+toProximity UNDER = Just PlacedUnder
+toProximity ABOVE = Just PlacedAbove
+toProximity LEFT = Just PlacedLeft
+toProximity RIGHT = Just PlacedRight
+toProximity FRONT = Just PlacedFront
+toProximity BEHIND = Just PlacedBehind
+toProximity _ = Nothing
 
 matchesProximity :: Proximity -> Lexeme -> Bool
 matchesProximity PlacedOn ON = True

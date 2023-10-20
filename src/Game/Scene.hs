@@ -53,9 +53,6 @@ describeAnchored :: Text
 describeAnchored shortName (Anchored gid proximity) = do
   anchored <- getObjectM gid
   let display' = tryDisplayF anchored
-  print ("DEBUG describeAnchored prior" <> _shortName' anchored)
-  print (fmap ("DEBUG describeAnchored maybe visible" <>) (_shortName' <$> display') )
-
   case display' of
     Nothing -> pure Nothing
     Just anchored' -> do
