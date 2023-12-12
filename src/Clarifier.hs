@@ -17,6 +17,7 @@ import Tokenizer.Data (Lexeme(..))
 import Prelude hiding (show)
 import Recognizer (NounPhrase(..))
 import Game.Object (getObjectsFromLabelM)
+import Game.Engine.Verification (tryAnchoredTo)
 
 doReportM :: Text -> GameStateExceptT ()
 doReportM report' = do
@@ -29,16 +30,22 @@ setReportM report' = do
   modify' (\gs -> gs{_report' = currentReport <> [report']})
 
 clearReportM :: GameStateExceptT () 
-clearReportM = do 
-  modify' (\gs -> gs{_report' = mempty})
+clearReportM = modify' (\gs -> gs{_report' = mempty})
 
+samePageCheck :: NounPhrase -> Label Object -> Bool 
+samePageCheck np label =
+  let label' :: (Label Object)
+      label' = Label (findNoun np)
+  in label == label' 
+
+{-
 samePageCheckM :: Label Object -> Label Object -> GameStateExceptT ()
 samePageCheckM label label'
   | label == label' = pass
   | otherwise       = throwError errMsg
   where
     errMsg = "What were we talking about again?"
-
+-}
 displayReport :: GameStateExceptT ()
 displayReport = do
   mapM_ print . _report' =<< get
@@ -53,7 +60,7 @@ clarifyWhich f labelObjectPair@(Label label', objects) = do
   where
     clarification = Clarification {
         _clarifyingLabel' = fst labelObjectPair
-      , _gidObject' = objects
+      , _objects' = objects
     }
     preamble = "which " <> (toLower . toText) label' <> " do you mean?"
 
@@ -63,18 +70,28 @@ setEvaluatorM engine = modify' (\gs -> gs{_evaluator' = engine})
 objectOrientation :: Object -> GameStateExceptT ()
 objectOrientation (Object {..}) =
   describeOrientation ("The " <> _shortName') _orientation'
-
+{-
 checkProximity :: PrepPhrase -> FoundAnchoredTo -> Bool
 checkProximity prep (FoundAnchoredTo _ (_,prox)) = error ("checkProximity deprecated")
 -- matchesProximity (prox,prep)
-
+-}
 clarifyNotThere :: GameStateExceptT ()
 clarifyNotThere = throwError "You don't see that here"
 
-clarifyingM :: Imperative -> GameStateExceptT () 
-clarifyingM (ClarifyingClause1 (NounPhrase1 _ (Noun sub)) prep) = pass {- do
-  clarified <- throwMaybeM noClarityMSG . _clarification' =<< get
-  samePageCheckM (Label sub) (_clarifyingLabel' clarified)
+clarifying :: Imperative -> GameStateExceptT () 
+clarifying (ClarifyingClause1 (NounPhrase1 _ advnp) (PrepPhrase1 prep adjnp)) = do
+  (Clarification {..}) <- throwMaybeM noClarityMSG . _clarification' =<< get
+  unless (samePageCheck advnp _clarifyingLabel')
+    $ throwError "Are we talking about the same thing?" 
+  anchoreds <- catMaybes 
+                <$> mapM (\Object {..} -> tryAnchoredTo _orientation') 
+                         (toList _objects')
+  anchors <-  
+  pass 
+   where
+    noClarityMSG = "Programmer Error: No clarifying object list"
+clarifying _ = throwError "clarifyingM unfinished"
+ {-
   objectListIobj <- getObjectsFromLabelM (Label (findInDirectObject prep))
   subjects <- throwMaybeM tryAgain
         $ nonEmpty $ filter (checkProximity prep) $ catMaybes
@@ -94,12 +111,14 @@ clarifyingM (ClarifyingClause1 (NounPhrase1 _ (Noun sub)) prep) = pass {- do
   where
     tryAgain = "Try that again"
     noClarityMSG = "Programmer Error: No clarifying object list"
--}
-clarifyingM _ = throwError "clarifyingM implimentation not completed"
 
-clarifyingLookDirectObjectM :: Preposition -> Imperative -> GameStateExceptT ()
-clarifyingLookDirectObjectM whatPrep imperative = pass {- do
-  clarifyingM imperative
+clarifyingM _ = throwError "clarifyingM implimentation not completed"
+-}
+clarifyingLookAdverbialObject :: Preposition -> Imperative -> GameStateExceptT ()
+clarifyingLookAdverbialObject advPrep imperative =  do
+  clarifying imperative
+  pass
+  {-
   gsub@(gid,_) <- throwMaybeM errMSG . _clarifiedDirectObject' =<< get
   -- updatedDirectObject <- getObjectM gid
   maybeDescribeNexusM (_mNexus' updatedDirectObject)

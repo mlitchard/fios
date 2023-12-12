@@ -34,9 +34,4 @@ primaryEvaluator (ImperativeClause (VerbPhrase5 verb ap@(AdjNoun {}))) = do
   eval (verb, ap)
 
 primaryEvaluator err = throwError (show err <> "You need to be more clear")
-{-
-data Clarification = Clarification {
-    _clarifyingLabel' :: Label Lexeme
-  , _gidObjectPairs' :: NonEmpty (GID Object,Object)
-}
--}
+

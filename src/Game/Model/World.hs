@@ -36,7 +36,7 @@ newtype AnchoredTo = AnchoredTo
 -}
 data Clarification = Clarification {
     _clarifyingLabel' :: Label Object
-  , _gidObject' :: NonEmpty Object
+  , _objects' :: NonEmpty Object
 }
 
 type ClarifyWhich = (Imperative -> GameStateExceptT ())
